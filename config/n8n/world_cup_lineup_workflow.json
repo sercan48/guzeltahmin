@@ -1,0 +1,208 @@
+{
+  "name": "World Cup 2026 Live Lineup & Prediction Pipeline",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 8 * * *"
+            }
+          ]
+        }
+      },
+      "name": "Daily Match Scheduler (08:00 AM)",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [
+        200,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT id, api_match_id, kickoff_time FROM matches WHERE DATE(kickoff_time) = CURRENT_DATE AND status = 'SCHEDULED';"
+      },
+      "name": "Fetch Today's Matches (Supabase)",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2,
+      "position": [
+        400,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "batchSize": 1,
+        "options": {}
+      },
+      "name": "Split In Batches (1 per Match)",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 2,
+      "position": [
+        600,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "amount": "={{ Math.max(0, new Date($json.kickoff_time).getTime() - new Date().getTime() - (45 * 60 * 1000)) / 1000 }}",
+        "unit": "seconds"
+      },
+      "name": "Wait until T-45 Mins",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [
+        800,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://v3.football.api-sports.io/fixtures/lineups",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "fixture",
+              "value": "={{ $json.api_match_id }}"
+            }
+          ]
+        },
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-apisports-key",
+              "value": "YOUR_API_KEY"
+            }
+          ]
+        }
+      },
+      "name": "Fetch Lineups API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        1000,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://your-python-backend/api/enrich-lineup",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "match_id",
+              "value": "={{ $node[\"Split In Batches (1 per Match)\"].json.id }}"
+            },
+            {
+              "name": "api_lineups",
+              "value": "={{ $json.response }}"
+            }
+          ]
+        }
+      },
+      "name": "Enrich EA FC Ratings (Python API)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        1200,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://your-python-backend/api/predict",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "match_id",
+              "value": "={{ $node[\"Split In Batches (1 per Match)\"].json.id }}"
+            }
+          ]
+        }
+      },
+      "name": "Trigger Power Score Prediction",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        1400,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Daily Match Scheduler (08:00 AM)": {
+      "main": [
+        [
+          {
+            "node": "Fetch Today's Matches (Supabase)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Today's Matches (Supabase)": {
+      "main": [
+        [
+          {
+            "node": "Split In Batches (1 per Match)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split In Batches (1 per Match)": {
+      "main": [
+        [
+          {
+            "node": "Wait until T-45 Mins",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait until T-45 Mins": {
+      "main": [
+        [
+          {
+            "node": "Fetch Lineups API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Lineups API": {
+      "main": [
+        [
+          {
+            "node": "Enrich EA FC Ratings (Python API)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enrich EA FC Ratings (Python API)": {
+      "main": [
+        [
+          {
+            "node": "Trigger Power Score Prediction",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

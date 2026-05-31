@@ -1,0 +1,2553 @@
+{
+  "generated_at": "2026-04-18T00:10:22.267034",
+  "matches": [
+    {
+      "match": "Sunderland AFC vs Nottingham Forest FC",
+      "home_team": "Sunderland AFC",
+      "away_team": "Nottingham Forest FC",
+      "fixture_id": null,
+      "date": "2026-04-24 00:00:00",
+      "league": "E0",
+      "league_name": "Premier League",
+      "home_prob": 0.75,
+      "draw_prob": 0.1,
+      "away_prob": 0.15,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.04,
+        "confidence": 0.55,
+        "reason": "Gol beklentisi: 2.33"
+      },
+      "top_2": {
+        "pick": "12 (Ev Sahibi veya Deplasman)",
+        "type": "Cifte Sans",
+        "odds": 1.21,
+        "confidence": 0.9,
+        "reason": "Cifte sans: 90%"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Hertha BSC vs Holstein Kiel",
+      "home_team": "Hertha BSC",
+      "away_team": "Holstein Kiel",
+      "fixture_id": null,
+      "date": "2026-04-24 00:00:00",
+      "league": "D2",
+      "league_name": "D2",
+      "home_prob": 0.01,
+      "draw_prob": 0.9,
+      "away_prob": 0.09,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.04,
+        "confidence": 0.55,
+        "reason": "Gol beklentisi: 2.28"
+      },
+      "top_2": {
+        "pick": "Ust 2.5 (2.28 gol beklentisi)",
+        "type": "Alt/Ust Gol",
+        "odds": 1.73,
+        "confidence": 0.62,
+        "reason": "Toplam gol beklentisi: 2.28"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "VfL Bochum 1848 vs SpVgg Greuther F\u00fcrth",
+      "home_team": "VfL Bochum 1848",
+      "away_team": "SpVgg Greuther F\u00fcrth",
+      "fixture_id": null,
+      "date": "2026-04-24 00:00:00",
+      "league": "D2",
+      "league_name": "D2",
+      "home_prob": 0.85,
+      "draw_prob": 0.09,
+      "away_prob": 0.06,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.24,
+        "confidence": 0.5,
+        "reason": "Gol beklentisi: 3.13"
+      },
+      "top_2": {
+        "pick": "Ust 2.5 (3.13 gol beklentisi)",
+        "type": "Alt/Ust Gol",
+        "odds": 1.2,
+        "confidence": 0.9,
+        "reason": "Toplam gol beklentisi: 3.13"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "SC Paderborn 07 vs Schalke 04",
+      "home_team": "SC Paderborn 07",
+      "away_team": "Schalke 04",
+      "fixture_id": null,
+      "date": "2026-04-24 00:00:00",
+      "league": "D2",
+      "league_name": "D2",
+      "home_prob": 0.01,
+      "draw_prob": 0.85,
+      "away_prob": 0.14,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.04,
+        "confidence": 0.55,
+        "reason": "Gol beklentisi: 2.33"
+      },
+      "top_2": {
+        "pick": "Beraberlik (X)",
+        "type": "Mac Sonucu (1X2)",
+        "odds": 1.27,
+        "confidence": 0.85,
+        "reason": "H:1% D:85% A:14%"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "1. FC Kaiserslautern vs Eintracht Braunschweig",
+      "home_team": "1. FC Kaiserslautern",
+      "away_team": "Eintracht Braunschweig",
+      "fixture_id": null,
+      "date": "2026-04-24 00:00:00",
+      "league": "D2",
+      "league_name": "D2",
+      "home_prob": 0.01,
+      "draw_prob": 0.9,
+      "away_prob": 0.09,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.24,
+        "confidence": 0.5,
+        "reason": "Gol beklentisi: 2.82"
+      },
+      "top_2": {
+        "pick": "\u0130Y 0.5 \u00dcst",
+        "type": "\u0130Y Alt/Ust Gol",
+        "odds": 1.25,
+        "confidence": 0.86,
+        "reason": "Hizli baslangic beklentisi"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "AS Saint-\u00c9tienne vs ESTAC Troyes",
+      "home_team": "AS Saint-\u00c9tienne",
+      "away_team": "ESTAC Troyes",
+      "fixture_id": null,
+      "date": "2026-04-24 00:00:00",
+      "league": "F2",
+      "league_name": "F2",
+      "home_prob": 0.49,
+      "draw_prob": 0.29,
+      "away_prob": 0.21,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.24,
+        "confidence": 0.5,
+        "reason": "Gol beklentisi: 2.74"
+      },
+      "top_2": {
+        "pick": "Ev Sahibi (1)",
+        "type": "Mac Sonucu (1X2)",
+        "odds": 2.19,
+        "confidence": 0.49,
+        "reason": "H:49% D:29% A:21%"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Clermont Foot 63 vs SC Bastia",
+      "home_team": "Clermont Foot 63",
+      "away_team": "SC Bastia",
+      "fixture_id": null,
+      "date": "2026-04-24 00:00:00",
+      "league": "F2",
+      "league_name": "F2",
+      "home_prob": 0.01,
+      "draw_prob": 0.71,
+      "away_prob": 0.28,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.04,
+        "confidence": 0.55,
+        "reason": "Gol beklentisi: 1.83"
+      },
+      "top_2": {
+        "pick": "Alt 2.5 (1.83 gol beklentisi)",
+        "type": "Alt/Ust Gol",
+        "odds": 1.88,
+        "confidence": 0.57,
+        "reason": "Toplam gol beklentisi: 1.83"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Amiens SC vs Montpellier",
+      "home_team": "Amiens SC",
+      "away_team": "Montpellier",
+      "fixture_id": null,
+      "date": "2026-04-24 00:00:00",
+      "league": "F2",
+      "league_name": "F2",
+      "home_prob": 0.01,
+      "draw_prob": 0.65,
+      "away_prob": 0.34,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.04,
+        "confidence": 0.55,
+        "reason": "Gol beklentisi: 2.07"
+      },
+      "top_2": {
+        "pick": "Beraberlik (X)",
+        "type": "Mac Sonucu (1X2)",
+        "odds": 1.65,
+        "confidence": 0.65,
+        "reason": "H:1% D:65% A:34%"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Stade de Reims vs AS Nancy Lorraine",
+      "home_team": "Stade de Reims",
+      "away_team": "AS Nancy Lorraine",
+      "fixture_id": null,
+      "date": "2026-04-24 00:00:00",
+      "league": "F2",
+      "league_name": "F2",
+      "home_prob": 0.85,
+      "draw_prob": 0.14,
+      "away_prob": 0.01,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.24,
+        "confidence": 0.5,
+        "reason": "Gol beklentisi: 2.67"
+      },
+      "top_2": {
+        "pick": "Ev Sahibi (1)",
+        "type": "Mac Sonucu (1X2)",
+        "odds": 1.27,
+        "confidence": 0.85,
+        "reason": "H:85% D:14% A:1%"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Fulham FC vs Aston Villa",
+      "home_team": "Fulham FC",
+      "away_team": "Aston Villa",
+      "fixture_id": null,
+      "date": "2026-04-25 00:00:00",
+      "league": "E0",
+      "league_name": "Premier League",
+      "home_prob": 0.01,
+      "draw_prob": 0.26,
+      "away_prob": 0.73,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.24,
+        "confidence": 0.5,
+        "reason": "Gol beklentisi: 2.69"
+      },
+      "top_2": {
+        "pick": "Deplasman (2)",
+        "type": "Mac Sonucu (1X2)",
+        "odds": 1.49,
+        "confidence": 0.73,
+        "reason": "H:1% D:26% A:73%"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "AFC Bournemouth vs Leeds United FC",
+      "home_team": "AFC Bournemouth",
+      "away_team": "Leeds United FC",
+      "fixture_id": null,
+      "date": "2026-04-25 00:00:00",
+      "league": "E0",
+      "league_name": "Premier League",
+      "home_prob": 0.01,
+      "draw_prob": 0.45,
+      "away_prob": 0.53,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.24,
+        "confidence": 0.5,
+        "reason": "Gol beklentisi: 3.02"
+      },
+      "top_2": {
+        "pick": "KG Var",
+        "type": "Karsilikli Gol (KG)",
+        "odds": 1.51,
+        "confidence": 0.72,
+        "reason": "KG olasilik: %72"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Liverpool vs Crystal Palace",
+      "home_team": "Liverpool",
+      "away_team": "Crystal Palace",
+      "fixture_id": null,
+      "date": "2026-04-25 00:00:00",
+      "league": "E0",
+      "league_name": "Premier League",
+      "home_prob": 0.79,
+      "draw_prob": 0.07,
+      "away_prob": 0.15,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.24,
+        "confidence": 0.5,
+        "reason": "Gol beklentisi: 2.67"
+      },
+      "top_2": {
+        "pick": "HMS 1",
+        "type": "Handikapli Mac Sonucu (HMS)",
+        "odds": 2.0,
+        "confidence": 0.55,
+        "reason": "Guclu favori avantaji (Tier 1 vs 3)"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "West Ham United vs Everton",
+      "home_team": "West Ham United",
+      "away_team": "Everton",
+      "fixture_id": null,
+      "date": "2026-04-25 00:00:00",
+      "league": "E0",
+      "league_name": "Premier League",
+      "home_prob": 0.29,
+      "draw_prob": 0.2,
+      "away_prob": 0.51,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.24,
+        "confidence": 0.5,
+        "reason": "Gol beklentisi: 2.69"
+      },
+      "top_2": {
+        "pick": "12 (Ev Sahibi veya Deplasman)",
+        "type": "Cifte Sans",
+        "odds": 1.35,
+        "confidence": 0.8,
+        "reason": "Cifte sans: 80%"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Wolverhampton Wanderers vs Tottenham Hotspur",
+      "home_team": "Wolverhampton Wanderers",
+      "away_team": "Tottenham Hotspur",
+      "fixture_id": null,
+      "date": "2026-04-25 00:00:00",
+      "league": "E0",
+      "league_name": "Premier League",
+      "home_prob": 0.41,
+      "draw_prob": 0.09,
+      "away_prob": 0.49,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.24,
+        "confidence": 0.5,
+        "reason": "Gol beklentisi: 2.7"
+      },
+      "top_2": {
+        "pick": "\u0130Y 0.5 \u00dcst",
+        "type": "\u0130Y Alt/Ust Gol",
+        "odds": 1.29,
+        "confidence": 0.84,
+        "reason": "Hizli baslangic beklentisi"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Arsenal vs Newcastle United",
+      "home_team": "Arsenal",
+      "away_team": "Newcastle United",
+      "fixture_id": null,
+      "date": "2026-04-25 00:00:00",
+      "league": "E0",
+      "league_name": "Premier League",
+      "home_prob": 0.95,
+      "draw_prob": 0.01,
+      "away_prob": 0.04,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.24,
+        "confidence": 0.5,
+        "reason": "Gol beklentisi: 2.82"
+      },
+      "top_2": {
+        "pick": "Ust 2.5 (2.82 gol beklentisi)",
+        "type": "Alt/Ust Gol",
+        "odds": 1.25,
+        "confidence": 0.87,
+        "reason": "Toplam gol beklentisi: 2.82"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Birmingham City FC vs Bristol City",
+      "home_team": "Birmingham City FC",
+      "away_team": "Bristol City",
+      "fixture_id": null,
+      "date": "2026-04-25 00:00:00",
+      "league": "E1",
+      "league_name": "Championship",
+      "home_prob": 0.67,
+      "draw_prob": 0.07,
+      "away_prob": 0.26,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.24,
+        "confidence": 0.5,
+        "reason": "Gol beklentisi: 2.59"
+      },
+      "top_2": {
+        "pick": "\u0130Y 0.5 \u00dcst",
+        "type": "\u0130Y Alt/Ust Gol",
+        "odds": 1.32,
+        "confidence": 0.82,
+        "reason": "Hizli baslangic beklentisi"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Charlton Athletic vs Hull City AFC",
+      "home_team": "Charlton Athletic",
+      "away_team": "Hull City AFC",
+      "fixture_id": null,
+      "date": "2026-04-25 00:00:00",
+      "league": "E1",
+      "league_name": "Championship",
+      "home_prob": 0.01,
+      "draw_prob": 0.46,
+      "away_prob": 0.53,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.24,
+        "confidence": 0.5,
+        "reason": "Gol beklentisi: 2.5"
+      },
+      "top_2": {
+        "pick": "HMS 2",
+        "type": "Handikapli Mac Sonucu (HMS)",
+        "odds": 1.59,
+        "confidence": 0.69,
+        "reason": "Guclu favori avantaji (Tier 5 vs 3)"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Coventry City vs Wrexham AFC",
+      "home_team": "Coventry City",
+      "away_team": "Wrexham AFC",
+      "fixture_id": null,
+      "date": "2026-04-25 00:00:00",
+      "league": "E1",
+      "league_name": "Championship",
+      "home_prob": 0.01,
+      "draw_prob": 0.55,
+      "away_prob": 0.44,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.24,
+        "confidence": 0.5,
+        "reason": "Gol beklentisi: 3.19"
+      },
+      "top_2": {
+        "pick": "Beraberlik (X)",
+        "type": "Mac Sonucu (1X2)",
+        "odds": 1.98,
+        "confidence": 0.55,
+        "reason": "H:1% D:55% A:44%"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Leicester City FC vs Millwall",
+      "home_team": "Leicester City FC",
+      "away_team": "Millwall",
+      "fixture_id": null,
+      "date": "2026-04-25 00:00:00",
+      "league": "E1",
+      "league_name": "Championship",
+      "home_prob": 0.49,
+      "draw_prob": 0.4,
+      "away_prob": 0.11,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.04,
+        "confidence": 0.55,
+        "reason": "Gol beklentisi: 2.46"
+      },
+      "top_2": {
+        "pick": "1X (Ev Sahibi veya Beraberlik)",
+        "type": "Cifte Sans",
+        "odds": 1.22,
+        "confidence": 0.89,
+        "reason": "Cifte sans: 89%"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Middlesbrough FC vs Watford FC",
+      "home_team": "Middlesbrough FC",
+      "away_team": "Watford FC",
+      "fixture_id": null,
+      "date": "2026-04-25 00:00:00",
+      "league": "E1",
+      "league_name": "Championship",
+      "home_prob": 0.41,
+      "draw_prob": 0.54,
+      "away_prob": 0.06,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.04,
+        "confidence": 0.55,
+        "reason": "Gol beklentisi: 2.31"
+      },
+      "top_2": {
+        "pick": "1X (Ev Sahibi veya Beraberlik)",
+        "type": "Cifte Sans",
+        "odds": 1.15,
+        "confidence": 0.94,
+        "reason": "Cifte sans: 94%"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Norwich City FC vs Swansea City AFC",
+      "home_team": "Norwich City FC",
+      "away_team": "Swansea City AFC",
+      "fixture_id": null,
+      "date": "2026-04-25 00:00:00",
+      "league": "E1",
+      "league_name": "Championship",
+      "home_prob": 0.23,
+      "draw_prob": 0.44,
+      "away_prob": 0.33,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.24,
+        "confidence": 0.5,
+        "reason": "Gol beklentisi: 2.53"
+      },
+      "top_2": {
+        "pick": "X2 (Beraberlik veya Deplasman)",
+        "type": "Cifte Sans",
+        "odds": 1.41,
+        "confidence": 0.77,
+        "reason": "Cifte sans: 77%"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Oxford United FC vs Sheffield Wednesday FC",
+      "home_team": "Oxford United FC",
+      "away_team": "Sheffield Wednesday FC",
+      "fixture_id": null,
+      "date": "2026-04-25 00:00:00",
+      "league": "E1",
+      "league_name": "Championship",
+      "home_prob": 0.78,
+      "draw_prob": 0.1,
+      "away_prob": 0.12,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.04,
+        "confidence": 0.55,
+        "reason": "Gol beklentisi: 2.35"
+      },
+      "top_2": {
+        "pick": "Ust 2.5 (2.35 gol beklentisi)",
+        "type": "Alt/Ust Gol",
+        "odds": 1.64,
+        "confidence": 0.66,
+        "reason": "Toplam gol beklentisi: 2.35"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Queens Park Rangers FC vs Derby County",
+      "home_team": "Queens Park Rangers FC",
+      "away_team": "Derby County",
+      "fixture_id": null,
+      "date": "2026-04-25 00:00:00",
+      "league": "E1",
+      "league_name": "Championship",
+      "home_prob": 0.49,
+      "draw_prob": 0.21,
+      "away_prob": 0.29,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.24,
+        "confidence": 0.5,
+        "reason": "Gol beklentisi: 2.62"
+      },
+      "top_2": {
+        "pick": "KG Var",
+        "type": "Karsilikli Gol (KG)",
+        "odds": 1.67,
+        "confidence": 0.65,
+        "reason": "KG olasilik: %65"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Sheffield United FC vs Preston North End",
+      "home_team": "Sheffield United FC",
+      "away_team": "Preston North End",
+      "fixture_id": null,
+      "date": "2026-04-25 00:00:00",
+      "league": "E1",
+      "league_name": "Championship",
+      "home_prob": 0.45,
+      "draw_prob": 0.14,
+      "away_prob": 0.41,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.04,
+        "confidence": 0.55,
+        "reason": "Gol beklentisi: 2.25"
+      },
+      "top_2": {
+        "pick": "12 (Ev Sahibi veya Deplasman)",
+        "type": "Cifte Sans",
+        "odds": 1.26,
+        "confidence": 0.86,
+        "reason": "Cifte sans: 86%"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Southampton FC vs Blackburn Rovers FC",
+      "home_team": "Southampton FC",
+      "away_team": "Blackburn Rovers FC",
+      "fixture_id": null,
+      "date": "2026-04-25 00:00:00",
+      "league": "E1",
+      "league_name": "Championship",
+      "home_prob": 0.4,
+      "draw_prob": 0.41,
+      "away_prob": 0.19,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.24,
+        "confidence": 0.5,
+        "reason": "Gol beklentisi: 2.62"
+      },
+      "top_2": {
+        "pick": "1X (Ev Sahibi veya Beraberlik)",
+        "type": "Cifte Sans",
+        "odds": 1.34,
+        "confidence": 0.81,
+        "reason": "Cifte sans: 81%"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Stoke City FC vs Portsmouth",
+      "home_team": "Stoke City FC",
+      "away_team": "Portsmouth",
+      "fixture_id": null,
+      "date": "2026-04-25 00:00:00",
+      "league": "E1",
+      "league_name": "Championship",
+      "home_prob": 0.94,
+      "draw_prob": 0.02,
+      "away_prob": 0.04,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.04,
+        "confidence": 0.55,
+        "reason": "Gol beklentisi: 1.92"
+      },
+      "top_2": {
+        "pick": "HMS 1",
+        "type": "Handikapli Mac Sonucu (HMS)",
+        "odds": 1.68,
+        "confidence": 0.66,
+        "reason": "Guclu favori avantaji (Tier 3 vs 5)"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "West Bromwich Albion FC vs Ipswich Town FC",
+      "home_team": "West Bromwich Albion FC",
+      "away_team": "Ipswich Town FC",
+      "fixture_id": null,
+      "date": "2026-04-25 00:00:00",
+      "league": "E1",
+      "league_name": "Championship",
+      "home_prob": 0.16,
+      "draw_prob": 0.18,
+      "away_prob": 0.67,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.04,
+        "confidence": 0.55,
+        "reason": "Gol beklentisi: 2.48"
+      },
+      "top_2": {
+        "pick": "Ust 2.5 (2.48 gol beklentisi)",
+        "type": "Alt/Ust Gol",
+        "odds": 1.51,
+        "confidence": 0.72,
+        "reason": "Toplam gol beklentisi: 2.48"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "1. FSV Mainz 05 vs FC Bayern M\u00fcnchen",
+      "home_team": "1. FSV Mainz 05",
+      "away_team": "FC Bayern M\u00fcnchen",
+      "fixture_id": null,
+      "date": "2026-04-25 00:00:00",
+      "league": "D1",
+      "league_name": "Bundesliga",
+      "home_prob": 0.19,
+      "draw_prob": 0.02,
+      "away_prob": 0.78,
+      "top_1": {
+        "pick": "TGS 4-6",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.49,
+        "confidence": 0.45,
+        "reason": "Gol beklentisi: 3.72"
+      },
+      "top_2": {
+        "pick": "Deplasman (2)",
+        "type": "Mac Sonucu (1X2)",
+        "odds": 1.38,
+        "confidence": 0.78,
+        "reason": "H:19% D:2% A:78%"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "1. FC K\u00f6ln vs Bayer Leverkusen",
+      "home_team": "1. FC K\u00f6ln",
+      "away_team": "Bayer Leverkusen",
+      "fixture_id": null,
+      "date": "2026-04-25 00:00:00",
+      "league": "D1",
+      "league_name": "Bundesliga",
+      "home_prob": 0.28,
+      "draw_prob": 0.25,
+      "away_prob": 0.48,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.24,
+        "confidence": 0.5,
+        "reason": "Gol beklentisi: 3.14"
+      },
+      "top_2": {
+        "pick": "Deplasman (2)",
+        "type": "Mac Sonucu (1X2)",
+        "odds": 2.26,
+        "confidence": 0.48,
+        "reason": "H:28% D:25% A:48%"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Augsburg vs Ein Frankfurt",
+      "home_team": "Augsburg",
+      "away_team": "Ein Frankfurt",
+      "fixture_id": null,
+      "date": "2026-04-25 00:00:00",
+      "league": "D1",
+      "league_name": "Bundesliga",
+      "home_prob": 0.33,
+      "draw_prob": 0.13,
+      "away_prob": 0.53,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.24,
+        "confidence": 0.5,
+        "reason": "Gol beklentisi: 3.42"
+      },
+      "top_2": {
+        "pick": "KG Var",
+        "type": "Karsilikli Gol (KG)",
+        "odds": 1.37,
+        "confidence": 0.79,
+        "reason": "KG olasilik: %79"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Borussia Dortmund vs Freiburg",
+      "home_team": "Borussia Dortmund",
+      "away_team": "Freiburg",
+      "fixture_id": null,
+      "date": "2026-04-25 00:00:00",
+      "league": "D1",
+      "league_name": "Bundesliga",
+      "home_prob": 0.88,
+      "draw_prob": 0.04,
+      "away_prob": 0.07,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.24,
+        "confidence": 0.5,
+        "reason": "Gol beklentisi: 3.16"
+      },
+      "top_2": {
+        "pick": "HMS 1",
+        "type": "Handikapli Mac Sonucu (HMS)",
+        "odds": 1.78,
+        "confidence": 0.62,
+        "reason": "Guclu favori avantaji (Tier 2 vs 4)"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Stuttgart vs Werder Bremen",
+      "home_team": "Stuttgart",
+      "away_team": "Werder Bremen",
+      "fixture_id": null,
+      "date": "2026-04-25 00:00:00",
+      "league": "D1",
+      "league_name": "Bundesliga",
+      "home_prob": 0.77,
+      "draw_prob": 0.09,
+      "away_prob": 0.13,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.24,
+        "confidence": 0.5,
+        "reason": "Gol beklentisi: 3.16"
+      },
+      "top_2": {
+        "pick": "HMS 1",
+        "type": "Handikapli Mac Sonucu (HMS)",
+        "odds": 2.03,
+        "confidence": 0.54,
+        "reason": "Guclu favori avantaji (Tier 2 vs 4)"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Wolfsburg vs Bor. M\u00f6nchengladbach",
+      "home_team": "Wolfsburg",
+      "away_team": "Bor. M\u00f6nchengladbach",
+      "fixture_id": null,
+      "date": "2026-04-25 00:00:00",
+      "league": "D1",
+      "league_name": "Bundesliga",
+      "home_prob": 0.66,
+      "draw_prob": 0.15,
+      "away_prob": 0.19,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.24,
+        "confidence": 0.5,
+        "reason": "Gol beklentisi: 3.2"
+      },
+      "top_2": {
+        "pick": "12 (Ev Sahibi veya Deplasman)",
+        "type": "Cifte Sans",
+        "odds": 1.28,
+        "confidence": 0.85,
+        "reason": "Cifte sans: 85%"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "RB Leipzig vs Union Berlin",
+      "home_team": "RB Leipzig",
+      "away_team": "Union Berlin",
+      "fixture_id": null,
+      "date": "2026-04-25 00:00:00",
+      "league": "D1",
+      "league_name": "Bundesliga",
+      "home_prob": 0.5,
+      "draw_prob": 0.18,
+      "away_prob": 0.32,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.24,
+        "confidence": 0.5,
+        "reason": "Gol beklentisi: 3.08"
+      },
+      "top_2": {
+        "pick": "KG Var",
+        "type": "Karsilikli Gol (KG)",
+        "odds": 1.38,
+        "confidence": 0.78,
+        "reason": "KG olasilik: %78"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "1. FC Heidenheim 1846 vs FC St. Pauli 1910",
+      "home_team": "1. FC Heidenheim 1846",
+      "away_team": "FC St. Pauli 1910",
+      "fixture_id": null,
+      "date": "2026-04-25 00:00:00",
+      "league": "D1",
+      "league_name": "Bundesliga",
+      "home_prob": 0.13,
+      "draw_prob": 0.24,
+      "away_prob": 0.63,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.24,
+        "confidence": 0.5,
+        "reason": "Gol beklentisi: 2.88"
+      },
+      "top_2": {
+        "pick": "Ust 2.5 (2.88 gol beklentisi)",
+        "type": "Alt/Ust Gol",
+        "odds": 1.21,
+        "confidence": 0.9,
+        "reason": "Toplam gol beklentisi: 2.88"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Hamburger SV vs TSG 1899 Hoffenheim",
+      "home_team": "Hamburger SV",
+      "away_team": "TSG 1899 Hoffenheim",
+      "fixture_id": null,
+      "date": "2026-04-25 00:00:00",
+      "league": "D1",
+      "league_name": "Bundesliga",
+      "home_prob": 0.01,
+      "draw_prob": 0.23,
+      "away_prob": 0.76,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.24,
+        "confidence": 0.5,
+        "reason": "Gol beklentisi: 3.0"
+      },
+      "top_2": {
+        "pick": "Ust 2.5 (3.0 gol beklentisi)",
+        "type": "Alt/Ust Gol",
+        "odds": 1.2,
+        "confidence": 0.9,
+        "reason": "Toplam gol beklentisi: 3.0"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Venezia vs Empoli",
+      "home_team": "Venezia",
+      "away_team": "Empoli",
+      "fixture_id": null,
+      "date": "2026-04-25 00:00:00",
+      "league": "I2",
+      "league_name": "I2",
+      "home_prob": 0.4,
+      "draw_prob": 0.57,
+      "away_prob": 0.03,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.24,
+        "confidence": 0.5,
+        "reason": "Gol beklentisi: 2.58"
+      },
+      "top_2": {
+        "pick": "KG Var",
+        "type": "Karsilikli Gol (KG)",
+        "odds": 1.43,
+        "confidence": 0.76,
+        "reason": "KG olasilik: %76"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Burnley FC vs Manchester City",
+      "home_team": "Burnley FC",
+      "away_team": "Manchester City",
+      "fixture_id": null,
+      "date": "2026-04-26 00:00:00",
+      "league": "E0",
+      "league_name": "Premier League",
+      "home_prob": 0.01,
+      "draw_prob": 0.11,
+      "away_prob": 0.88,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.24,
+        "confidence": 0.5,
+        "reason": "Gol beklentisi: 2.98"
+      },
+      "top_2": {
+        "pick": "\u0130Y 0.5 \u00dcst",
+        "type": "\u0130Y Alt/Ust Gol",
+        "odds": 1.21,
+        "confidence": 0.9,
+        "reason": "Hizli baslangic beklentisi"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Brighton & Hove Albion vs Chelsea",
+      "home_team": "Brighton & Hove Albion",
+      "away_team": "Chelsea",
+      "fixture_id": null,
+      "date": "2026-04-26 00:00:00",
+      "league": "E0",
+      "league_name": "Premier League",
+      "home_prob": 0.48,
+      "draw_prob": 0.08,
+      "away_prob": 0.44,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.24,
+        "confidence": 0.5,
+        "reason": "Gol beklentisi: 2.78"
+      },
+      "top_2": {
+        "pick": "\u0130Y 0.5 \u00dcst",
+        "type": "\u0130Y Alt/Ust Gol",
+        "odds": 1.26,
+        "confidence": 0.86,
+        "reason": "Hizli baslangic beklentisi"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Deportivo Alav\u00e9s vs Mallorca",
+      "home_team": "Deportivo Alav\u00e9s",
+      "away_team": "Mallorca",
+      "fixture_id": null,
+      "date": "2026-04-26 00:00:00",
+      "league": "SP1",
+      "league_name": "La Liga",
+      "home_prob": 0.39,
+      "draw_prob": 0.29,
+      "away_prob": 0.32,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.24,
+        "confidence": 0.5,
+        "reason": "Gol beklentisi: 2.54"
+      },
+      "top_2": {
+        "pick": "Ust 2.5 (2.54 gol beklentisi)",
+        "type": "Alt/Ust Gol",
+        "odds": 1.46,
+        "confidence": 0.74,
+        "reason": "Toplam gol beklentisi: 2.54"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Real Betis Balompi\u00e9 vs Real Madrid",
+      "home_team": "Real Betis Balompi\u00e9",
+      "away_team": "Real Madrid",
+      "fixture_id": null,
+      "date": "2026-04-26 00:00:00",
+      "league": "SP1",
+      "league_name": "La Liga",
+      "home_prob": 0.21,
+      "draw_prob": 0.38,
+      "away_prob": 0.41,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.24,
+        "confidence": 0.5,
+        "reason": "Gol beklentisi: 2.87"
+      },
+      "top_2": {
+        "pick": "HMS 2",
+        "type": "Handikapli Mac Sonucu (HMS)",
+        "odds": 1.99,
+        "confidence": 0.55,
+        "reason": "Guclu favori avantaji (Tier 3 vs 1)"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Espanyol Barcelona vs Levante",
+      "home_team": "Espanyol Barcelona",
+      "away_team": "Levante",
+      "fixture_id": null,
+      "date": "2026-04-26 00:00:00",
+      "league": "SP1",
+      "league_name": "La Liga",
+      "home_prob": 0.34,
+      "draw_prob": 0.26,
+      "away_prob": 0.4,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.24,
+        "confidence": 0.5,
+        "reason": "Gol beklentisi: 2.74"
+      },
+      "top_2": {
+        "pick": "Ust 2.5 (2.74 gol beklentisi)",
+        "type": "Alt/Ust Gol",
+        "odds": 1.3,
+        "confidence": 0.83,
+        "reason": "Toplam gol beklentisi: 2.74"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Osasuna vs Sevilla",
+      "home_team": "Osasuna",
+      "away_team": "Sevilla",
+      "fixture_id": null,
+      "date": "2026-04-26 00:00:00",
+      "league": "SP1",
+      "league_name": "La Liga",
+      "home_prob": 0.41,
+      "draw_prob": 0.21,
+      "away_prob": 0.38,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.24,
+        "confidence": 0.5,
+        "reason": "Gol beklentisi: 2.61"
+      },
+      "top_2": {
+        "pick": "KG Var",
+        "type": "Karsilikli Gol (KG)",
+        "odds": 1.65,
+        "confidence": 0.66,
+        "reason": "KG olasilik: %66"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Rayo Vallecano de Madrid vs Real Sociedad de F\u00fatbol",
+      "home_team": "Rayo Vallecano de Madrid",
+      "away_team": "Real Sociedad de F\u00fatbol",
+      "fixture_id": null,
+      "date": "2026-04-26 00:00:00",
+      "league": "SP1",
+      "league_name": "La Liga",
+      "home_prob": 0.12,
+      "draw_prob": 0.13,
+      "away_prob": 0.75,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.24,
+        "confidence": 0.5,
+        "reason": "Gol beklentisi: 2.61"
+      },
+      "top_2": {
+        "pick": "Deplasman (2)",
+        "type": "Mac Sonucu (1X2)",
+        "odds": 1.45,
+        "confidence": 0.75,
+        "reason": "H:12% D:13% A:75%"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Club Atl\u00e9tico de Madrid vs Athletic Club",
+      "home_team": "Club Atl\u00e9tico de Madrid",
+      "away_team": "Athletic Club",
+      "fixture_id": null,
+      "date": "2026-04-26 00:00:00",
+      "league": "SP1",
+      "league_name": "La Liga",
+      "home_prob": 0.77,
+      "draw_prob": 0.11,
+      "away_prob": 0.12,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.24,
+        "confidence": 0.5,
+        "reason": "Gol beklentisi: 2.56"
+      },
+      "top_2": {
+        "pick": "Ev Sahibi (1)",
+        "type": "Mac Sonucu (1X2)",
+        "odds": 1.4,
+        "confidence": 0.77,
+        "reason": "H:77% D:11% A:12%"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Getafe vs Barcelona",
+      "home_team": "Getafe",
+      "away_team": "Barcelona",
+      "fixture_id": null,
+      "date": "2026-04-26 00:00:00",
+      "league": "SP1",
+      "league_name": "La Liga",
+      "home_prob": 0.08,
+      "draw_prob": 0.17,
+      "away_prob": 0.75,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.24,
+        "confidence": 0.5,
+        "reason": "Gol beklentisi: 2.78"
+      },
+      "top_2": {
+        "pick": "HMS 2",
+        "type": "Handikapli Mac Sonucu (HMS)",
+        "odds": 1.71,
+        "confidence": 0.64,
+        "reason": "Guclu favori avantaji (Tier 5 vs 1)"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Villarreal vs RC Celta de Vigo",
+      "home_team": "Villarreal",
+      "away_team": "RC Celta de Vigo",
+      "fixture_id": null,
+      "date": "2026-04-26 00:00:00",
+      "league": "SP1",
+      "league_name": "La Liga",
+      "home_prob": 0.5,
+      "draw_prob": 0.26,
+      "away_prob": 0.25,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.24,
+        "confidence": 0.5,
+        "reason": "Gol beklentisi: 2.76"
+      },
+      "top_2": {
+        "pick": "\u0130Y 0.5 \u00dcst",
+        "type": "\u0130Y Alt/Ust Gol",
+        "odds": 1.27,
+        "confidence": 0.85,
+        "reason": "Hizli baslangic beklentisi"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Real Oviedo vs Elche CF",
+      "home_team": "Real Oviedo",
+      "away_team": "Elche CF",
+      "fixture_id": null,
+      "date": "2026-04-26 00:00:00",
+      "league": "SP1",
+      "league_name": "La Liga",
+      "home_prob": 0.01,
+      "draw_prob": 0.25,
+      "away_prob": 0.74,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.24,
+        "confidence": 0.5,
+        "reason": "Gol beklentisi: 2.54"
+      },
+      "top_2": {
+        "pick": "Ust 2.5 (2.54 gol beklentisi)",
+        "type": "Alt/Ust Gol",
+        "odds": 1.46,
+        "confidence": 0.74,
+        "reason": "Toplam gol beklentisi: 2.54"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Valencia vs Girona",
+      "home_team": "Valencia",
+      "away_team": "Girona",
+      "fixture_id": null,
+      "date": "2026-04-26 00:00:00",
+      "league": "SP1",
+      "league_name": "La Liga",
+      "home_prob": 0.68,
+      "draw_prob": 0.1,
+      "away_prob": 0.22,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.24,
+        "confidence": 0.5,
+        "reason": "Gol beklentisi: 2.63"
+      },
+      "top_2": {
+        "pick": "\u0130Y 0.5 \u00dcst",
+        "type": "\u0130Y Alt/Ust Gol",
+        "odds": 1.31,
+        "confidence": 0.83,
+        "reason": "Hizli baslangic beklentisi"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Fiorentina vs Sassuolo Calcio",
+      "home_team": "Fiorentina",
+      "away_team": "Sassuolo Calcio",
+      "fixture_id": null,
+      "date": "2026-04-26 00:00:00",
+      "league": "I1",
+      "league_name": "Serie A",
+      "home_prob": 0.21,
+      "draw_prob": 0.38,
+      "away_prob": 0.41,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.24,
+        "confidence": 0.5,
+        "reason": "Gol beklentisi: 2.59"
+      },
+      "top_2": {
+        "pick": "X2 (Beraberlik veya Deplasman)",
+        "type": "Cifte Sans",
+        "odds": 1.37,
+        "confidence": 0.79,
+        "reason": "Cifte sans: 79%"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "AC Milan vs Juventus",
+      "home_team": "AC Milan",
+      "away_team": "Juventus",
+      "fixture_id": null,
+      "date": "2026-04-26 00:00:00",
+      "league": "I1",
+      "league_name": "Serie A",
+      "home_prob": 0.58,
+      "draw_prob": 0.37,
+      "away_prob": 0.06,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.24,
+        "confidence": 0.5,
+        "reason": "Gol beklentisi: 2.54"
+      },
+      "top_2": {
+        "pick": "1X (Ev Sahibi veya Beraberlik)",
+        "type": "Cifte Sans",
+        "odds": 1.15,
+        "confidence": 0.94,
+        "reason": "Cifte sans: 94%"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Cagliari Calcio vs Atalanta",
+      "home_team": "Cagliari Calcio",
+      "away_team": "Atalanta",
+      "fixture_id": null,
+      "date": "2026-04-26 00:00:00",
+      "league": "I1",
+      "league_name": "Serie A",
+      "home_prob": 0.31,
+      "draw_prob": 0.18,
+      "away_prob": 0.51,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.04,
+        "confidence": 0.55,
+        "reason": "Gol beklentisi: 2.38"
+      },
+      "top_2": {
+        "pick": "KG Var",
+        "type": "Karsilikli Gol (KG)",
+        "odds": 1.65,
+        "confidence": 0.66,
+        "reason": "KG olasilik: %66"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Genoa CFC vs Como 1907",
+      "home_team": "Genoa CFC",
+      "away_team": "Como 1907",
+      "fixture_id": null,
+      "date": "2026-04-26 00:00:00",
+      "league": "I1",
+      "league_name": "Serie A",
+      "home_prob": 0.01,
+      "draw_prob": 0.32,
+      "away_prob": 0.67,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.24,
+        "confidence": 0.5,
+        "reason": "Gol beklentisi: 2.52"
+      },
+      "top_2": {
+        "pick": "KG Var",
+        "type": "Karsilikli Gol (KG)",
+        "odds": 1.48,
+        "confidence": 0.73,
+        "reason": "KG olasilik: %73"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Bologna FC 1909 vs AS Roma",
+      "home_team": "Bologna FC 1909",
+      "away_team": "AS Roma",
+      "fixture_id": null,
+      "date": "2026-04-26 00:00:00",
+      "league": "I1",
+      "league_name": "Serie A",
+      "home_prob": 0.22,
+      "draw_prob": 0.28,
+      "away_prob": 0.5,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.04,
+        "confidence": 0.55,
+        "reason": "Gol beklentisi: 2.32"
+      },
+      "top_2": {
+        "pick": "X2 (Beraberlik veya Deplasman)",
+        "type": "Cifte Sans",
+        "odds": 1.39,
+        "confidence": 0.78,
+        "reason": "Cifte sans: 78%"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Torino vs FC Internazionale Milano",
+      "home_team": "Torino",
+      "away_team": "FC Internazionale Milano",
+      "fixture_id": null,
+      "date": "2026-04-26 00:00:00",
+      "league": "I1",
+      "league_name": "Serie A",
+      "home_prob": 0.01,
+      "draw_prob": 0.06,
+      "away_prob": 0.93,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.24,
+        "confidence": 0.5,
+        "reason": "Gol beklentisi: 2.91"
+      },
+      "top_2": {
+        "pick": "Deplasman (2)",
+        "type": "Mac Sonucu (1X2)",
+        "odds": 1.16,
+        "confidence": 0.93,
+        "reason": "H:1% D:6% A:93%"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Hellas Verona vs US Lecce",
+      "home_team": "Hellas Verona",
+      "away_team": "US Lecce",
+      "fixture_id": null,
+      "date": "2026-04-26 00:00:00",
+      "league": "I1",
+      "league_name": "Serie A",
+      "home_prob": 0.35,
+      "draw_prob": 0.43,
+      "away_prob": 0.22,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.04,
+        "confidence": 0.55,
+        "reason": "Gol beklentisi: 2.29"
+      },
+      "top_2": {
+        "pick": "Ust 2.5 (2.29 gol beklentisi)",
+        "type": "Alt/Ust Gol",
+        "odds": 1.72,
+        "confidence": 0.63,
+        "reason": "Toplam gol beklentisi: 2.29"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "SS Lazio vs Udinese Calcio",
+      "home_team": "SS Lazio",
+      "away_team": "Udinese Calcio",
+      "fixture_id": null,
+      "date": "2026-04-26 00:00:00",
+      "league": "I1",
+      "league_name": "Serie A",
+      "home_prob": 0.31,
+      "draw_prob": 0.32,
+      "away_prob": 0.36,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.04,
+        "confidence": 0.55,
+        "reason": "Gol beklentisi: 2.32"
+      },
+      "top_2": {
+        "pick": "KG Var",
+        "type": "Karsilikli Gol (KG)",
+        "odds": 1.82,
+        "confidence": 0.59,
+        "reason": "KG olasilik: %60"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Parma Calcio 1913 vs AC Pisa 1909",
+      "home_team": "Parma Calcio 1913",
+      "away_team": "AC Pisa 1909",
+      "fixture_id": null,
+      "date": "2026-04-26 00:00:00",
+      "league": "I1",
+      "league_name": "Serie A",
+      "home_prob": 0.55,
+      "draw_prob": 0.38,
+      "away_prob": 0.07,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.04,
+        "confidence": 0.55,
+        "reason": "Gol beklentisi: 2.14"
+      },
+      "top_2": {
+        "pick": "Ev Sahibi (1)",
+        "type": "Mac Sonucu (1X2)",
+        "odds": 1.96,
+        "confidence": 0.55,
+        "reason": "H:55% D:38% A:7%"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "SSC Napoli vs Cremonese",
+      "home_team": "SSC Napoli",
+      "away_team": "Cremonese",
+      "fixture_id": null,
+      "date": "2026-04-26 00:00:00",
+      "league": "I1",
+      "league_name": "Serie A",
+      "home_prob": 0.94,
+      "draw_prob": 0.03,
+      "away_prob": 0.03,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.04,
+        "confidence": 0.55,
+        "reason": "Gol beklentisi: 2.39"
+      },
+      "top_2": {
+        "pick": "Ust 2.5 (2.39 gol beklentisi)",
+        "type": "Alt/Ust Gol",
+        "odds": 1.6,
+        "confidence": 0.68,
+        "reason": "Toplam gol beklentisi: 2.39"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Le Havre vs FC Metz",
+      "home_team": "Le Havre",
+      "away_team": "FC Metz",
+      "fixture_id": null,
+      "date": "2026-04-26 00:00:00",
+      "league": "F1",
+      "league_name": "Ligue 1",
+      "home_prob": 0.01,
+      "draw_prob": 0.84,
+      "away_prob": 0.15,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.24,
+        "confidence": 0.5,
+        "reason": "Gol beklentisi: 2.6"
+      },
+      "top_2": {
+        "pick": "\u0130Y 0.5 \u00dcst",
+        "type": "\u0130Y Alt/Ust Gol",
+        "odds": 1.32,
+        "confidence": 0.82,
+        "reason": "Hizli baslangic beklentisi"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Lorient vs RC Strasbourg Alsace",
+      "home_team": "Lorient",
+      "away_team": "RC Strasbourg Alsace",
+      "fixture_id": null,
+      "date": "2026-04-26 00:00:00",
+      "league": "F1",
+      "league_name": "Ligue 1",
+      "home_prob": 0.22,
+      "draw_prob": 0.31,
+      "away_prob": 0.47,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.24,
+        "confidence": 0.5,
+        "reason": "Gol beklentisi: 2.9"
+      },
+      "top_2": {
+        "pick": "HMS 2",
+        "type": "Handikapli Mac Sonucu (HMS)",
+        "odds": 2.01,
+        "confidence": 0.55,
+        "reason": "Guclu favori avantaji (Tier 4 vs 2)"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Paris FC vs Lille OSC",
+      "home_team": "Paris FC",
+      "away_team": "Lille OSC",
+      "fixture_id": null,
+      "date": "2026-04-26 00:00:00",
+      "league": "F1",
+      "league_name": "Ligue 1",
+      "home_prob": 0.01,
+      "draw_prob": 0.11,
+      "away_prob": 0.88,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.24,
+        "confidence": 0.5,
+        "reason": "Gol beklentisi: 2.8"
+      },
+      "top_2": {
+        "pick": "Ust 2.5 (2.8 gol beklentisi)",
+        "type": "Alt/Ust Gol",
+        "odds": 1.26,
+        "confidence": 0.86,
+        "reason": "Toplam gol beklentisi: 2.8"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Toulouse vs AS Monaco FC",
+      "home_team": "Toulouse",
+      "away_team": "AS Monaco FC",
+      "fixture_id": null,
+      "date": "2026-04-26 00:00:00",
+      "league": "F1",
+      "league_name": "Ligue 1",
+      "home_prob": 0.34,
+      "draw_prob": 0.19,
+      "away_prob": 0.48,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.24,
+        "confidence": 0.5,
+        "reason": "Gol beklentisi: 2.84"
+      },
+      "top_2": {
+        "pick": "Deplasman (2)",
+        "type": "Mac Sonucu (1X2)",
+        "odds": 2.27,
+        "confidence": 0.48,
+        "reason": "H:34% D:19% A:48%"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Olympique Lyonnais vs Auxerre",
+      "home_team": "Olympique Lyonnais",
+      "away_team": "Auxerre",
+      "fixture_id": null,
+      "date": "2026-04-26 00:00:00",
+      "league": "F1",
+      "league_name": "Ligue 1",
+      "home_prob": 0.6,
+      "draw_prob": 0.17,
+      "away_prob": 0.24,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.04,
+        "confidence": 0.55,
+        "reason": "Gol beklentisi: 2.42"
+      },
+      "top_2": {
+        "pick": "KG Var",
+        "type": "Karsilikli Gol (KG)",
+        "odds": 1.66,
+        "confidence": 0.65,
+        "reason": "KG olasilik: %65"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Olympique Marseille vs OGC Nice",
+      "home_team": "Olympique Marseille",
+      "away_team": "OGC Nice",
+      "fixture_id": null,
+      "date": "2026-04-26 00:00:00",
+      "league": "F1",
+      "league_name": "Ligue 1",
+      "home_prob": 0.88,
+      "draw_prob": 0.02,
+      "away_prob": 0.1,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.24,
+        "confidence": 0.5,
+        "reason": "Gol beklentisi: 3.26"
+      },
+      "top_2": {
+        "pick": "HMS 1",
+        "type": "Handikapli Mac Sonucu (HMS)",
+        "odds": 1.78,
+        "confidence": 0.62,
+        "reason": "Guclu favori avantaji (Tier 2 vs 4)"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Angers SCO vs Paris Saint-Germain",
+      "home_team": "Angers SCO",
+      "away_team": "Paris Saint-Germain",
+      "fixture_id": null,
+      "date": "2026-04-26 00:00:00",
+      "league": "F1",
+      "league_name": "Ligue 1",
+      "home_prob": 0.01,
+      "draw_prob": 0.17,
+      "away_prob": 0.82,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.24,
+        "confidence": 0.5,
+        "reason": "Gol beklentisi: 2.58"
+      },
+      "top_2": {
+        "pick": "HMS 2",
+        "type": "Handikapli Mac Sonucu (HMS)",
+        "odds": 1.59,
+        "confidence": 0.69,
+        "reason": "Guclu favori avantaji (Tier 5 vs 1)"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Stade Brestois 29 vs Racing Club de Lens",
+      "home_team": "Stade Brestois 29",
+      "away_team": "Racing Club de Lens",
+      "fixture_id": null,
+      "date": "2026-04-26 00:00:00",
+      "league": "F1",
+      "league_name": "Ligue 1",
+      "home_prob": 0.08,
+      "draw_prob": 0.14,
+      "away_prob": 0.78,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.24,
+        "confidence": 0.5,
+        "reason": "Gol beklentisi: 2.74"
+      },
+      "top_2": {
+        "pick": "HMS 2",
+        "type": "Handikapli Mac Sonucu (HMS)",
+        "odds": 1.71,
+        "confidence": 0.64,
+        "reason": "Guclu favori avantaji (Tier 5 vs 3)"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Stade Rennais FC 1901 vs Nantes",
+      "home_team": "Stade Rennais FC 1901",
+      "away_team": "Nantes",
+      "fixture_id": null,
+      "date": "2026-04-26 00:00:00",
+      "league": "F1",
+      "league_name": "Ligue 1",
+      "home_prob": 0.8,
+      "draw_prob": 0.11,
+      "away_prob": 0.09,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.24,
+        "confidence": 0.5,
+        "reason": "Gol beklentisi: 2.82"
+      },
+      "top_2": {
+        "pick": "Ev Sahibi (1)",
+        "type": "Mac Sonucu (1X2)",
+        "odds": 1.35,
+        "confidence": 0.8,
+        "reason": "H:80% D:11% A:9%"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Gil Vicente vs Casa Pia",
+      "home_team": "Gil Vicente",
+      "away_team": "Casa Pia",
+      "fixture_id": null,
+      "date": "2026-04-26 00:00:00",
+      "league": "P1",
+      "league_name": "Primeira Liga",
+      "home_prob": 0.76,
+      "draw_prob": 0.14,
+      "away_prob": 0.1,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.24,
+        "confidence": 0.5,
+        "reason": "Gol beklentisi: 2.64"
+      },
+      "top_2": {
+        "pick": "1X (Ev Sahibi veya Beraberlik)",
+        "type": "Cifte Sans",
+        "odds": 1.21,
+        "confidence": 0.9,
+        "reason": "Cifte sans: 90%"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Tondela vs Nacional",
+      "home_team": "Tondela",
+      "away_team": "Nacional",
+      "fixture_id": null,
+      "date": "2026-04-26 00:00:00",
+      "league": "P1",
+      "league_name": "Primeira Liga",
+      "home_prob": 0.12,
+      "draw_prob": 0.34,
+      "away_prob": 0.54,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.04,
+        "confidence": 0.55,
+        "reason": "Gol beklentisi: 2.48"
+      },
+      "top_2": {
+        "pick": "X2 (Beraberlik veya Deplasman)",
+        "type": "Cifte Sans",
+        "odds": 1.23,
+        "confidence": 0.88,
+        "reason": "Cifte sans: 88%"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Santa Clara vs Sporting Clube de Braga",
+      "home_team": "Santa Clara",
+      "away_team": "Sporting Clube de Braga",
+      "fixture_id": null,
+      "date": "2026-04-26 00:00:00",
+      "league": "P1",
+      "league_name": "Primeira Liga",
+      "home_prob": 0.01,
+      "draw_prob": 0.38,
+      "away_prob": 0.61,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.24,
+        "confidence": 0.5,
+        "reason": "Gol beklentisi: 2.6"
+      },
+      "top_2": {
+        "pick": "HMS 2",
+        "type": "Handikapli Mac Sonucu (HMS)",
+        "odds": 1.59,
+        "confidence": 0.69,
+        "reason": "Guclu favori avantaji (Tier 5 vs 3)"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "AVS vs Sporting Clube de Portugal",
+      "home_team": "AVS",
+      "away_team": "Sporting Clube de Portugal",
+      "fixture_id": null,
+      "date": "2026-04-26 00:00:00",
+      "league": "P1",
+      "league_name": "Primeira Liga",
+      "home_prob": 0.01,
+      "draw_prob": 0.06,
+      "away_prob": 0.93,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.24,
+        "confidence": 0.5,
+        "reason": "Gol beklentisi: 3.06"
+      },
+      "top_2": {
+        "pick": "Deplasman (2)",
+        "type": "Mac Sonucu (1X2)",
+        "odds": 1.17,
+        "confidence": 0.93,
+        "reason": "H:1% D:6% A:93%"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "GD Estoril Praia vs FC Famalic\u00e3o",
+      "home_team": "GD Estoril Praia",
+      "away_team": "FC Famalic\u00e3o",
+      "fixture_id": null,
+      "date": "2026-04-26 00:00:00",
+      "league": "P1",
+      "league_name": "Primeira Liga",
+      "home_prob": 0.26,
+      "draw_prob": 0.28,
+      "away_prob": 0.47,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.24,
+        "confidence": 0.5,
+        "reason": "Gol beklentisi: 2.78"
+      },
+      "top_2": {
+        "pick": "KG Var",
+        "type": "Karsilikli Gol (KG)",
+        "odds": 1.41,
+        "confidence": 0.77,
+        "reason": "KG olasilik: %77"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "CF Estrela da Amadora vs FC Porto",
+      "home_team": "CF Estrela da Amadora",
+      "away_team": "FC Porto",
+      "fixture_id": null,
+      "date": "2026-04-26 00:00:00",
+      "league": "P1",
+      "league_name": "Primeira Liga",
+      "home_prob": 0.05,
+      "draw_prob": 0.15,
+      "away_prob": 0.8,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.24,
+        "confidence": 0.5,
+        "reason": "Gol beklentisi: 2.6"
+      },
+      "top_2": {
+        "pick": "HMS 2",
+        "type": "Handikapli Mac Sonucu (HMS)",
+        "odds": 1.66,
+        "confidence": 0.66,
+        "reason": "Guclu favori avantaji (Tier 5 vs 1)"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "FC Alverca vs Arouca",
+      "home_team": "FC Alverca",
+      "away_team": "Arouca",
+      "fixture_id": null,
+      "date": "2026-04-26 00:00:00",
+      "league": "P1",
+      "league_name": "Primeira Liga",
+      "home_prob": 0.01,
+      "draw_prob": 0.72,
+      "away_prob": 0.27,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.24,
+        "confidence": 0.5,
+        "reason": "Gol beklentisi: 2.96"
+      },
+      "top_2": {
+        "pick": "Ust 2.5 (2.96 gol beklentisi)",
+        "type": "Alt/Ust Gol",
+        "odds": 1.2,
+        "confidence": 0.9,
+        "reason": "Toplam gol beklentisi: 2.96"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Sport Lisboa e Benfica vs Moreirense",
+      "home_team": "Sport Lisboa e Benfica",
+      "away_team": "Moreirense",
+      "fixture_id": null,
+      "date": "2026-04-26 00:00:00",
+      "league": "P1",
+      "league_name": "Primeira Liga",
+      "home_prob": 0.91,
+      "draw_prob": 0.05,
+      "away_prob": 0.04,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.24,
+        "confidence": 0.5,
+        "reason": "Gol beklentisi: 2.7"
+      },
+      "top_2": {
+        "pick": "HMS 1",
+        "type": "Handikapli Mac Sonucu (HMS)",
+        "odds": 1.73,
+        "confidence": 0.63,
+        "reason": "Guclu favori avantaji (Tier 3 vs 5)"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Vit\u00f3ria Guimar\u00e3es vs Rio Ave",
+      "home_team": "Vit\u00f3ria Guimar\u00e3es",
+      "away_team": "Rio Ave",
+      "fixture_id": null,
+      "date": "2026-04-26 00:00:00",
+      "league": "P1",
+      "league_name": "Primeira Liga",
+      "home_prob": 0.7,
+      "draw_prob": 0.15,
+      "away_prob": 0.15,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.24,
+        "confidence": 0.5,
+        "reason": "Gol beklentisi: 2.66"
+      },
+      "top_2": {
+        "pick": "Ust 2.5 (2.66 gol beklentisi)",
+        "type": "Alt/Ust Gol",
+        "odds": 1.36,
+        "confidence": 0.8,
+        "reason": "Toplam gol beklentisi: 2.66"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "\u0130stanbul Ba\u015fak\u015fehir vs Kas\u0131mpa\u015fa SK",
+      "home_team": "\u0130stanbul Ba\u015fak\u015fehir",
+      "away_team": "Kas\u0131mpa\u015fa SK",
+      "fixture_id": null,
+      "date": "2026-04-26 00:00:00",
+      "league": "T1",
+      "league_name": "S\u00fcper Lig",
+      "home_prob": 0.55,
+      "draw_prob": 0.35,
+      "away_prob": 0.1,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.04,
+        "confidence": 0.55,
+        "reason": "Gol beklentisi: 2.14"
+      },
+      "top_2": {
+        "pick": "KG Var",
+        "type": "Karsilikli Gol (KG)",
+        "odds": 1.88,
+        "confidence": 0.58,
+        "reason": "KG olasilik: %58"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "G\u00f6ztepe vs Antalyaspor",
+      "home_team": "G\u00f6ztepe",
+      "away_team": "Antalyaspor",
+      "fixture_id": null,
+      "date": "2026-04-26 00:00:00",
+      "league": "T1",
+      "league_name": "S\u00fcper Lig",
+      "home_prob": 0.92,
+      "draw_prob": 0.07,
+      "away_prob": 0.01,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.04,
+        "confidence": 0.55,
+        "reason": "Gol beklentisi: 2.32"
+      },
+      "top_2": {
+        "pick": "KG Var",
+        "type": "Karsilikli Gol (KG)",
+        "odds": 1.76,
+        "confidence": 0.61,
+        "reason": "KG olasilik: %61"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Konyaspor vs Trabzonspor",
+      "home_team": "Konyaspor",
+      "away_team": "Trabzonspor",
+      "fixture_id": null,
+      "date": "2026-04-26 00:00:00",
+      "league": "T1",
+      "league_name": "S\u00fcper Lig",
+      "home_prob": 0.16,
+      "draw_prob": 0.18,
+      "away_prob": 0.66,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.24,
+        "confidence": 0.5,
+        "reason": "Gol beklentisi: 2.73"
+      },
+      "top_2": {
+        "pick": "HMS 2",
+        "type": "Handikapli Mac Sonucu (HMS)",
+        "odds": 1.86,
+        "confidence": 0.59,
+        "reason": "Guclu favori avantaji (Tier 4 vs 2)"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Alanyaspor vs Samsunspor",
+      "home_team": "Alanyaspor",
+      "away_team": "Samsunspor",
+      "fixture_id": null,
+      "date": "2026-04-26 00:00:00",
+      "league": "T1",
+      "league_name": "S\u00fcper Lig",
+      "home_prob": 0.42,
+      "draw_prob": 0.31,
+      "away_prob": 0.27,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.04,
+        "confidence": 0.55,
+        "reason": "Gol beklentisi: 2.27"
+      },
+      "top_2": {
+        "pick": "KG Var",
+        "type": "Karsilikli Gol (KG)",
+        "odds": 1.6,
+        "confidence": 0.68,
+        "reason": "KG olasilik: %68"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Be\u015fikta\u015f vs Fatih Karag\u00fcmr\u00fck",
+      "home_team": "Be\u015fikta\u015f",
+      "away_team": "Fatih Karag\u00fcmr\u00fck",
+      "fixture_id": null,
+      "date": "2026-04-26 00:00:00",
+      "league": "T1",
+      "league_name": "S\u00fcper Lig",
+      "home_prob": 0.54,
+      "draw_prob": 0.39,
+      "away_prob": 0.08,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.24,
+        "confidence": 0.5,
+        "reason": "Gol beklentisi: 3.0"
+      },
+      "top_2": {
+        "pick": "1X (Ev Sahibi veya Beraberlik)",
+        "type": "Cifte Sans",
+        "odds": 1.17,
+        "confidence": 0.92,
+        "reason": "Cifte sans: 92%"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Eyupspor vs Gaziantep",
+      "home_team": "Eyupspor",
+      "away_team": "Gaziantep",
+      "fixture_id": null,
+      "date": "2026-04-26 00:00:00",
+      "league": "T1",
+      "league_name": "S\u00fcper Lig",
+      "home_prob": 0.23,
+      "draw_prob": 0.2,
+      "away_prob": 0.57,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.04,
+        "confidence": 0.55,
+        "reason": "Gol beklentisi: 2.41"
+      },
+      "top_2": {
+        "pick": "Ust 2.5 (2.41 gol beklentisi)",
+        "type": "Alt/Ust Gol",
+        "odds": 1.58,
+        "confidence": 0.68,
+        "reason": "Toplam gol beklentisi: 2.41"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Galatasaray vs Fenerbahce",
+      "home_team": "Galatasaray",
+      "away_team": "Fenerbahce",
+      "fixture_id": null,
+      "date": "2026-04-26 00:00:00",
+      "league": "T1",
+      "league_name": "S\u00fcper Lig",
+      "home_prob": 0.5,
+      "draw_prob": 0.41,
+      "away_prob": 0.09,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.24,
+        "confidence": 0.5,
+        "reason": "Gol beklentisi: 2.68"
+      },
+      "top_2": {
+        "pick": "Ust 2.5 (2.68 gol beklentisi)",
+        "type": "Alt/Ust Gol",
+        "odds": 1.34,
+        "confidence": 0.81,
+        "reason": "Toplam gol beklentisi: 2.68"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Kayserispor vs \u00c7aykur Rizespor",
+      "home_team": "Kayserispor",
+      "away_team": "\u00c7aykur Rizespor",
+      "fixture_id": null,
+      "date": "2026-04-26 00:00:00",
+      "league": "T1",
+      "league_name": "S\u00fcper Lig",
+      "home_prob": 0.16,
+      "draw_prob": 0.36,
+      "away_prob": 0.49,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.24,
+        "confidence": 0.5,
+        "reason": "Gol beklentisi: 2.77"
+      },
+      "top_2": {
+        "pick": "HMS 2",
+        "type": "Handikapli Mac Sonucu (HMS)",
+        "odds": 1.86,
+        "confidence": 0.59,
+        "reason": "Guclu favori avantaji (Tier 5 vs 3)"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Genclerbirligi vs Kocaelispor",
+      "home_team": "Genclerbirligi",
+      "away_team": "Kocaelispor",
+      "fixture_id": null,
+      "date": "2026-04-26 00:00:00",
+      "league": "T1",
+      "league_name": "S\u00fcper Lig",
+      "home_prob": 0.01,
+      "draw_prob": 0.83,
+      "away_prob": 0.16,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.04,
+        "confidence": 0.55,
+        "reason": "Gol beklentisi: 2.32"
+      },
+      "top_2": {
+        "pick": "Beraberlik (X)",
+        "type": "Mac Sonucu (1X2)",
+        "odds": 1.31,
+        "confidence": 0.83,
+        "reason": "H:1% D:83% A:16%"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "C\u00e1diz CF vs Las Palmas",
+      "home_team": "C\u00e1diz CF",
+      "away_team": "Las Palmas",
+      "fixture_id": null,
+      "date": "2026-04-26 00:00:00",
+      "league": "SP2",
+      "league_name": "SP2",
+      "home_prob": 0.01,
+      "draw_prob": 0.74,
+      "away_prob": 0.25,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.04,
+        "confidence": 0.55,
+        "reason": "Gol beklentisi: 1.71"
+      },
+      "top_2": {
+        "pick": "KG Var",
+        "type": "Karsilikli Gol (KG)",
+        "odds": 1.87,
+        "confidence": 0.58,
+        "reason": "KG olasilik: %58"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "C\u00f3rdoba CF vs Sporting Gij\u00f3n",
+      "home_team": "C\u00f3rdoba CF",
+      "away_team": "Sporting Gij\u00f3n",
+      "fixture_id": null,
+      "date": "2026-04-26 00:00:00",
+      "league": "SP2",
+      "league_name": "SP2",
+      "home_prob": 0.01,
+      "draw_prob": 0.67,
+      "away_prob": 0.32,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.04,
+        "confidence": 0.55,
+        "reason": "Gol beklentisi: 2.08"
+      },
+      "top_2": {
+        "pick": "\u0130Y 0.5 \u00dcst",
+        "type": "\u0130Y Alt/Ust Gol",
+        "odds": 1.51,
+        "confidence": 0.72,
+        "reason": "Hizli baslangic beklentisi"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Huesca vs Real Zaragoza",
+      "home_team": "Huesca",
+      "away_team": "Real Zaragoza",
+      "fixture_id": null,
+      "date": "2026-04-26 00:00:00",
+      "league": "SP2",
+      "league_name": "SP2",
+      "home_prob": 0.01,
+      "draw_prob": 0.77,
+      "away_prob": 0.22,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.04,
+        "confidence": 0.55,
+        "reason": "Gol beklentisi: 2.08"
+      },
+      "top_2": {
+        "pick": "Beraberlik (X)",
+        "type": "Mac Sonucu (1X2)",
+        "odds": 1.4,
+        "confidence": 0.77,
+        "reason": "H:1% D:77% A:22%"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Granada vs UD Almer\u00eda",
+      "home_team": "Granada",
+      "away_team": "UD Almer\u00eda",
+      "fixture_id": null,
+      "date": "2026-04-26 00:00:00",
+      "league": "SP2",
+      "league_name": "SP2",
+      "home_prob": 0.01,
+      "draw_prob": 0.45,
+      "away_prob": 0.54,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.24,
+        "confidence": 0.5,
+        "reason": "Gol beklentisi: 2.96"
+      },
+      "top_2": {
+        "pick": "Deplasman (2)",
+        "type": "Mac Sonucu (1X2)",
+        "odds": 1.99,
+        "confidence": 0.54,
+        "reason": "H:1% D:45% A:54%"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    },
+    {
+      "match": "Real Valladolid CF vs Real Sociedad",
+      "home_team": "Real Valladolid CF",
+      "away_team": "Real Sociedad",
+      "fixture_id": null,
+      "date": "2026-04-26 00:00:00",
+      "league": "SP2",
+      "league_name": "SP2",
+      "home_prob": 0.01,
+      "draw_prob": 0.85,
+      "away_prob": 0.14,
+      "top_1": {
+        "pick": "TGS 2-3",
+        "type": "Toplam Gol Araligi (TGS)",
+        "odds": 2.24,
+        "confidence": 0.5,
+        "reason": "Gol beklentisi: 3.02"
+      },
+      "top_2": {
+        "pick": "Ust 2.5 (3.02 gol beklentisi)",
+        "type": "Alt/Ust Gol",
+        "odds": 1.2,
+        "confidence": 0.9,
+        "reason": "Toplam gol beklentisi: 3.02"
+      },
+      "home_missing": 0,
+      "away_missing": 0
+    }
+  ]
+}

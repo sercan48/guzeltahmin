@@ -1,0 +1,161 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: vip_auto_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: mysecretpassword
+      POSTGRES_DB: vip_automation
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d vip_automation"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: vip_auto_redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  api-service:
+    build:
+      context: .
+      dockerfile: api-service/Dockerfile
+    container_name: vip_auto_api
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://postgres:mysecretpassword@db:5432/vip_automation
+      - REDIS_URL=redis://redis:6379/0
+      - PORT=8000
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+  bot-service:
+    build:
+      context: .
+      dockerfile: bot-service/Dockerfile
+    container_name: vip_auto_bot
+    restart: always
+    environment:
+      - API_SERVICE_URL=http://api-service:8000
+    env_file:
+      - .env
+    depends_on:
+      api-service:
+        condition: service_started
+
+  expiry-worker:
+    build:
+      context: .
+      dockerfile: worker-service/Dockerfile
+    container_name: vip_auto_expiry_worker
+    restart: always
+    command: python -m workers.entrypoints.expiry_worker
+    environment:
+      - API_SERVICE_URL=http://api-service:8000
+    env_file:
+      - .env
+    depends_on:
+      api-service:
+        condition: service_started
+
+  campaign-worker:
+    build:
+      context: .
+      dockerfile: worker-service/Dockerfile
+    container_name: vip_auto_campaign_worker
+    restart: always
+    command: python -m workers.entrypoints.campaign_worker
+    environment:
+      - API_SERVICE_URL=http://api-service:8000
+    env_file:
+      - .env
+    depends_on:
+      api-service:
+        condition: service_started
+
+  analytics-worker:
+    build:
+      context: .
+      dockerfile: worker-service/Dockerfile
+    container_name: vip_auto_analytics_worker
+    restart: always
+    command: python -m workers.entrypoints.analytics_worker
+    environment:
+      - API_SERVICE_URL=http://api-service:8000
+    env_file:
+      - .env
+    depends_on:
+      api-service:
+        condition: service_started
+
+  churn-worker:
+    build:
+      context: .
+      dockerfile: worker-service/Dockerfile
+    container_name: vip_auto_churn_worker
+    restart: always
+    command: python -m workers.entrypoints.churn_worker
+    environment:
+      - API_SERVICE_URL=http://api-service:8000
+    env_file:
+      - .env
+    depends_on:
+      api-service:
+        condition: service_started
+
+  reconciliation-worker:
+    build:
+      context: .
+      dockerfile: worker-service/Dockerfile
+    container_name: vip_auto_reconciliation_worker
+    restart: always
+    command: python -m workers.entrypoints.reconciliation_worker
+    environment:
+      - API_SERVICE_URL=http://api-service:8000
+    env_file:
+      - .env
+    depends_on:
+      api-service:
+        condition: service_started
+
+  event-ingester:
+    build:
+      context: .
+      dockerfile: api-service/Dockerfile
+    container_name: vip_auto_event_ingester
+    restart: always
+    command: python -m app.workers.event_ingester
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://postgres:mysecretpassword@db:5432/vip_automation
+      - REDIS_URL=redis://redis:6379/0
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+
+volumes:
+  postgres_data:
+  redis_data:

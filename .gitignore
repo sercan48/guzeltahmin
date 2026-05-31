@@ -1,0 +1,39 @@
+# Environment
+.env
+.venv/
+venv/
+
+# Data
+data/raw/
+data/fifa/
+data/processed/
+data/transfermarkt/
+*.db
+*.csv
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+htmlcov/
+*.egg-info/
+dist/
+build/
+
+# Model artifacts
+models/*.pkl
+models/*.json
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Large archives
+*.zip
+*.tar.gz
+*.tgz
