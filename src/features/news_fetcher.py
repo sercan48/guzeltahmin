@@ -129,8 +129,8 @@ def generate_news_bulletin():
             previously_shared_context = ", ".join(list(posted_news)[-10:])
             
             prompt = (
-                "Google Arama (Search Grounding) ile güncel ve önemli 5 futbol gelişmesini bul.\n"
-                "Format: '🔹 <b>[Başlık]:</b> [Kısa Detay]' (Sadece 5 satır döndür, giriş/açıklama yazma).\n"
+                "Google Arama (Search Grounding) ile güncel ve önemli 5 ila 10 arasında futbol gelişmesini bul.\n"
+                "Format: '🔹 <b>[Başlık]:</b> [Kısa Detay]' (5-10 satır döndür, giriş/açıklama yazma).\n"
                 "Yasak: Reklam, clickbait, 'canlı izle', 'saat kaçta', 'bilet' içerikleri.\n"
                 f"Tekrar etme: {previously_shared_context}"
             )
@@ -157,6 +157,9 @@ def generate_news_bulletin():
                         line = re.sub(r'^[\d\.\-\*\s]+', '', line).strip()
                         line = f"🔹 {line}"
                         
+                    if "<b>" not in line or "</b>" not in line:
+                        continue
+                        
                     valid_news_items.append(line)
                     
                     # Extract title and add to posted news cache
@@ -170,7 +173,7 @@ def generate_news_bulletin():
                     bulletin_content = "\n".join(valid_news_items)
                     
                     # Assemble final bulletin
-                    bulletin = "🗞️ <b>Dünya futbolundan öne çıkan 5 güncel ve önemli gelişme şu şekilde:</b>\n\n"
+                    bulletin = "🗞️ <b>Dünya futbolundan öne çıkan güncel ve önemli gelişmeler şu şekilde:</b>\n\n"
                     bulletin += bulletin_content
                     bulletin += "\n"
                     bulletin += generate_dynamic_footer(valid_news_items)
@@ -232,8 +235,8 @@ def _generate_rss_fallback_bulletin(posted_news) -> str | None:
         logger.error("No news found in any RSS feeds. Cannot generate bulletin.")
         return None
         
-    # Take top 5 unique news
-    selected_news = raw_news[:5]
+    # Take up to 8 unique news items
+    selected_news = raw_news[:8]
     
     # Try to use Gemini to translate and format the RSS items (lightweight prompt, no grounding tool needed)
     if GEMINI_API_KEY:
@@ -249,7 +252,7 @@ def _generate_rss_fallback_bulletin(posted_news) -> str | None:
                 "Aşağıdaki spor haberlerini Türkçe'ye çevir ve özetle. Her haber için tek bir satır oluştur.\n"
                 "Format tam olarak şöyle olmalıdır:\n"
                 "🔹 <b>[Haber Başlığı]:</b> [Kısa Türkçe Detay]\n"
-                "Giriş, açıklama veya yorum yazma, sadece bu 5 satırı döndür.\n\n"
+                "Giriş, açıklama veya yorum yazma, sadece bu haber satırlarını döndür.\n\n"
                 f"{articles_text}"
             )
             
@@ -267,6 +270,10 @@ def _generate_rss_fallback_bulletin(posted_news) -> str | None:
                     if not line.startswith("🔹"):
                         line = re.sub(r'^[\d\.\-\*\s]+', '', line).strip()
                         line = f"🔹 {line}"
+                        
+                    if "<b>" not in line or "</b>" not in line:
+                        continue
+                        
                     valid_items.append(line)
                     
                     match = re.search(r'<b>(.*?)</b>', line)
@@ -277,7 +284,7 @@ def _generate_rss_fallback_bulletin(posted_news) -> str | None:
                 if valid_items:
                     save_posted_news(posted_news)
                     bulletin_content = "\n".join(valid_items)
-                    bulletin = "🗞️ <b>Dünya futbolundan öne çıkan 5 güncel gelişme (RSS Kaynaklı):</b>\n\n"
+                    bulletin = "🗞️ <b>Dünya futbolundan öne çıkan güncel gelişmeler (RSS Kaynaklı):</b>\n\n"
                     bulletin += bulletin_content
                     bulletin += "\n"
                     bulletin += generate_dynamic_footer(valid_items)
@@ -297,7 +304,7 @@ def _generate_rss_fallback_bulletin(posted_news) -> str | None:
         
     save_posted_news(posted_news)
     bulletin_content = "\n".join(valid_items)
-    bulletin = "🗞️ <b>Dünya futbolundan öne çıkan 5 güncel gelişme (Yedek RSS Akışı):</b>\n\n"
+    bulletin = "🗞️ <b>Dünya futbolundan öne çıkan güncel gelişmeler (Yedek RSS Akışı):</b>\n\n"
     bulletin += bulletin_content
     bulletin += "\n"
     bulletin += generate_dynamic_footer(valid_items)
