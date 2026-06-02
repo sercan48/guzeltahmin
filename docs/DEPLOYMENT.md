@@ -92,9 +92,36 @@ services:
 
 ---
 
-## 3. Alternative Process Management (PM2)
+## 3. Windows Process Management (PowerShell Watchdog)
 
-If deploying directly to a VM without Docker, manage Python processes using PM2:
+On Windows systems (without Docker), the bot can be run as a background service supervised by the **Windows Task Scheduler** and a watchdog script.
+
+### 1. Watchdog Script (`scripts/watchdog_bot.ps1`)
+The script [watchdog_bot.ps1](file:///c:/Users/WIN/Desktop/Güzel Tahmin/scripts/watchdog_bot.ps1) dynamically resolves the project directory, checks if the bot is running, and launches it in the background if it is offline:
+```powershell
+# Monitors and restarts the Telegram Bot process
+$ScriptDir = $PSScriptRoot
+$WorkingDirectory = Split-Path -Parent $ScriptDir
+$Interpreter = "$WorkingDirectory\.venv\Scripts\python.exe"
+$Arguments = "-m app.telegram_bot"
+
+$Process = Get-CimInstance Win32_Process -Filter "CommandLine like '%app.telegram_bot%'"
+if ($Process -eq $null) {
+    Start-Process -FilePath $Interpreter -ArgumentList $Arguments -WorkingDirectory $WorkingDirectory -RedirectStandardOutput "$WorkingDirectory\data\bot_stdout.log" -RedirectStandardError "$WorkingDirectory\data\bot_stderr.log" -WindowStyle Hidden
+}
+```
+
+### 2. Task Scheduler Configuration
+To register the watchdog to run every 5 minutes automatically:
+```powershell
+schtasks /create /tn "GuzelTahminBotWatchdog" /tr "powershell.exe -ExecutionPolicy Bypass -File 'C:\Users\WIN\Desktop\Güzel Tahmin\scripts\watchdog_bot.ps1'" /sc MINUTE /mo 5 /f
+```
+
+---
+
+## 4. Alternative Process Management (PM2)
+
+If deploying to a VM (Linux) without Docker, manage Python processes using PM2:
 
 Create an `ecosystem.config.js` file:
 ```javascript
