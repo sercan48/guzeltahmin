@@ -94,9 +94,10 @@ def generate_news_bulletin():
             previously_shared_context = ", ".join(list(posted_news)[-10:])
             
             prompt = (
-                "Google Arama (Search Grounding) ile güncel ve önemli 5 ila 10 arasında futbol gelişmesini bul.\n"
-                "Format: '🔹 <b>[Başlık]:</b> [Kısa Detay]' (5-10 satır döndür, giriş/açıklama yazma).\n"
-                "Yasak: Reklam, clickbait, 'canlı izle', 'saat kaçta', 'bilet' içerikleri.\n"
+                "Google Search ile son dakika önemli futbol gelişmelerini (transferler, sakatlıklar, resmi kararlar, kritik maç sonuçları) bul.\n"
+                "Sadece en güncel ve gerçek 5-6 haberi Türkçe olarak şu formatta yaz:\n"
+                "🔹 <b>[Konu/Başlık]:</b> [Tek cümlelik net ve tarafsız detay]\n"
+                "Yasak: Giriş/açıklama metni yazma, clickbait, reklam, yayın saati, bilet veya canlı izleme linki.\n"
                 f"Tekrar etme: {previously_shared_context}"
             )
             
