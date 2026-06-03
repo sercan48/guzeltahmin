@@ -96,7 +96,7 @@ def generate_news_bulletin():
             prompt = (
                 "Google Search ile son dakika önemli futbol gelişmelerini (transferler, sakatlıklar, resmi kararlar, kritik maç sonuçları) bul.\n"
                 "Sadece en güncel ve gerçek 5-6 haberi Türkçe olarak şu formatta yaz:\n"
-                "🔹 <b>[Konu/Başlık]:</b> [Tek cümlelik net ve tarafsız detay]\n"
+                "🔹 <b>[Konu/Başlık]:</b> [Bir spor editörü kalitesinde yazılmış, profesyonel, akıcı, açıklayıcı ve bilgilendirici 2-3 cümlelik detay]\n"
                 "Yasak: Giriş/açıklama metni yazma, clickbait, reklam, yayın saati, bilet veya canlı izleme linki.\n"
                 f"Tekrar etme: {previously_shared_context}"
             )
