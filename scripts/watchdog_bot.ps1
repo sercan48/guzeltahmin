@@ -4,7 +4,7 @@
 $ScriptDir = $PSScriptRoot
 $WorkingDirectory = Split-Path -Parent $ScriptDir
 $Interpreter = "$WorkingDirectory\.venv\Scripts\python.exe"
-$Arguments = "-m app.telegram_bot"
+$Arguments = "-u -m app.telegram_bot"
 
 # Check if the bot process is currently running
 $Process = Get-CimInstance Win32_Process -Filter "CommandLine like '%app.telegram_bot%'"
@@ -26,7 +26,7 @@ if ($Process -eq $null) {
     $OutLog = "$DataDir\bot_stdout.log"
     $ErrLog = "$DataDir\bot_stderr.log"
     
-    Start-Process -FilePath $Interpreter -ArgumentList $Arguments -WorkingDirectory $WorkingDirectory -RedirectStandardOutput $OutLog -RedirectStandardError $ErrLog -WindowStyle Hidden
+    Start-Process -FilePath $Interpreter -ArgumentList $Arguments -WorkingDirectory $WorkingDirectory -RedirectStandardOutput $OutLog -RedirectStandardError $ErrLog -WindowStyle Hidden -Wait
 } else {
     # Log that the bot is healthy
     $LogMsg = "$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss') - [WATCHDOG] Bot is healthy. Process ID: $($Process.ProcessId)"

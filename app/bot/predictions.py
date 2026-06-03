@@ -733,8 +733,8 @@ async def schedule_predictions(app):
 
     logger.info(
         "Scheduled jobs (TR time): "
-        "08:00 DB sync, 08:30 pipeline, 09:00 results, 09:30 news, "
-        "10:00 premium, 10:30 free pick, 18:00 news, 18:30 WC prelim, "
+        "08:00 DB sync, 08:30 pipeline, 09:00 results, 09:30 news morning, "
+        "10:00 premium, 10:30 free pick, 18:00 news evening, 18:30 WC prelim, "
         "22:00 WC scheduler, 23:00 WC night, 23:30 self-learning"
     )
 async def daily_news_job(context: ContextTypes.DEFAULT_TYPE):
