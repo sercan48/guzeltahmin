@@ -35,7 +35,8 @@ FOOTBALL_DATA_ORG_KEY = os.getenv("FOOTBALL_DATA_ORG_KEY", "")
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
 TELEGRAM_CHANNEL_ID = os.getenv("TELEGRAM_CHANNEL_ID", "")  # Premium channel
 TELEGRAM_FREE_CHANNEL_ID = os.getenv("TELEGRAM_FREE_CHANNEL_ID", "")  # Free daily pick
-TELEGRAM_VIP_LINK = os.getenv("TELEGRAM_VIP_LINK", "https://t.me/+placeholder_vip_link")
+TELEGRAM_VIP_LINK = os.getenv("TELEGRAM_VIP_LINK", "https://rebrand.ly/guzeltahminvip")
+TELEGRAM_VIP_JOIN_LINK = os.getenv("TELEGRAM_VIP_JOIN_LINK", "https://t.me/+b9DHTgihMBNjYTU0")
 EXTRA_RSS_URLS = [
     x.strip() for x in os.getenv("EXTRA_RSS_URLS", "").split(",") if x.strip()
 ]

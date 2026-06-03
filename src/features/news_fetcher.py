@@ -8,7 +8,7 @@ import json
 import time
 import re
 from pathlib import Path
-from config.settings import CACHE_DIR, GEMINI_API_KEY, TELEGRAM_VIP_LINK
+from config.settings import CACHE_DIR, GEMINI_API_KEY, TELEGRAM_VIP_LINK, TELEGRAM_VIP_JOIN_LINK
 
 logger = logging.getLogger(__name__)
 
@@ -40,36 +40,42 @@ def generate_dynamic_footer(news_items):
     # Check if there are any injuries/suspensions mentioned in the current news items
     has_injury = any(any(kw in item.lower() for kw in ["sakat", "injury", "injured"]) for item in news_items)
     
+    # 50% chance to show a VIP redirect link to prevent annoying users
+    show_vip_link = random.random() < 0.5
+    
     if has_injury:
         footer_note = (
             "🤖 <b>Algoritma Notu:</b> Bültendeki kritik sakatlık/kadro dışı gelişmeleri Monte Carlo simülasyonumuza "
             "işlenerek takım güç dengeleri güncellenmiştir. Eksiklerin bahis oranları üzerindeki etkisi hesaplanmıştır."
         )
-        footer_cta = f"💎 Sakatlıkların oranları nasıl etkilediğini görmek ve güncel VIP slipimizi almak için VIP kanalımıza davetlisiniz: {TELEGRAM_VIP_LINK}"
-        return f"\n{footer_note}\n\n{footer_cta}"
+        if show_vip_link:
+            footer_cta = f"\n\n💎 Sakatlıkların oranları nasıl etkilediğini görmek ve güncel VIP slipimizi almak için: <a href=\"{TELEGRAM_VIP_JOIN_LINK}\">Güzel Tahmin VIP Kanalı</a>"
+        else:
+            footer_cta = ""
+        return f"\n{footer_note}{footer_cta}"
         
     # General pool of distinct footers
     variations = [
         {
             "note": "🤖 <b>Algoritma Notu:</b> Bu gelişmelerin ardından bahis piyasalarında (Market Delta) ani hareketlilikler gözlemlendi. XGBoost tabanlı tahmin modelimiz yeni olasılıkları hesapladı.",
-            "cta": f"💎 Detaylı oran analizleri ve güncel tahmin slipi VIP kanalımızda yayında! VIP Giriş: {TELEGRAM_VIP_LINK}"
+            "cta": f"\n\n💎 Detaylı oran analizleri ve güncel tahmin slipimiz için: <a href=\"{TELEGRAM_VIP_JOIN_LINK}\">Güzel Tahmin VIP Kanalı</a>" if show_vip_link else ""
         },
         {
             "note": "🤖 <b>Algoritma Analizi:</b> Son dakika haberleri doğrultusunda bugünün fikstüründeki Güven Puanları (Confidence Score) güncellendi. Modelimiz yapay zeka konsensüsünü yeniden hesapladı.",
-            "cta": f"💎 Risk analizi yapılmış resmi kuponlar ve VIP tahminlerimiz için VIP kanalımıza katılın: {TELEGRAM_VIP_LINK}"
+            "cta": f"\n\n💎 Risk analizi yapılmış resmi kuponlarımız için: <a href=\"{TELEGRAM_VIP_JOIN_LINK}\">Güzel Tahmin VIP Kanalı</a>" if show_vip_link else ""
         },
         {
             "note": "🤖 <b>Yapay Zeka Raporu:</b> Son takım verileri doğrultusunda Ensemble modelimiz tüm pazarları tarayarak (Omni-Market) değer kaymalarını ayıkladı.",
-            "cta": f"💎 Akıllı filtrelerden geçen sistem analizleri ve VIP tahmin slipimiz için hemen VIP kanalımıza katılın: {TELEGRAM_VIP_LINK}"
+            "cta": f"\n\n💎 Akıllı filtrelerden geçen sistem analizleri ve VIP tahmin slipimiz için: <a href=\"{TELEGRAM_VIP_JOIN_LINK}\">Güzel Tahmin VIP Kanalı</a>" if show_vip_link else ""
         },
         {
             "note": "🤖 <b>Algoritma Bildirimi:</b> Takım güçlerindeki son değişimler ve xG tahmin oranları yapay zeka tarafından güncellenmiştir.",
-            "cta": f"💎 Güncel oranlar ve VIP analizler için VIP kanalımıza katılım sağlayın: {TELEGRAM_VIP_LINK}"
+            "cta": f"\n\n💎 Güncel oranlar ve VIP analizler için: <a href=\"{TELEGRAM_VIP_JOIN_LINK}\">Güzel Tahmin VIP Kanalı</a>" if show_vip_link else ""
         }
     ]
     
     selected = random.choice(variations)
-    return f"\n{selected['note']}\n\n{selected['cta']}"
+    return f"\n{selected['note']}{selected['cta']}"
 
 def generate_news_bulletin():
     """Generates the Telegram HTML message using Gemini Google Search Grounding.

@@ -9,6 +9,7 @@ from telegram.ext import ContextTypes
 from config.settings import (
     TELEGRAM_CHANNEL_ID, TELEGRAM_FREE_CHANNEL_ID,
     LIVE_BETTING_ENABLED, SELF_LEARNING_ENABLED,
+    TELEGRAM_VIP_JOIN_LINK,
 )
 from config.leagues import ACTIVE_LEAGUES
 from app.bot.admin import premium_only
@@ -191,10 +192,15 @@ def _get_promo_footer(db) -> str:
         else:
             stats_hook = "Ensemble AI modellerimizle yüksek başarı oranı! 📈"
             
+    import random
+    if random.random() < 0.5:
+        vip_cta = f"\n🔗 Katılım: [Güzel Tahmin VIP Kanalı]({TELEGRAM_VIP_JOIN_LINK})"
+    else:
+        vip_cta = ""
+        
     footer = (
         f"📢 *{stats_hook}*\n"
-        f"Günün tüm analizlerine, özel hazır kuponlara ve canlı rehbere erişmek için hemen VIP kanalımıza katılın! 👇\n"
-        f"🔗 VIP Kanal Kayıt: @GüzelTahminBot"
+        f"Günün tüm analizlerine, özel hazır kuponlara ve canlı rehbere erişmek için hemen VIP kanalımıza katılın! 👇{vip_cta}"
     )
     return footer
 
