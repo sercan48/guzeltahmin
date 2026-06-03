@@ -93,5 +93,5 @@ def full_clean_pipeline(df: pd.DataFrame) -> pd.DataFrame:
     final = len(df)
     dropped = initial - final
     if dropped > 0:
-        print(f"[INFO] Cleaned: {dropped} rows removed ({initial} → {final})")
+        print(f"[INFO] Cleaned: {dropped} rows removed ({initial} -> {final})")
     return df
