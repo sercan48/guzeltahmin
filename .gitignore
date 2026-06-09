@@ -8,7 +8,9 @@ data/raw/
 data/fifa/
 data/processed/
 data/transfermarkt/
+data/cache/
 *.db
+*.sqlite
 *.csv
 *.log
 
@@ -25,6 +27,14 @@ build/
 # Model artifacts
 models/*.pkl
 models/*.json
+models/**/*.pkl
+models/**/*.npy
+
+# Scratch / throwaway debug scripts
+scratch/
+
+# CatBoost training artifacts
+catboost_info/
 
 # IDE
 .vscode/
