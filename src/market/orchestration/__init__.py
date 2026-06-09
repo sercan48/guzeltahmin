@@ -15,6 +15,15 @@ from .lifecycle import (
     is_legal_transition,
 )
 from .event_store import EventStore, LifecycleService
+from .orchestrator import (
+    PipelineOrchestrator,
+    Trigger,
+    TriggerType,
+    TriggerResult,
+    PaperSignal,
+    OrchestratorConfig,
+    OrchestratorMetrics,
+)
 
 __all__ = [
     "State",
@@ -28,4 +37,11 @@ __all__ = [
     "is_legal_transition",
     "EventStore",
     "LifecycleService",
+    "PipelineOrchestrator",
+    "Trigger",
+    "TriggerType",
+    "TriggerResult",
+    "PaperSignal",
+    "OrchestratorConfig",
+    "OrchestratorMetrics",
 ]
