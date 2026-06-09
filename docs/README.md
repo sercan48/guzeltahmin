@@ -42,6 +42,7 @@ Design & architecture documentation for the MIW football prediction system. Thes
 | `MIW_M7_SHADOW_RUN.md` | M7 — Shadow run & continuous simulation (**code** `src/market/shadow/`) |
 | `MIW_M8_SETTLEMENT.md` | M8 — Settlement & Outcome Ground Truth Engine (design) |
 | `MIW_M9_CONTROL_PLANE.md` | M9 — Production Control Plane & Live Safety Gate System (design) |
+| `MIW_M10_REAL_DATA_ACTIVATION.md` | M10 — Real Data Activation & Live System Bootstrap Layer (design) |
 
 > M1 (canonicalization) and M2 (Truth Store) are code in `src/market/truth/`;
 > their contracts are documented in `MIW_SHARP_DATA_INFRASTRUCTURE.md` (F16) and
