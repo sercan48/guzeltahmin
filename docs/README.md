@@ -18,7 +18,9 @@ Design & architecture documentation for the MIW football prediction system. Thes
 | `MIW_REALWORLD_ALIGNMENT.md` | Phase 10 — Real-World Alignment Layer |
 | `MIW_PAPER_TRADING_VALIDATION.md` | Phase 11 — Paper Trading & Execution Validation |
 | `MIW_GOVERNANCE_DEPLOYMENT.md` | Phase 12 — Governance & Live Deployment Framework |
+| `MIW_R1_PAL_CORE.md` | R1 — PAL Core (Provider Abstraction Layer) implementation |
 | `MIW_R1_1_PROVIDER_INTEGRATION.md` | Phase 1.1 / R1.1 — First Live Provider Integration & Snapshot Validation |
+| `MIW_R1_2_MARKET_MEASUREMENT.md` | R1.2 — Live Market Measurement Layer (CLV + Odds Drift Core) — **runnable code** in `src/market/` |
 | `MIW_SYSTEM_AUDIT.md` | Master audit — understanding, gaps & roadmap |
 
 ## Note on `MIW_FEATURE_LAYER.md`
