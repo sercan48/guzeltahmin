@@ -34,6 +34,7 @@
 10. MIW_PAPER_TRADING_VALIDATION
 11. MIW_GOVERNANCE_DEPLOYMENT
 12. MIW_SYSTEM_AUDIT
+13. MIW_R1_1_PROVIDER_INTEGRATION
 
 **Important Rules:**
 - No target leakage
@@ -63,6 +64,7 @@ docs/
 ├── MIW_REALWORLD_ALIGNMENT.md
 ├── MIW_PAPER_TRADING_VALIDATION.md
 ├── MIW_GOVERNANCE_DEPLOYMENT.md
+├── MIW_R1_1_PROVIDER_INTEGRATION.md
 └── MIW_SYSTEM_AUDIT.md
 ```
 
@@ -86,6 +88,7 @@ docs/
 | 10 | MIW_REALWORLD_ALIGNMENT |
 | 11 | MIW_PAPER_TRADING_VALIDATION |
 | 12 | MIW_GOVERNANCE_DEPLOYMENT |
+| R1.1 | MIW_R1_1_PROVIDER_INTEGRATION |
 | Audit | MIW_SYSTEM_AUDIT |
 
 > Note: `MIW_HISTORICAL_ODDS_WAREHOUSE_PLAN.md` (Phase 9) is included in `docs/` but is omitted from the Read Order above by design; consult it together with R2 (Historical Odds Warehouse MVP).
