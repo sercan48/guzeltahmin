@@ -292,6 +292,33 @@ class TruthStore:
                           selection: str) -> Optional[TruthRecord]:
         return self.get_truth(match_id, market, selection, snapshot_type="CLOSE")
 
+    def iter_truth(self, match_id: Optional[str] = None, market: Optional[str] = None,
+                   as_of: Optional[datetime] = None) -> List[TruthRecord]:
+        """Read-only export of the latest-version truth rows (point-in-time).
+
+        Additive accessor for the M3 enforcement adapter; does not change any
+        existing behaviour. Returns the highest-version row per
+        (match, market, selection, snapshot_type) with as_of <= ``as_of``.
+        """
+        sql = "SELECT * FROM truth_odds WHERE 1=1"
+        params: list = []
+        if match_id is not None:
+            sql += " AND match_id=?"; params.append(match_id)
+        if market is not None:
+            sql += " AND market=?"; params.append(market)
+        if as_of is not None:
+            sql += " AND as_of_ts<=?"; params.append(_epoch(as_of))
+        sql += " ORDER BY match_id, market, selection, snapshot_type, version DESC"
+        seen = set()
+        out: List[TruthRecord] = []
+        for row in self.conn.execute(sql, params).fetchall():
+            key = (row["match_id"], row["market"], row["selection"], row["snapshot_type"])
+            if key in seen:
+                continue  # keep highest version (first seen due to ORDER BY version DESC)
+            seen.add(key)
+            out.append(self._row_to_record(row))
+        return out
+
     # -- helpers ------------------------------------------------------------
     def _persist(self, rec: TruthRecord, as_of_ts: float) -> None:
         prev = self.conn.execute(

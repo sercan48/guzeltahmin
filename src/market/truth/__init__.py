@@ -23,6 +23,12 @@ from .store import (
     Provenance,
     classify_provider,
 )
+from .adapter import (
+    TruthAdapter,
+    MeasurementMode,
+    TruthMeta,
+    HybridValidation,
+)
 
 __all__ = [
     "OddsFormat",
@@ -40,4 +46,8 @@ __all__ = [
     "ProviderClass",
     "Provenance",
     "classify_provider",
+    "TruthAdapter",
+    "MeasurementMode",
+    "TruthMeta",
+    "HybridValidation",
 ]
