@@ -41,6 +41,7 @@ Design & architecture documentation for the MIW football prediction system. Thes
 | `MIW_M6_TELEGRAM_OUTPUT.md` | M6 — Telegram output & explainability, presentation only (**code** `app/bot/paper_formatter.py`) |
 | `MIW_M7_SHADOW_RUN.md` | M7 — Shadow run & continuous simulation (**code** `src/market/shadow/`) |
 | `MIW_M8_SETTLEMENT.md` | M8 — Settlement & Outcome Ground Truth Engine (design) |
+| `MIW_M9_CONTROL_PLANE.md` | M9 — Production Control Plane & Live Safety Gate System (design) |
 
 > M1 (canonicalization) and M2 (Truth Store) are code in `src/market/truth/`;
 > their contracts are documented in `MIW_SHARP_DATA_INFRASTRUCTURE.md` (F16) and
