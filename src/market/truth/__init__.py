@@ -15,6 +15,14 @@ from .canonicalization import (
     devig_shin,
     devig_ensemble,
 )
+from .store import (
+    TruthStore,
+    RawSnapshot,
+    TruthRecord,
+    ProviderClass,
+    Provenance,
+    classify_provider,
+)
 
 __all__ = [
     "OddsFormat",
@@ -26,4 +34,10 @@ __all__ = [
     "devig_power",
     "devig_shin",
     "devig_ensemble",
+    "TruthStore",
+    "RawSnapshot",
+    "TruthRecord",
+    "ProviderClass",
+    "Provenance",
+    "classify_provider",
 ]
