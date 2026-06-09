@@ -22,6 +22,7 @@ Design & architecture documentation for the MIW football prediction system. Thes
 | `MIW_SHADOW_LIVE_SIMULATION.md` | Faz 14 — End-to-End Live Simulation & Shadow Verification Layer (design) |
 | `MIW_SHARP_ANCHOR_CALIBRATION.md` | Faz 15 — Real Data Calibration & Sharp Anchor Alignment (design) |
 | `MIW_SHARP_DATA_INFRASTRUCTURE.md` | Faz 16 — Sharp Market Data Infrastructure & Truth Layer (design) |
+| `MIW_TRUTH_WAREHOUSE_BOOTSTRAP.md` | Phase 16 bootstrap / R2 — Sharp Closing Odds Ingestion & Truth Warehouse (design) |
 | `MIW_R1_PAL_CORE.md` | R1 — PAL Core (Provider Abstraction Layer) implementation |
 | `MIW_R1_1_PROVIDER_INTEGRATION.md` | Phase 1.1 / R1.1 — First Live Provider Integration & Snapshot Validation |
 | `MIW_R1_2_MARKET_MEASUREMENT.md` | R1.2 — Live Market Measurement Layer (CLV + Odds Drift Core) — **runnable code** in `src/market/` |
