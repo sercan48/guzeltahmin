@@ -30,6 +30,22 @@ Design & architecture documentation for the MIW football prediction system. Thes
 | `MIW_R1_3_EDGE_DETECTION_KERNEL.md` | R1.3 — Edge Detection Kernel (model-vs-market edge, EQS, tiers) — **runnable code** in `src/market/edge/` |
 | `MIW_SYSTEM_AUDIT.md` | Master audit — understanding, gaps & roadmap |
 
+## M-series — production buildout (design → production)
+
+| Document | Scope |
+|---|---|
+| `MIW_M3_TRUTH_RULE_ENFORCEMENT.md` | M3 — Truth Rule Enforcement adapter (**code** `src/market/truth/`) |
+| `MIW_M3_2_TRUTH_TO_EDGE.md` | M3.2 — Truth→Edge wiring, discount-only (**code**) |
+| `MIW_M4_LIFECYCLE_STATE_MACHINE.md` | M4 — Market lifecycle state machine, event-sourced (**code** `src/market/orchestration/`) |
+| `MIW_M5_ORCHESTRATOR_PAPER.md` | M5 — Pipeline orchestrator & paper activation (**code**) |
+| `MIW_M6_TELEGRAM_OUTPUT.md` | M6 — Telegram output & explainability, presentation only (**code** `app/bot/paper_formatter.py`) |
+| `MIW_M7_SHADOW_RUN.md` | M7 — Shadow run & continuous simulation (**code** `src/market/shadow/`) |
+| `MIW_M8_SETTLEMENT.md` | M8 — Settlement & Outcome Ground Truth Engine (design) |
+
+> M1 (canonicalization) and M2 (Truth Store) are code in `src/market/truth/`;
+> their contracts are documented in `MIW_SHARP_DATA_INFRASTRUCTURE.md` (F16) and
+> `MIW_TRUTH_WAREHOUSE_BOOTSTRAP.md`.
+
 ## Note on `MIW_FEATURE_LAYER.md`
 
 `MIW_FEATURE_LAYER.md` is the canonical feature-layer document. It contains:
