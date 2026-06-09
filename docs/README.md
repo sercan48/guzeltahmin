@@ -21,6 +21,7 @@ Design & architecture documentation for the MIW football prediction system. Thes
 | `MIW_R1_PAL_CORE.md` | R1 — PAL Core (Provider Abstraction Layer) implementation |
 | `MIW_R1_1_PROVIDER_INTEGRATION.md` | Phase 1.1 / R1.1 — First Live Provider Integration & Snapshot Validation |
 | `MIW_R1_2_MARKET_MEASUREMENT.md` | R1.2 — Live Market Measurement Layer (CLV + Odds Drift Core) — **runnable code** in `src/market/` |
+| `MIW_R1_3_EDGE_DETECTION_KERNEL.md` | R1.3 — Edge Detection Kernel (model-vs-market edge, EQS, tiers) — **runnable code** in `src/market/edge/` |
 | `MIW_SYSTEM_AUDIT.md` | Master audit — understanding, gaps & roadmap |
 
 ## Note on `MIW_FEATURE_LAYER.md`

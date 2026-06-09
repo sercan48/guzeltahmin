@@ -37,6 +37,7 @@
 13. MIW_R1_PAL_CORE
 14. MIW_R1_1_PROVIDER_INTEGRATION
 15. MIW_R1_2_MARKET_MEASUREMENT
+16. MIW_R1_3_EDGE_DETECTION_KERNEL
 
 **Important Rules:**
 - No target leakage
@@ -69,6 +70,7 @@ docs/
 ├── MIW_R1_PAL_CORE.md
 ├── MIW_R1_1_PROVIDER_INTEGRATION.md
 ├── MIW_R1_2_MARKET_MEASUREMENT.md
+├── MIW_R1_3_EDGE_DETECTION_KERNEL.md
 └── MIW_SYSTEM_AUDIT.md
 ```
 
@@ -95,6 +97,7 @@ docs/
 | R1 | MIW_R1_PAL_CORE |
 | R1.1 | MIW_R1_1_PROVIDER_INTEGRATION |
 | R1.2 | MIW_R1_2_MARKET_MEASUREMENT |
+| R1.3 | MIW_R1_3_EDGE_DETECTION_KERNEL |
 | Audit | MIW_SYSTEM_AUDIT |
 
 > Note: `MIW_HISTORICAL_ODDS_WAREHOUSE_PLAN.md` (Phase 9) is included in `docs/` but is omitted from the Read Order above by design; consult it together with R2 (Historical Odds Warehouse MVP).
