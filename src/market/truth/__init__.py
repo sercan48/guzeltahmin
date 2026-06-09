@@ -29,6 +29,12 @@ from .adapter import (
     TruthMeta,
     HybridValidation,
 )
+from .edge_wiring import (
+    TruthEdgeAdjuster,
+    TruthEdgeConfig,
+    TruthAdjustedEdge,
+    DEFAULT_TRUTH_EDGE_CONFIG,
+)
 
 __all__ = [
     "OddsFormat",
@@ -50,4 +56,8 @@ __all__ = [
     "MeasurementMode",
     "TruthMeta",
     "HybridValidation",
+    "TruthEdgeAdjuster",
+    "TruthEdgeConfig",
+    "TruthAdjustedEdge",
+    "DEFAULT_TRUTH_EDGE_CONFIG",
 ]

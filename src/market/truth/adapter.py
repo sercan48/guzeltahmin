@@ -33,7 +33,10 @@ from typing import Dict, List, Optional, Sequence, Tuple
 from ..schema import OddsRecord, MatchContext
 from ..measurement_pipeline import MeasurementPipeline, MeasurementResult
 from ..schema import Horizon
-from .store import TruthStore, TruthRecord
+from .store import TruthStore, TruthRecord, ProviderClass, classify_provider
+
+# disagreement (sigma) at which cross-book agreement is considered fully eroded
+_AGREEMENT_SIGMA_SCALE = 0.05
 
 Key = Tuple[str, str, str]   # (match_id, market, selection)
 
@@ -60,6 +63,10 @@ class TruthMeta:
     confidence: float
     provenance: str
     as_of: str
+    # derived truth-quality signals consumed by the M3.2 truth->edge layer
+    truth_quality: float = 0.0              # == confidence (alias for clarity)
+    truth_efficiency: float = 0.0           # cross-book agreement (1 - sigma/scale)
+    sharp_consensus_strength: float = 0.0   # sharp trust-share x agreement, in [0,1]
 
 
 @dataclass
@@ -97,8 +104,23 @@ class TruthAdapter:
                 key = (tr.match_id, tr.market, tr.selection)
                 # keep the latest (highest as_of) meta per selection
                 if key not in meta or tr.as_of >= meta[key].as_of:
-                    meta[key] = TruthMeta(tr.confidence, tr.provenance, tr.as_of)
+                    meta[key] = self._meta_from_record(tr)
         return records, meta
+
+    def _meta_from_record(self, tr: TruthRecord) -> TruthMeta:
+        agreement = max(0.0, min(1.0, 1.0 - tr.sigma_truth / _AGREEMENT_SIGMA_SCALE))
+        sharp_share = sum(
+            w for p, w in tr.contributing_providers.items()
+            if classify_provider(p, self.store.class_overrides) == ProviderClass.SHARP.value
+        )
+        return TruthMeta(
+            confidence=tr.confidence,
+            provenance=tr.provenance,
+            as_of=tr.as_of,
+            truth_quality=tr.confidence,
+            truth_efficiency=agreement,
+            sharp_consensus_strength=max(0.0, min(1.0, sharp_share * agreement)),
+        )
 
     @staticmethod
     def _to_odds_record(tr: TruthRecord) -> OddsRecord:
