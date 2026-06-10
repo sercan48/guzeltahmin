@@ -22,6 +22,14 @@ from .closure import (
     ClosureSummary,
     CloseKind,
 )
+from .math_engine import (
+    SettlementMathEngine,
+    MetricRecord,
+    MetricsSummary,
+    RollingStats,
+    MetricStatus,
+    settlement_confidence,
+)
 
 __all__ = [
     "OutcomeStatus",
@@ -35,4 +43,10 @@ __all__ = [
     "ClosureRecord",
     "ClosureSummary",
     "CloseKind",
+    "SettlementMathEngine",
+    "MetricRecord",
+    "MetricsSummary",
+    "RollingStats",
+    "MetricStatus",
+    "settlement_confidence",
 ]
