@@ -16,6 +16,12 @@ from .ledger import (
     SettlementRecord,
     SettlementSummary,
 )
+from .closure import (
+    ClosureLedger,
+    ClosureRecord,
+    ClosureSummary,
+    CloseKind,
+)
 
 __all__ = [
     "OutcomeStatus",
@@ -25,4 +31,8 @@ __all__ = [
     "SettlementLedger",
     "SettlementRecord",
     "SettlementSummary",
+    "ClosureLedger",
+    "ClosureRecord",
+    "ClosureSummary",
+    "CloseKind",
 ]
