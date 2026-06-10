@@ -30,6 +30,13 @@ from .math_engine import (
     MetricStatus,
     settlement_confidence,
 )
+from .performance import (
+    PerformanceAggregator,
+    PerformanceEntry,
+    SegmentStats,
+    StabilityReport,
+    AttributionReport,
+)
 
 __all__ = [
     "OutcomeStatus",
@@ -49,4 +56,9 @@ __all__ = [
     "RollingStats",
     "MetricStatus",
     "settlement_confidence",
+    "PerformanceAggregator",
+    "PerformanceEntry",
+    "SegmentStats",
+    "StabilityReport",
+    "AttributionReport",
 ]
