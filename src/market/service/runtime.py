@@ -75,6 +75,7 @@ class ServiceRuntime:
         publisher: TelegramPublisher,
         health: HealthMonitor,
         signal_source: Optional[Callable[[], List]] = None,
+        monetization_filter=None,
     ) -> None:
         self._config = config
         self._scheduler = scheduler
@@ -83,6 +84,7 @@ class ServiceRuntime:
         self._publisher = publisher
         self._health = health
         self._signal_source = signal_source
+        self._monetization = monetization_filter
         self._stop = False
         self._degraded = False
         self._consecutive_failures = 0
@@ -143,10 +145,15 @@ class ServiceRuntime:
                 gate = self._gateway.gate(sig, signal_id=sid)
                 s.signals_gated += 1
                 if gate.publish:
-                    pub: PublishResult = self._publisher.publish(sig, gate)
-                    if pub.published:
+                    if self._monetization is not None:
+                        self._monetization.process(sig, gate)
                         s.published += 1
                         self._health.record_signal(published=True)
+                    else:
+                        pub: PublishResult = self._publisher.publish(sig, gate)
+                        if pub.published:
+                            s.published += 1
+                            self._health.record_signal(published=True)
                 else:
                     s.suppressed += 1
                     self._health.record_signal(published=False)
@@ -168,6 +175,14 @@ class ServiceRuntime:
                         s.outcomes_triggered += 1
                     except Exception as exc:
                         s.errors.append(f"ingest_outcome: {exc}")
+
+        # --- 5-b. Deliver queued monetization signals --------------------
+        if self._monetization is not None:
+            try:
+                self._monetization.deliver_due(self._publisher)
+            except Exception as exc:
+                s.errors.append(f"monetization_delivery: {exc}")
+                self._log.warning("monetization delivery error: %s", exc)
 
         # --- 6. Wrap up --------------------------------------------------
         s.degraded = self._degraded
@@ -287,6 +302,7 @@ def build_runtime(
     secret_provider=None,
     http_client=None,
     signal_source: Optional[Callable[[], List]] = None,
+    monetization_filter=None,
 ) -> ServiceRuntime:
     """Instantiate all dependencies from config.
 
@@ -362,5 +378,5 @@ def build_runtime(
 
     return ServiceRuntime(
         config, scheduler, bridge, gateway, publisher,
-        HealthMonitor(), signal_source,
+        HealthMonitor(), signal_source, monetization_filter,
     )
