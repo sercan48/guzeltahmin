@@ -22,6 +22,8 @@ class ProviderQuote:
     selection: str
     odds: float
     provider_class: str = "SHARP"
+    timestamp: Optional[str] = None   # ISO UTC: the provider's real quote time
+    liquidity: Optional[float] = None  # matched volume / depth (exchanges)
 
 
 @dataclass(frozen=True)

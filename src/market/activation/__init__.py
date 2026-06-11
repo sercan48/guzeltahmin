@@ -12,6 +12,8 @@ from .providers import (
     ProviderOutcome,
     ProviderError,
 )
+from .fixture_map import FixtureMap
+from .adapters import PinnacleProvider, BetfairProvider
 from .bridge import (
     IngestionBridge,
     IngestionJob,
@@ -26,6 +28,9 @@ __all__ = [
     "ProviderQuote",
     "ProviderOutcome",
     "ProviderError",
+    "FixtureMap",
+    "PinnacleProvider",
+    "BetfairProvider",
     "IngestionBridge",
     "IngestionJob",
     "JobResult",

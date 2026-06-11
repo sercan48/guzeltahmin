@@ -86,6 +86,11 @@ class IngestionBridge:
                 job_type TEXT, snapshot_type TEXT, status TEXT, attempts INTEGER,
                 providers_used TEXT, last_error TEXT, updated_iso TEXT
             );
+            CREATE TABLE IF NOT EXISTS quote_liquidity (
+                match_id TEXT, market TEXT, selection TEXT, tick TEXT, provider TEXT,
+                liquidity REAL, quote_ts TEXT,
+                PRIMARY KEY (match_id, market, selection, tick, provider)
+            );
             """
         )
         self.conn.commit()
@@ -158,9 +163,18 @@ class IngestionBridge:
             if not quotes:
                 raise ProviderError("no quotes from any provider")
             for q in quotes:
+                # use the provider's real quote time when available (staleness/
+                # closing-lock accuracy); fall back to the scheduled time.
+                q_at = datetime.fromisoformat(q.timestamp) if q.timestamp else collected_at
                 self.truth.ingest_snapshot(RawSnapshot(
                     job.match_id, q.provider, q.market, q.selection, q.odds,
-                    job.snapshot_type, collected_at, provider_class=q.provider_class))
+                    job.snapshot_type, q_at, provider_class=q.provider_class))
+                if q.liquidity is not None:
+                    self.conn.execute(
+                        "INSERT OR IGNORE INTO quote_liquidity (match_id,market,selection,"
+                        "tick,provider,liquidity,quote_ts) VALUES (?,?,?,?,?,?,?)",
+                        (job.match_id, q.market, q.selection, job.tick, q.provider,
+                         float(q.liquidity), q.timestamp))
             self.truth.recompute_truth(job.match_id, job.market, job.snapshot_type)
             self.scheduler.observe(f"{job.match_id}:{job.tick}", at=collected_at)
             return self._persist(job, JobStatus.SUCCESS, attempts, used, "")
@@ -175,13 +189,23 @@ class IngestionBridge:
         provs: set = set()
         for r in success:
             provs.update(json.loads(r["providers_used"]))
+        liq = self.conn.execute("SELECT COUNT(*) c FROM quote_liquidity").fetchone()["c"]
         return {
             "ingestion_success": len(success),
             "ingestion_failure": sum(1 for r in rows if r["status"] == JobStatus.FAILED.value),
             "in_retry": sum(1 for r in rows if r["status"] == JobStatus.RETRY.value),
             "total_attempts": sum(r["attempts"] for r in rows),
             "provider_coverage": sorted(provs),
+            "liquidity_records": liq,
         }
+
+    def liquidity_for(self, match_id: str, market: str, selection: str,
+                      tick: str = "CLOSE") -> Dict[str, float]:
+        """Per-provider liquidity captured at a tick (e.g. for future MSI)."""
+        rows = self.conn.execute(
+            "SELECT provider, liquidity FROM quote_liquidity WHERE match_id=? AND market=? "
+            "AND selection=? AND tick=?", (match_id, market, selection, tick)).fetchall()
+        return {r["provider"]: r["liquidity"] for r in rows}
 
     def replay(self) -> dict:
         rows = self.conn.execute(
