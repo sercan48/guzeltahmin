@@ -37,6 +37,14 @@ from .performance import (
     StabilityReport,
     AttributionReport,
 )
+from .signal_grading import (
+    SignalGradingEngine,
+    SignalInput,
+    GradedSignal,
+    GroupSummary,
+    CalibrationReport,
+    HitMiss,
+)
 
 __all__ = [
     "OutcomeStatus",
@@ -61,4 +69,10 @@ __all__ = [
     "SegmentStats",
     "StabilityReport",
     "AttributionReport",
+    "SignalGradingEngine",
+    "SignalInput",
+    "GradedSignal",
+    "GroupSummary",
+    "CalibrationReport",
+    "HitMiss",
 ]
