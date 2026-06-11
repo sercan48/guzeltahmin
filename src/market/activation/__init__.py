@@ -20,6 +20,12 @@ from .pinnacle_live import (
     parse_pinnacle_snapshot,
     parse_pinnacle_settled,
 )
+from .betfair_live import (
+    BetfairLiveProvider,
+    make_betfair_provider,
+    parse_betfair_book,
+    parse_betfair_settled,
+)
 from .transport import (
     Transport,
     RequestSpec,
@@ -60,6 +66,10 @@ __all__ = [
     "make_pinnacle_provider",
     "parse_pinnacle_snapshot",
     "parse_pinnacle_settled",
+    "BetfairLiveProvider",
+    "make_betfair_provider",
+    "parse_betfair_book",
+    "parse_betfair_settled",
     "Transport",
     "RequestSpec",
     "HttpResponse",
