@@ -14,6 +14,12 @@ from .providers import (
 )
 from .fixture_map import FixtureMap
 from .adapters import PinnacleProvider, BetfairProvider
+from .pinnacle_live import (
+    PinnacleLiveProvider,
+    make_pinnacle_provider,
+    parse_pinnacle_snapshot,
+    parse_pinnacle_settled,
+)
 from .transport import (
     Transport,
     RequestSpec,
@@ -50,6 +56,10 @@ __all__ = [
     "FixtureMap",
     "PinnacleProvider",
     "BetfairProvider",
+    "PinnacleLiveProvider",
+    "make_pinnacle_provider",
+    "parse_pinnacle_snapshot",
+    "parse_pinnacle_settled",
     "Transport",
     "RequestSpec",
     "HttpResponse",
