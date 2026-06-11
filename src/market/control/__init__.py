@@ -16,6 +16,12 @@ from .control_plane import (
     risk_index,
     evaluate_gate,
 )
+from .gating import (
+    TelemetryAdapter,
+    ControlGateway,
+    GateResult,
+    ReasonCode,
+)
 
 __all__ = [
     "SystemState",
@@ -27,4 +33,8 @@ __all__ = [
     "kill_factors",
     "risk_index",
     "evaluate_gate",
+    "TelemetryAdapter",
+    "ControlGateway",
+    "GateResult",
+    "ReasonCode",
 ]
