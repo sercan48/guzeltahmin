@@ -31,6 +31,7 @@ class ProviderOutcome:
     status: str            # COMPLETED / VOID / CANCELLED / ...
     home_goals: Optional[int]
     away_goals: Optional[int]
+    liquidity: Optional[float] = None   # market matched volume (exchanges)
 
 
 class OddsProvider(ABC):

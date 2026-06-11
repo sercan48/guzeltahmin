@@ -26,6 +26,11 @@ from .betfair_live import (
     parse_betfair_book,
     parse_betfair_settled,
 )
+from .betfair_outcome import (
+    BetfairOutcomeProvider,
+    make_betfair_outcome_provider,
+    parse_outcome_book,
+)
 from .transport import (
     Transport,
     RequestSpec,
@@ -70,6 +75,9 @@ __all__ = [
     "make_betfair_provider",
     "parse_betfair_book",
     "parse_betfair_settled",
+    "BetfairOutcomeProvider",
+    "make_betfair_outcome_provider",
+    "parse_outcome_book",
     "Transport",
     "RequestSpec",
     "HttpResponse",
