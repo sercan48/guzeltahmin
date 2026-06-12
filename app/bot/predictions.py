@@ -23,6 +23,38 @@ logger = logging.getLogger(__name__)
 
 
 # ─────────────────────────────────────
+# SEND DEDUP (idempotency guard)
+# ─────────────────────────────────────
+# Prevents a scheduled broadcast from being sent more than once for the same
+# UTC day — protects against duplicate job registration, bot restarts inside
+# the scheduled minute, or a second bot instance briefly overlapping.
+
+import os as _os
+
+_SENT_MARKER_DIR = _os.path.join("data", "cache", "sent_markers")
+
+
+def _already_sent_today(key: str) -> bool:
+    """Return True if a broadcast with `key` was already sent today (UTC)."""
+    day = datetime.utcnow().strftime("%Y-%m-%d")
+    marker = _os.path.join(_SENT_MARKER_DIR, f"{key}_{day}.marker")
+    return _os.path.exists(marker)
+
+
+def _mark_sent_today(key: str) -> None:
+    """Record that a broadcast with `key` was sent today (UTC)."""
+    day = datetime.utcnow().strftime("%Y-%m-%d")
+    _os.makedirs(_SENT_MARKER_DIR, exist_ok=True)
+    marker = _os.path.join(_SENT_MARKER_DIR, f"{key}_{day}.marker")
+    try:
+        with open(marker, "w", encoding="utf-8") as fh:
+            fh.write(datetime.utcnow().isoformat())
+    except OSError as e:
+        logger.warning(f"Could not write sent marker {marker}: {e}")
+
+
+
+# ─────────────────────────────────────
 # USER COMMANDS
 # ─────────────────────────────────────
 
@@ -468,21 +500,29 @@ async def social_proof_report_job(context: ContextTypes.DEFAULT_TYPE):
     """Scheduled: Calculate daily/weekly ROI and broadcast report to general channel."""
     if not TELEGRAM_FREE_CHANNEL_ID:
         return
-        
+
+    # Idempotency guard: send at most once per UTC day even if the job fires
+    # twice (duplicate registration, restart within the scheduled minute, or a
+    # second overlapping instance).
+    if _already_sent_today("social_proof_report"):
+        logger.info("Social proof report already sent today — skipping duplicate.")
+        return
+
     db = get_backend()
     db.connect()
     try:
         daily = _calculate_yesterday_performance(db)
         weekly = _calculate_performance_for_period(db, 7)
-        
+
         from app.bot.formatters import format_performance_report
         report_text = format_performance_report(daily, weekly)
-        
+
         await context.bot.send_message(
             chat_id=TELEGRAM_FREE_CHANNEL_ID,
             text=report_text,
             parse_mode="Markdown"
         )
+        _mark_sent_today("social_proof_report")
         logger.info("Social proof report posted to free channel.")
     except Exception as e:
         logger.error(f"Failed to post social proof report: {e}")
@@ -700,6 +740,23 @@ async def schedule_predictions(app):
 
     from datetime import time as dt_time, timezone, timedelta
     TZ_TR = timezone(timedelta(hours=3))
+
+    # Idempotent scheduling: remove any jobs already registered under these
+    # names so a second call to schedule_predictions() (e.g. re-init) cannot
+    # leave duplicate daily jobs that would each broadcast.
+    _JOB_NAMES = [
+        "daily_db_sync", "daily_pipeline", "daily_results", "daily_news_morning",
+        "premium_predictions", "social_proof_report", "free_daily_pick",
+        "daily_news_evening", "wc_preliminary", "world_cup_scheduler",
+        "wc_night_slip", "self_learning",
+    ]
+    removed = 0
+    for _name in _JOB_NAMES:
+        for _job in job_queue.get_jobs_by_name(_name):
+            _job.schedule_removal()
+            removed += 1
+    if removed:
+        logger.warning(f"Cleared {removed} pre-existing scheduled job(s) before re-scheduling.")
 
     # 08:00 TR — Sync active season data (results/upcoming matches)
     job_queue.run_daily(daily_db_sync_job, time=dt_time(8, 0, tzinfo=TZ_TR), name="daily_db_sync")
