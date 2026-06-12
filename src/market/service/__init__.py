@@ -29,6 +29,22 @@ from .validation import (
     build_validation_harness,
     make_l4_dry_run_profile,
 )
+from .production import AlertThresholds, ProductionProfile
+from .preflight import (
+    CheckResult,
+    CheckStatus,
+    PreflightReport,
+    ProviderValidator,
+)
+from .metrics import (
+    Alert,
+    AlertEngine,
+    AlertSeverity,
+    OperationalMetrics,
+    OperationalSnapshot,
+)
+from .deployment_report import ProductionDailyReport
+from .deployment import ProductionHarness, build_production_harness
 
 __all__ = [
     # L3 — config
@@ -66,4 +82,22 @@ __all__ = [
     "ValidationHarness",
     "build_validation_harness",
     "make_l4_dry_run_profile",
+    # L6 — production profile
+    "ProductionProfile",
+    "AlertThresholds",
+    # L6 — preflight
+    "ProviderValidator",
+    "PreflightReport",
+    "CheckResult",
+    "CheckStatus",
+    # L6 — metrics & alerts
+    "OperationalMetrics",
+    "OperationalSnapshot",
+    "AlertEngine",
+    "Alert",
+    "AlertSeverity",
+    # L6 — deployment
+    "ProductionDailyReport",
+    "ProductionHarness",
+    "build_production_harness",
 ]
