@@ -1,0 +1,114 @@
+{
+  "day": "2026-06-12",
+  "generated_at": "2026-06-12T08:22:45.173848+00:00",
+  "mode": "SHADOW_OFFLINE_REHEARSAL",
+  "dry_run": true,
+  "iterations_run": 5,
+  "stop_reason": null,
+  "checklist": {
+    "A_provider_mapping": {
+      "required_secrets": [
+        "PINNACLE_API_KEY",
+        "BETFAIR_APP_KEY",
+        "BETFAIR_SESSION_TOKEN"
+      ],
+      "live_credentials_present": false,
+      "harness_preflight_passed": true,
+      "mode": "OFFLINE_REHEARSAL",
+      "status": "PASS"
+    },
+    "B_fixture_coverage": {
+      "jobs_processed_first_iter": 0,
+      "note": "0 jobs is expected offline (NullHttpClient, no live fixtures)",
+      "status": "OFFLINE_NO_FIXTURES"
+    },
+    "C_settlement_source": {
+      "ledger_reachable": true,
+      "settlement_chain_valid": true,
+      "n_settlements": 0,
+      "status": "PASS"
+    },
+    "D_replay_determinism": {
+      "control_chain_valid": true,
+      "status": "PASS"
+    },
+    "E_kill_switch": {
+      "dry_run_enforced": true,
+      "monetization_disabled": true,
+      "control_state_initial": "OFF",
+      "control_state_note": "OFF/LOCKED is expected at cold start; transitions to SHADOW via manual_reset() once live metrics clear kill factors (health_v2 >= 30, settlement_confidence >= 0.30)",
+      "alert_thresholds": {
+        "min_provider_availability": 0.9,
+        "min_completeness": 0.8,
+        "max_consecutive_empty_iterations": 120
+      },
+      "status": "PASS"
+    },
+    "_overall": {
+      "blocking_failures": [],
+      "ready_to_iterate": true
+    }
+  },
+  "first_iteration_snapshot": {
+    "ts": "2026-06-12T08:22:45.172654+00:00",
+    "iter": 0,
+    "latency_ms": 2.7,
+    "jobs_processed": 0,
+    "completeness": 1.0,
+    "provider_availability": 1.0,
+    "control_state": "LOCKED",
+    "signals_gated": 0,
+    "published": 0,
+    "suppressed": 0,
+    "outcomes_triggered": 0,
+    "degraded": false,
+    "replay_chain_valid": true,
+    "new_alerts": []
+  },
+  "operational": {
+    "uptime_seconds": 0.0,
+    "iterations": 5,
+    "empty_iterations": 5,
+    "consecutive_empty": 5,
+    "total_jobs": 0,
+    "provider_availability": 1.0,
+    "snapshot_completeness": 1.0,
+    "settlements_total": 0,
+    "signals_total": 0,
+    "degraded_iterations": 0,
+    "started_at_ts": 1781252565.162325
+  },
+  "readiness": {
+    "overall": 100.0,
+    "verdict": "GO_LIVE",
+    "dimensions": {
+      "feed_completeness": 100.0,
+      "provider_latency": 100.0,
+      "truth_confidence": 100.0,
+      "settlement_accuracy": 100.0,
+      "replay_integrity": 100.0
+    },
+    "thresholds": {
+      "completeness_clean_ratio": 0.95,
+      "latency_p95_ms": 2000.0,
+      "truth_confidence_mean": 0.65,
+      "settlement_accuracy": 1.0,
+      "replay_all_valid": true
+    }
+  },
+  "alerts": {
+    "total": 0,
+    "critical": 0,
+    "alerts": []
+  },
+  "performance_read_only": {
+    "n_settlements": 0,
+    "n_void": 0,
+    "total_roi": 0,
+    "mean_roi": 0.0,
+    "mean_clv": null,
+    "clv_positive_rate": null,
+    "settlement_chain_valid": true,
+    "note": "no settled bets — offline rehearsal has no live feed"
+  }
+}

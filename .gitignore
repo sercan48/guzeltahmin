@@ -10,6 +10,9 @@ data/processed/
 data/transfermarkt/
 data/cache/
 *.db
+*.db-wal
+*.db-shm
+*.db.gate
 *.sqlite
 *.csv
 *.log
