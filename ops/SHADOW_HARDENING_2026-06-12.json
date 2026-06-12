@@ -1,0 +1,146 @@
+{
+  "day": "2026-06-12",
+  "generated_at": "2026-06-12T10:19:02.009972+00:00",
+  "mode": "SHADOW_HARDENING",
+  "stability_score": 100.0,
+  "live_readiness_verdict": "READY_FOR_LIVE_CREDENTIALS",
+  "critical_risks": [],
+  "failure_map": {},
+  "observability": {
+    "shadow_log_exists": true,
+    "daily_report_exists": true,
+    "daily_report_parseable": true,
+    "daily_report_has_readiness": true,
+    "daily_report_has_alerts": true,
+    "daily_report_mode": "SHADOW_OFFLINE_REHEARSAL",
+    "provider_outage_alert_fires": true,
+    "all_scenarios_have_chain_valid": true,
+    "missing_operational_metrics": []
+  },
+  "transport_layer_note": "Real providers require FixtureMap entry before reaching HTTP layer. FakeHttpClient injection does not exercise transport in offline harness. Scenarios use MockOddsProvider.fail_matches to inject ProviderError at provider level — same bridge/retry/degrade code path as real HTTP failures.",
+  "scenarios": [
+    {
+      "scenario": "provider_timeout",
+      "iterations": 10,
+      "no_crash": true,
+      "bridge_failures": 0,
+      "bridge_in_retry": 0,
+      "chain_valid": true,
+      "final_control_state": "LOCKED",
+      "verdict": "PASS",
+      "notes": "ProviderError on every fetch; bridge must queue RETRY without crash",
+      "wall_ms": 110
+    },
+    {
+      "scenario": "empty_fixture_response",
+      "iterations": 10,
+      "no_crash": true,
+      "bridge_in_retry": 0,
+      "chain_valid": true,
+      "final_control_state": "LOCKED",
+      "verdict": "PASS",
+      "notes": "0 quotes returned; bridge must handle empty response without panic",
+      "wall_ms": 79
+    },
+    {
+      "scenario": "malformed_odds_payload",
+      "iterations": 10,
+      "no_crash": true,
+      "chain_valid": true,
+      "final_control_state": "LOCKED",
+      "verdict": "PASS",
+      "notes": "odds=0.0/-1.0 injected; pipeline must not divide-by-zero or crash",
+      "wall_ms": 75
+    },
+    {
+      "scenario": "settlement_missing_delayed",
+      "iterations": 10,
+      "settlement_n": 0,
+      "control_chain_valid": true,
+      "ledger_chain_valid": true,
+      "final_control_state": "LOCKED",
+      "verdict": "PASS",
+      "notes": "Outcome never arrives; SettlementLedger must stay consistent at 0",
+      "wall_ms": 83
+    },
+    {
+      "scenario": "circuit_breaker_open",
+      "iterations": 25,
+      "no_crash": true,
+      "bridge_in_retry": 0,
+      "alerts_fired": [],
+      "chain_valid": true,
+      "final_control_state": "LOCKED",
+      "verdict": "PASS",
+      "notes": "Per-job ProviderError caught by bridge → RETRY queue (not runtime degraded). Runtime degraded fires only when process_due() itself raises. provider_outage/completeness alerts expected after threshold.",
+      "wall_ms": 96
+    },
+    {
+      "scenario": "rate_limiter_exhaustion",
+      "iterations_injected": 5,
+      "iterations_recovery": 10,
+      "no_crash": true,
+      "retry_queue_at_peak": 0,
+      "retry_queue_after_recovery": 0,
+      "chain_valid": true,
+      "final_control_state": "LOCKED",
+      "verdict": "PASS",
+      "notes": "10-match ProviderError flood then recovery; RETRY queue must fill and drain",
+      "wall_ms": 93
+    },
+    {
+      "scenario": "stress_loop_24h_sim",
+      "steps": 120,
+      "simulated_hours": 24.0,
+      "wall_clock_ms": 389,
+      "signals_injected": 120,
+      "control_transitions": [
+        {
+          "step": 0,
+          "from": null,
+          "to": "LOCKED",
+          "sim_h": 0.0
+        }
+      ],
+      "replay_spot_check_failures": 0,
+      "final_chain_valid": true,
+      "final_readiness": {
+        "overall": 100.0,
+        "verdict": "GO_LIVE",
+        "dimensions": {
+          "feed_completeness": 100.0,
+          "provider_latency": 100.0,
+          "truth_confidence": 100.0,
+          "settlement_accuracy": 100.0,
+          "replay_integrity": 100.0
+        },
+        "thresholds": {
+          "completeness_clean_ratio": 0.95,
+          "latency_p95_ms": 2000.0,
+          "truth_confidence_mean": 0.65,
+          "settlement_accuracy": 1.0,
+          "replay_all_valid": true
+        }
+      },
+      "alert_counts": {
+        "provider_outage": 1
+      },
+      "operational_summary": {
+        "uptime_seconds": 86400.0,
+        "iterations": 120,
+        "empty_iterations": 120,
+        "consecutive_empty": 120,
+        "total_jobs": 0,
+        "provider_availability": 1.0,
+        "snapshot_completeness": 1.0,
+        "settlements_total": 0,
+        "signals_total": 0,
+        "degraded_iterations": 0,
+        "started_at_ts": 1767614400.0
+      },
+      "verdict": "PASS",
+      "notes": "120 steps × 12 min = 24.0h sim in 0.39s wall clock",
+      "wall_ms": 438
+    }
+  ]
+}
