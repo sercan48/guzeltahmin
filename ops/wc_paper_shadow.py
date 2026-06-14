@@ -45,30 +45,34 @@ def _tg_send(token: str, chat_id: str, text: str) -> bool:
 def _fetch_predictions(db) -> list:
     today = datetime.now().strftime("%Y-%m-%d")
     tomorrow = (datetime.now() + timedelta(days=1)).strftime("%Y-%m-%d")
-    return db.fetchall(
-        """
-        SELECT p.predicted_result, p.confidence_score,
-               p.home_win_prob, p.draw_prob, p.away_win_prob,
-               p.over25_prob, p.btts_prob, p.value_margin,
-               m.date, m.time, m.league_code,
-               t1.name AS home_team, t2.name AS away_team,
-               o.home_odds, o.draw_odds, o.away_odds
-        FROM predictions p
-        JOIN matches m ON p.match_id = m.id
-        JOIN teams t1 ON m.home_team_id = t1.id
-        JOIN teams t2 ON m.away_team_id = t2.id
-        LEFT JOIN (
-            SELECT match_id, home_odds, draw_odds, away_odds
-            FROM odds
-            WHERE id IN (SELECT MAX(id) FROM odds GROUP BY match_id)
-        ) o ON p.match_id = o.match_id
-        WHERE DATE(m.date) IN (?, ?)
-          AND m.ft_result IS NULL
-          AND p.confidence_score >= 55
-        ORDER BY p.confidence_score DESC
-        """,
-        (today, tomorrow),
-    )
+    try:
+        return db.fetchall(
+            """
+            SELECT p.predicted_result, p.confidence_score,
+                   p.home_win_prob, p.draw_prob, p.away_win_prob,
+                   p.over25_prob, p.btts_prob, p.value_margin,
+                   m.date, m.time, m.league_code,
+                   t1.name AS home_team, t2.name AS away_team,
+                   o.home_odds, o.draw_odds, o.away_odds
+            FROM predictions p
+            JOIN matches m ON p.match_id = m.id
+            JOIN teams t1 ON m.home_team_id = t1.id
+            JOIN teams t2 ON m.away_team_id = t2.id
+            LEFT JOIN (
+                SELECT match_id, home_odds, draw_odds, away_odds
+                FROM odds
+                WHERE id IN (SELECT MAX(id) FROM odds GROUP BY match_id)
+            ) o ON p.match_id = o.match_id
+            WHERE DATE(m.date) IN (?, ?)
+              AND m.ft_result IS NULL
+              AND p.confidence_score >= 55
+            ORDER BY p.confidence_score DESC
+            """,
+            (today, tomorrow),
+        )
+    except Exception as exc:
+        logger.warning("DB sorgu hatası: %s", exc)
+        return []
 
 
 def _odds_fmt(val) -> str:
