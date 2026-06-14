@@ -1,0 +1,168 @@
+{
+  "day": "2026-06-14",
+  "generated_at": "2026-06-14T06:39:41.325389+00:00",
+  "mode": "PERSONAL_SHADOW",
+  "pipeline_health_score": 100.0,
+  "daily_report": {
+    "signal_count": 4,
+    "tier_distribution": {
+      "TIER_A": 3,
+      "TIER_B": 1
+    },
+    "truth_confidence_mean": 0.8667,
+    "settled_count": 4,
+    "hit_rate": 0.5,
+    "CLV": 0.017019,
+    "ROI": {
+      "total": 0.131374,
+      "mean": 0.032843
+    },
+    "replay_chain_valid": true,
+    "control_state_distribution": {
+      "ALLOW": 4
+    },
+    "provider_failures": 0
+  },
+  "validation": {
+    "replay_deterministic": true,
+    "settlement_chain_valid": true,
+    "control_chain_valid": true,
+    "chain_valid": true,
+    "complete_settlement_path": true,
+    "no_future_data_leakage": true,
+    "no_duplicate_deliveries": true,
+    "no_orphan_records": true,
+    "no_temporal_leakage": true
+  },
+  "control_behaviour_probe": {
+    "suppress_decision": "SUPPRESS",
+    "suppress_publish": false,
+    "halt_decision": "HALT",
+    "halt_publish": false,
+    "suppress_correct": true,
+    "halt_correct": true
+  },
+  "telegram_delivery_verification": {
+    "mode": "PERSONAL_SHADOW",
+    "telegram_credentials_present": false,
+    "dry_run": true,
+    "single_channel": true,
+    "channel_configured": false,
+    "allow_signals_delivered": 0,
+    "allow_signals_would_send_dryrun": 4,
+    "delivery_failures": 0,
+    "no_duplicate_deliveries": true,
+    "results": [
+      {
+        "signal_id": "wc:wc2026_grpA_m1:HOME",
+        "published": true,
+        "channel": "@operator_personal_shadow",
+        "dry_run": true,
+        "reason": "dry_run"
+      },
+      {
+        "signal_id": "wc:wc2026_grpB_m1:HOME",
+        "published": true,
+        "channel": "@operator_personal_shadow",
+        "dry_run": true,
+        "reason": "dry_run"
+      },
+      {
+        "signal_id": "wc:wc2026_grpC_m1:AWAY",
+        "published": true,
+        "channel": "@operator_personal_shadow",
+        "dry_run": true,
+        "reason": "dry_run"
+      },
+      {
+        "signal_id": "wc:wc2026_grpD_m1:HOME",
+        "published": true,
+        "channel": "@operator_personal_shadow",
+        "dry_run": true,
+        "reason": "dry_run"
+      }
+    ]
+  },
+  "settlement_verification": {
+    "settled_count": 4,
+    "hit_rate": 0.5,
+    "roi_total": 0.131374,
+    "clv_mean": 0.017019,
+    "settlement_chain_valid": true,
+    "complete_settlement_path": true
+  },
+  "replay_verification": {
+    "deterministic": true,
+    "run1_hash": "6510b198c58f5387febf5b91fe86b442f0dfc0f2916bac89be68169a096bb03f",
+    "run2_hash": "6510b198c58f5387febf5b91fe86b442f0dfc0f2916bac89be68169a096bb03f"
+  },
+  "acceptance_hash": {
+    "value": "ab3844b895a887e3579a29e273261154743507bf157596bc4657aaa7b901abcd",
+    "baseline": "ab3844b895a887e3579a29e273261154743507bf157596bc4657aaa7b901abcd",
+    "unchanged": true
+  },
+  "operational_risks": [
+    "Telegram credentials absent — delivery validated in dry-run only.",
+    "No live provider feed — odds paths are deterministic operational inputs (algorithm-behaviour validation, not edge validation)."
+  ],
+  "operational_blockers": [
+    "Live provider credentials",
+    "Telegram bot token + personal channel id"
+  ],
+  "shadow_readiness_assessment": "PERSONAL_SHADOW_VALIDATED — pipeline behaviour correct on WC fixtures. System remains in PERSONAL_SHADOW; promotion requires live data + operator approval.",
+  "recommended_next_step": "Provision TELEGRAM_BOT_TOKEN + TELEGRAM_PERSONAL_CHANNEL and re-run with --deliver to verify real single-channel delivery; keep MODE=PERSONAL_SHADOW. Do NOT enable public publishing/monetization until explicit operator approval.",
+  "audit_trail": [
+    {
+      "signal_id": "wc:wc2026_grpA_m1:HOME",
+      "match_id": "wc2026_grpA_m1",
+      "timestamp": "2026-06-18T18:00:00+00:00",
+      "tier": "TIER_A",
+      "entry_odds": 2.0556,
+      "truth_confidence": 0.8667,
+      "control_decision": "ALLOW",
+      "deliverable": true,
+      "settlement_status": "HIT",
+      "realized_roi": 1.055599,
+      "realized_clv": 0.032138
+    },
+    {
+      "signal_id": "wc:wc2026_grpB_m1:HOME",
+      "match_id": "wc2026_grpB_m1",
+      "timestamp": "2026-06-18T21:00:00+00:00",
+      "tier": "TIER_A",
+      "entry_odds": 2.5587,
+      "truth_confidence": 0.8667,
+      "control_decision": "ALLOW",
+      "deliverable": true,
+      "settlement_status": "MISS",
+      "realized_roi": -1.0,
+      "realized_clv": 0.013078
+    },
+    {
+      "signal_id": "wc:wc2026_grpC_m1:AWAY",
+      "match_id": "wc2026_grpC_m1",
+      "timestamp": "2026-06-19T18:00:00+00:00",
+      "tier": "TIER_B",
+      "entry_odds": 2.0758,
+      "truth_confidence": 0.8667,
+      "control_decision": "ALLOW",
+      "deliverable": true,
+      "settlement_status": "HIT",
+      "realized_roi": 1.075775,
+      "realized_clv": 0.013923
+    },
+    {
+      "signal_id": "wc:wc2026_grpD_m1:HOME",
+      "match_id": "wc2026_grpD_m1",
+      "timestamp": "2026-06-19T21:00:00+00:00",
+      "tier": "TIER_A",
+      "entry_odds": 2.1103,
+      "truth_confidence": 0.8667,
+      "control_decision": "ALLOW",
+      "deliverable": true,
+      "settlement_status": "MISS",
+      "realized_roi": -1.0,
+      "realized_clv": 0.008936
+    }
+  ]
+}
