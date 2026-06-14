@@ -388,6 +388,16 @@ def validate(bundle: dict, second_hash: str) -> dict:
 # Telegram delivery (single operator channel)
 # ──────────────────────────────────────────────────────────────────────────────
 
+def _mask_channel(ch: str) -> str:
+    """Mask a channel id so it is never persisted in full in a committed report."""
+    if not ch:
+        return ""
+    s = str(ch)
+    if len(s) <= 4:
+        return "***"
+    return f"***{s[-4:]}"
+
+
 def deliver_personal(bundle: dict, deliver: bool) -> dict:
     """Deliver ALLOW signals to a single operator channel (real if creds present)."""
     token = os.environ.get("TELEGRAM_BOT_TOKEN", "")
@@ -425,7 +435,7 @@ def deliver_personal(bundle: dict, deliver: bool) -> dict:
             continue
         res = publisher.publish(sig, gate)
         results.append({"signal_id": sid, "published": res.published,
-                        "channel": res.channel, "dry_run": res.dry_run,
+                        "channel": _mask_channel(res.channel), "dry_run": res.dry_run,
                         "reason": res.reason})
         if res.dry_run and res.published:
             would_send += 1
@@ -440,6 +450,7 @@ def deliver_personal(bundle: dict, deliver: bool) -> dict:
         "dry_run": dry_run,
         "single_channel": True,
         "channel_configured": bool(channel),
+        "channel_masked": _mask_channel(channel),
         "allow_signals_delivered": sent,
         "allow_signals_would_send_dryrun": would_send,
         "delivery_failures": failed,
