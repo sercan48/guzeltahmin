@@ -58,18 +58,43 @@ def _team_name(db, team_id) -> str:
     return f"ID {team_id}"
 
 
-def get_todays_wc_matches(db, date_str: str) -> list[dict]:
-    """Read-only fetch of unsettled matches scheduled for `date_str`."""
+class SourceStatus:
+    """Outcome of a match-fetch attempt."""
+
+    OK = "ok"           # table exists, query ran — zero or more rows
+    NO_TABLE = "no_table"   # matches table doesn't exist in this DB
+    DB_ERROR = "db_error"   # connection or unexpected query error
+
+
+def get_todays_wc_matches(db, date_str: str) -> tuple[list[dict], str]:
+    """
+    Read-only fetch of unsettled matches scheduled for `date_str`.
+
+    Returns (rows, SourceStatus.*) so callers can distinguish:
+      OK        — data source is healthy; rows may be empty (genuinely no matches)
+      NO_TABLE  — matches table is absent (DB not initialised / wrong environment)
+      DB_ERROR  — connection or query failure
+    """
     try:
-        return db.fetchall(
+        # Check table existence first so the error is explicit, not a silent empty list.
+        if not db.table_exists("matches"):
+            logger.warning(
+                "Table 'matches' not found in DB. "
+                "Run scripts/init_db.py or scripts/update_db_wc2026.py to initialise."
+            )
+            return [], SourceStatus.NO_TABLE
+
+        rows = db.fetchall(
             "SELECT id, home_team_id, away_team_id, date, time "
             "FROM matches WHERE DATE(date) = ? AND ft_result IS NULL "
             "ORDER BY time",
             (date_str,),
         )
+        return rows, SourceStatus.OK
+
     except Exception as e:
-        logger.warning("Could not read matches for %s: %s", date_str, e)
-        return []
+        logger.error("DB error while reading matches for %s: %s", date_str, e)
+        return [], SourceStatus.DB_ERROR
 
 
 def shadow_predict(match_id: int) -> dict:
@@ -129,7 +154,7 @@ def format_match_block(db, match: dict, pred: dict) -> str:
     )
 
 
-def build_bulletin(db, matches: list[dict], date_str: str) -> str:
+def build_bulletin(db, matches: list[dict], date_str: str, source_status: str) -> str:
     header = (
         "🧪 <b>DÜNYA KUPASI — GÖLGE (SHADOW) KUPONU</b>\n"
         f"📅 {date_str}\n"
@@ -137,6 +162,23 @@ def build_bulletin(db, matches: list[dict], date_str: str) -> str:
         "Yalnızca sinyal kalitesi gözlemleniyor.</i>\n"
     )
 
+    if source_status == SourceStatus.NO_TABLE:
+        return (
+            header
+            + "\n⚠️ <b>Veri kaynağı hazır değil.</b>\n"
+            "<i>matches tablosu bu ortamda bulunamadı. "
+            "Gerçek üretim DB'sine karşı çalıştırılması gerekiyor "
+            "veya önce scripts/update_db_wc2026.py ile DB başlatılmalı.</i>"
+        )
+
+    if source_status == SourceStatus.DB_ERROR:
+        return (
+            header
+            + "\n❌ <b>Veritabanı bağlantı hatası.</b>\n"
+            "<i>Maçlar okunamadı. DB yapılandırmasını ve bağlantıyı kontrol edin.</i>"
+        )
+
+    # source_status == OK
     if not matches:
         return header + "\n📭 Bugün için planlanmış Dünya Kupası maçı bulunamadı."
 
@@ -192,9 +234,12 @@ def main() -> int:
     db = get_backend()
     db.connect()
     try:
-        matches = get_todays_wc_matches(db, args.date)
-        logger.info("Found %d match(es) for %s.", len(matches), args.date)
-        bulletin = build_bulletin(db, matches, args.date)
+        matches, source_status = get_todays_wc_matches(db, args.date)
+        logger.info(
+            "Source: %s | Found %d match(es) for %s.",
+            source_status, len(matches), args.date,
+        )
+        bulletin = build_bulletin(db, matches, args.date, source_status)
     finally:
         db.close()
 
