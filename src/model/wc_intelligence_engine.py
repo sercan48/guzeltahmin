@@ -93,6 +93,7 @@ _ELO: dict[str, float] = {
     "congo dr":           1620.0,
     "bosnia-herzegovina": 1660.0,
     "qatar":              1620.0,
+    "belgium":            1855.0,
 }
 
 _DEFAULT_ELO = 1650.0
