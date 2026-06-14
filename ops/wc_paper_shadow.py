@@ -205,39 +205,19 @@ def get_todays_wc_matches(db, date_str: str) -> tuple[list[dict], str]:
         return [], SourceStatus.DB_ERROR
 
 
-def shadow_predict(match_id: int) -> dict:
+def shadow_predict(match: dict) -> dict:
     """
-    Run the existing World Cup ensemble + calibration for a match WITHOUT any
-    database side effects (no `is_*_run` flag writes). Mirrors the
-    'preliminary' tier path of `run_tier_inference`.
+    Produce a paper-trading prediction for one match using ShadowPredictor.
+
+    Accepts a match dict (from DB or API fallback) carrying home_name /
+    away_name.  Delegates to ops.shadow_predictor — never the production
+    inference stack — so this function is safe to call alongside live jobs.
     """
-    from src.features.wc_confidence_calibrator import calibrate_confidence
-    from src.model.wc_ensemble_inference import run_ensemble_inference
-    from src.model.wc_three_tier_inference import (
-        extract_team_stats,
-        get_expected_lineups,
-    )
+    from ops.shadow_predictor import ShadowPredictor
 
-    lineups = get_expected_lineups(match_id)
-    team_a = extract_team_stats(lineups[0])
-    team_b = extract_team_stats(lineups[1])
-
-    ensemble = run_ensemble_inference(team_a, team_b)
-
-    raw_prediction = "DRAW"
-    if ensemble["home_win_prob"] > 45:
-        raw_prediction = "HOME_WIN"
-    elif ensemble["away_win_prob"] > 45:
-        raw_prediction = "AWAY_WIN"
-
-    # Shadow preliminary phase: no market delta applied.
-    calibrated = calibrate_confidence(
-        model_prediction=raw_prediction,
-        confidence_score=ensemble["confidence_score"],
-        market_delta={"home_delta": 0.0, "away_delta": 0.0},
-    )
-
-    return {**ensemble, **calibrated, "raw_prediction": raw_prediction}
+    home = match.get("home_name") or "Unknown"
+    away = match.get("away_name") or "Unknown"
+    return ShadowPredictor().predict(home, away)
 
 
 def format_match_block(db, match: dict, pred: dict) -> str:
@@ -297,7 +277,7 @@ def build_bulletin(
     blocks = []
     for m in matches:
         try:
-            pred = shadow_predict(m["id"])
+            pred = shadow_predict(m)
             blocks.append(format_match_block(db, m, pred))
         except Exception as e:
             logger.error("Prediction failed for match %s: %s", m.get("id"), e)
