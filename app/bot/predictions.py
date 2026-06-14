@@ -722,6 +722,9 @@ async def schedule_predictions(app):
     # 10:30 TR — Free channel: single best pick
     job_queue.run_daily(free_daily_pick_job, time=dt_time(10, 30, tzinfo=TZ_TR), name="free_daily_pick")
 
+    # 17:00 TR — WC shadow delivery: personal channel paper-trading bulletin (DB + API fallback)
+    job_queue.run_daily(wc_shadow_delivery_job, time=dt_time(17, 0, tzinfo=TZ_TR), name="wc_shadow")
+
     # 18:00 TR — Free channel: evening news
     job_queue.run_daily(daily_news_job, time=dt_time(18, 0, tzinfo=TZ_TR), name="daily_news_evening")
 
@@ -740,8 +743,8 @@ async def schedule_predictions(app):
     logger.info(
         "Scheduled jobs (TR time): "
         "08:00 DB sync, 08:30 pipeline, 09:00 results, 09:30 news morning, "
-        "10:00 premium, 10:30 free pick, 18:00 news evening, 18:30 WC prelim, "
-        "22:00 WC scheduler, 23:00 WC night, 23:30 self-learning"
+        "10:00 premium, 10:30 free pick, 17:00 WC shadow, 18:00 news evening, "
+        "18:30 WC prelim, 22:00 WC scheduler, 23:00 WC night, 23:30 self-learning"
     )
 async def daily_news_job(context: ContextTypes.DEFAULT_TYPE):
     """Runs periodically to post daily football news to the free channel, funneling users to VIP."""
@@ -771,6 +774,59 @@ async def daily_news_job(context: ContextTypes.DEFAULT_TYPE):
                         logger.error(f"Failed to send alert to admin {admin_id}: {admin_err}")
     except Exception as e:
         logger.error(f"Error sending news bulletin: {e}")
+
+async def wc_shadow_delivery_job(context: ContextTypes.DEFAULT_TYPE):
+    """
+    Runs daily at 17:00 TR.
+    Fetches today's WC matches (DB first, then football-data.org → API-Football fallback)
+    and posts a paper-trading / shadow bulletin to the personal channel.
+    No real bets — observation only (Phase 11 shadow mode).
+    """
+    import os
+    from ops.wc_paper_shadow import (
+        SourceStatus,
+        build_bulletin,
+        fetch_wc_matches_from_api,
+        get_todays_wc_matches,
+    )
+
+    personal_channel = os.getenv("TELEGRAM_PERSONAL_CHANNEL", "").strip()
+    if not personal_channel:
+        logger.warning("wc_shadow_delivery_job: TELEGRAM_PERSONAL_CHANNEL not set, skipping.")
+        return
+
+    date_str = datetime.now().strftime("%Y-%m-%d")
+    db = get_backend()
+    db.connect()
+    try:
+        matches, source_status = get_todays_wc_matches(db, date_str)
+        data_source_label = "DB"
+
+        needs_api = source_status in (SourceStatus.NO_TABLE, SourceStatus.DB_ERROR) or (
+            source_status == SourceStatus.OK and not matches
+        )
+        if needs_api:
+            api_matches, api_source = fetch_wc_matches_from_api(date_str)
+            if api_source:
+                matches = api_matches
+                source_status = SourceStatus.OK
+                data_source_label = api_source
+
+        bulletin = build_bulletin(db, matches, date_str, source_status, data_source_label)
+    except Exception as e:
+        logger.error("wc_shadow_delivery_job error: %s", e)
+        return
+    finally:
+        db.close()
+
+    await context.bot.send_message(
+        chat_id=personal_channel,
+        text=bulletin,
+        parse_mode="HTML",
+        disable_web_page_preview=True,
+    )
+    logger.info("WC shadow bulletin sent to personal channel (%s).", personal_channel)
+
 
 async def wc_preliminary_job(context: ContextTypes.DEFAULT_TYPE):
     """Runs at 18:30 to send preliminary predictions for tomorrow's early AM matches."""
