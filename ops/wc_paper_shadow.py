@@ -46,7 +46,7 @@ def _pick_label(prediction: str) -> str:
 
 
 def _team_name(db, team_id) -> str:
-    """Resolve a team name; fall back to the raw id if unavailable."""
+    """Resolve a team name from DB; fall back to the raw id if unavailable."""
     if team_id is None:
         return "?"
     try:
@@ -56,6 +56,114 @@ def _team_name(db, team_id) -> str:
     except Exception:
         pass
     return f"ID {team_id}"
+
+
+# ---------------------------------------------------------------------------
+# API fallback helpers
+# ---------------------------------------------------------------------------
+
+def _fetch_football_data_org(date_str: str):
+    """
+    Fetch WC fixtures from football-data.org free tier.
+    Returns list of match dicts on success (may be empty), None on failure.
+    """
+    import requests
+    from config.settings import FOOTBALL_DATA_ORG_KEY
+
+    headers = {"X-Auth-Token": FOOTBALL_DATA_ORG_KEY} if FOOTBALL_DATA_ORG_KEY else {}
+    try:
+        resp = requests.get(
+            "https://api.football-data.org/v4/competitions/WC/matches",
+            params={"dateFrom": date_str, "dateTo": date_str},
+            headers=headers,
+            timeout=15,
+        )
+        if resp.status_code == 403:
+            logger.warning("football-data.org 403 — WC may require a paid-tier key")
+            return None
+        if resp.status_code != 200:
+            logger.warning("football-data.org HTTP %d", resp.status_code)
+            return None
+
+        skip = {"FINISHED", "AWARDED", "POSTPONED", "CANCELLED"}
+        matches = []
+        for m in resp.json().get("matches", []):
+            if m.get("status") in skip:
+                continue
+            utc = m.get("utcDate", "")
+            matches.append({
+                "id": m["id"],
+                "home_name": m.get("homeTeam", {}).get("name", "?"),
+                "away_name": m.get("awayTeam", {}).get("name", "?"),
+                "time": (utc[11:16] + " UTC") if len(utc) >= 16 else "—",
+                "date": date_str,
+            })
+        logger.info("football-data.org: %d match(es) on %s", len(matches), date_str)
+        return matches
+    except Exception as e:
+        logger.warning("football-data.org fetch failed: %s", e)
+        return None
+
+
+def _fetch_api_football(date_str: str):
+    """
+    Fetch WC 2026 fixtures from API-Football (league 1).
+    Returns list of match dicts on success (may be empty), None on failure.
+    """
+    import requests
+    from config.settings import API_FOOTBALL_KEY
+
+    if not API_FOOTBALL_KEY:
+        logger.info("API_FOOTBALL_KEY not set — skipping API-Football fallback")
+        return None
+    try:
+        resp = requests.get(
+            "https://v3.football.api-sports.io/fixtures",
+            params={"league": "1", "season": "2026", "date": date_str},
+            headers={
+                "x-rapidapi-host": "v3.football.api-sports.io",
+                "x-rapidapi-key": API_FOOTBALL_KEY,
+            },
+            timeout=15,
+        )
+        if resp.status_code != 200:
+            logger.warning("API-Football HTTP %d", resp.status_code)
+            return None
+
+        skip = {"FT", "AET", "PEN", "PST", "CANC", "ABD"}
+        matches = []
+        for f in resp.json().get("response", []):
+            if f.get("fixture", {}).get("status", {}).get("short") in skip:
+                continue
+            fixture_date = f.get("fixture", {}).get("date", "")
+            matches.append({
+                "id": f["fixture"]["id"],
+                "home_name": f.get("teams", {}).get("home", {}).get("name", "?"),
+                "away_name": f.get("teams", {}).get("away", {}).get("name", "?"),
+                "time": (fixture_date[11:16] + " UTC") if len(fixture_date) >= 16 else "—",
+                "date": date_str,
+            })
+        logger.info("API-Football: %d match(es) on %s", len(matches), date_str)
+        return matches
+    except Exception as e:
+        logger.warning("API-Football fetch failed: %s", e)
+        return None
+
+
+def fetch_wc_matches_from_api(date_str: str) -> tuple[list[dict], str]:
+    """
+    Try external APIs in order: football-data.org → API-Football.
+    Returns (matches, source_label). source_label is empty string if all sources failed.
+    """
+    result = _fetch_football_data_org(date_str)
+    if result is not None:
+        return result, "football-data.org"
+
+    result = _fetch_api_football(date_str)
+    if result is not None:
+        return result, "API-Football"
+
+    return [], ""
 
 
 class SourceStatus:
@@ -133,8 +241,9 @@ def shadow_predict(match_id: int) -> dict:
 
 
 def format_match_block(db, match: dict, pred: dict) -> str:
-    home = _team_name(db, match.get("home_team_id"))
-    away = _team_name(db, match.get("away_team_id"))
+    # API-sourced matches carry pre-resolved names; DB matches need a lookup.
+    home = match.get("home_name") or _team_name(db, match.get("home_team_id"))
+    away = match.get("away_name") or _team_name(db, match.get("away_team_id"))
     kickoff = match.get("time") or "—"
 
     if pred.get("is_no_bet"):
@@ -154,10 +263,13 @@ def format_match_block(db, match: dict, pred: dict) -> str:
     )
 
 
-def build_bulletin(db, matches: list[dict], date_str: str, source_status: str) -> str:
+def build_bulletin(
+    db, matches: list[dict], date_str: str, source_status: str, data_source_label: str = ""
+) -> str:
+    source_note = f" · Veri: {data_source_label}" if data_source_label else ""
     header = (
         "🧪 <b>DÜNYA KUPASI — GÖLGE (SHADOW) KUPONU</b>\n"
-        f"📅 {date_str}\n"
+        f"📅 {date_str}{source_note}\n"
         "<i>Kağıt üzerinde (paper) takip — gerçek bahis YOK. "
         "Yalnızca sinyal kalitesi gözlemleniyor.</i>\n"
     )
@@ -235,11 +347,33 @@ def main() -> int:
     db.connect()
     try:
         matches, source_status = get_todays_wc_matches(db, args.date)
+        data_source_label = "DB"
         logger.info(
-            "Source: %s | Found %d match(es) for %s.",
+            "DB source: %s | %d match(es) for %s.",
             source_status, len(matches), args.date,
         )
-        bulletin = build_bulletin(db, matches, args.date, source_status)
+
+        # Fall back to external API when DB is unusable OR has no matches today.
+        needs_api = source_status in (SourceStatus.NO_TABLE, SourceStatus.DB_ERROR) or (
+            source_status == SourceStatus.OK and not matches
+        )
+        if needs_api:
+            reason = "no matches in DB" if source_status == SourceStatus.OK else source_status
+            logger.info("Trying API fallback (%s)...", reason)
+            api_matches, api_source = fetch_wc_matches_from_api(args.date)
+            if api_source:  # at least one API responded (may still be 0 matches)
+                matches = api_matches
+                source_status = SourceStatus.OK
+                data_source_label = api_source
+                logger.info(
+                    "API fallback succeeded: %d match(es) from %s",
+                    len(api_matches), api_source,
+                )
+            else:
+                data_source_label = ""
+                logger.warning("All API fallbacks failed — keeping original source status.")
+
+        bulletin = build_bulletin(db, matches, args.date, source_status, data_source_label)
     finally:
         db.close()
 
