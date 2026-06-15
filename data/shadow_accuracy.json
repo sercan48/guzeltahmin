@@ -1,0 +1,84 @@
+{
+  "generated_at": "2026-06-15T08:29:26.439950+00:00",
+  "n_settled": 12,
+  "n_correct": 8,
+  "overall_accuracy_pct": 66.67,
+  "log_loss": 0.97064,
+  "n_draws_predicted": 0,
+  "n_draws_actual": 4,
+  "draw_rate_predicted": 21.067,
+  "draw_rate_actual": 33.333,
+  "draw_rate_bias": null,
+  "draw_bias_available": false,
+  "confusion_matrix": {
+    "HOME_WIN": {
+      "HOME_WIN": 7,
+      "DRAW": 3,
+      "AWAY_WIN": 0
+    },
+    "DRAW": {
+      "HOME_WIN": 0,
+      "DRAW": 0,
+      "AWAY_WIN": 0
+    },
+    "AWAY_WIN": {
+      "HOME_WIN": 0,
+      "DRAW": 1,
+      "AWAY_WIN": 1
+    }
+  },
+  "by_tier": {
+    "TIER_A": {
+      "n": 2,
+      "correct": 1,
+      "accuracy": 50.0
+    },
+    "TIER_B": {
+      "n": 7,
+      "correct": 4,
+      "accuracy": 57.14
+    },
+    "TIER_C": {
+      "n": 3,
+      "correct": 3,
+      "accuracy": 100.0
+    }
+  },
+  "by_confidence_band": {
+    "90-92": {
+      "n": 0,
+      "mean_conf": null,
+      "correct": 0,
+      "accuracy": null
+    },
+    "70-89": {
+      "n": 2,
+      "mean_conf": 76.25,
+      "correct": 1,
+      "accuracy": 50.0
+    },
+    "50-69": {
+      "n": 6,
+      "mean_conf": 57.42,
+      "correct": 3,
+      "accuracy": 50.0
+    },
+    "30-49": {
+      "n": 4,
+      "mean_conf": 36.12,
+      "correct": 4,
+      "accuracy": 100.0
+    }
+  },
+  "rolling_7d": {
+    "n": 12,
+    "accuracy": 66.67,
+    "cutoff": "2026-06-08"
+  },
+  "brier_score": null,
+  "brier_available": false,
+  "ece": null,
+  "ece_available": false,
+  "reliability_bins": [],
+  "flags": []
+}
