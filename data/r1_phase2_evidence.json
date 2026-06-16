@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-16T07:23:35.928122+00:00",
+  "generated_at": "2026-06-16T11:59:45.138639+00:00",
   "work_package": "R-1 Phase 2 \u2014 Evidence Collection Only",
   "roadmap_phase": "SHADOW_HARDENING",
   "n_settled": 16,
@@ -271,5 +271,13 @@
     "accuracy_not_materially_degraded": false
   },
   "verdict": "NEED_MORE_DATA",
-  "verdict_reason": "n_settled=16 has not yet reached the first formal checkpoint (n>=20). Per task instructions, no APPROVE/REJECT determination is made below n=20."
+  "verdict_reason": "n_settled=16 has not yet reached the first formal checkpoint (n>=20). Per task instructions, no APPROVE/REJECT determination is made below n=20.",
+  "class_diversity": {
+    "insample_collapsed": true,
+    "insample_detail": "1 distinct predicted classes, top class DRAW=100.0%",
+    "loocv_collapsed": true,
+    "loocv_detail": "2 distinct predicted classes, top class DRAW=93.8%"
+  },
+  "final_classification": "NEED_MORE_DATA",
+  "final_classification_reason": "n_settled=16 has not yet reached the first formal checkpoint (n>=20)."
 }

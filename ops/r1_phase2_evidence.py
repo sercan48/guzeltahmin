@@ -291,6 +291,65 @@ def run_evidence() -> dict:
             f"in SHADOW_HARDENING."
         )
 
+    # ── class-diversity collapse check (out-of-sample AND in-sample) ──
+    # "does not collapse class diversity": flags the degenerate case where
+    # isotonic_draw predicts the same single outcome for (almost) every
+    # fixture, regardless of whether that happens to read well on accuracy.
+    def _diversity_collapse(rows: list[dict]) -> tuple[bool, str]:
+        from collections import Counter
+        counts = Counter(r["predicted_outcome"] for r in rows)
+        m = len(rows)
+        distinct = len(counts)
+        max_label, max_count = counts.most_common(1)[0]
+        max_share = max_count / m
+        collapsed = distinct < 2 or max_share >= 0.9
+        detail = f"{distinct} distinct predicted classes, top class {max_label}={max_share*100:.1f}%"
+        return collapsed, detail
+
+    insample_collapsed, insample_collapse_detail = _diversity_collapse(after_rows)
+    loocv_collapsed, loocv_collapse_detail = _diversity_collapse(loocv_rows)
+    any_diversity_collapse = insample_collapsed or loocv_collapsed
+
+    # ── final classification (per current task spec) ──
+    # A) CALIBRATION_REQUIRED      — recommend switching default away from identity
+    # B) CALIBRATION_NOT_REQUIRED  — checkpoint reached, calibration does not clear the bar
+    # C) NEED_MORE_DATA            — checkpoint not yet reached
+    oos_brier_improves = loocv_metrics["brier_score"] < before_metrics["brier_score"]
+    oos_ece_improves = (
+        loocv_metrics["ece"] is not None and before_metrics["ece"] is not None
+        and loocv_metrics["ece"] < before_metrics["ece"]
+    )
+    if checkpoint_reached is None:
+        final_classification = "NEED_MORE_DATA"
+        final_classification_reason = (
+            f"n_settled={n} has not yet reached the first formal checkpoint (n>=20)."
+        )
+    elif oos_brier_improves and oos_ece_improves and not any_diversity_collapse:
+        final_classification = "CALIBRATION_REQUIRED"
+        final_classification_reason = (
+            f"At checkpoint n>={checkpoint_reached}: out-of-sample (LOOCV) Brier improves "
+            f"({before_metrics['brier_score']:.5f} -> {loocv_metrics['brier_score']:.5f}) AND "
+            f"out-of-sample ECE improves ({before_metrics['ece']:.5f} -> {loocv_metrics['ece']:.5f}) "
+            f"AND class diversity is preserved ({loocv_collapse_detail})."
+        )
+    else:
+        final_classification = "CALIBRATION_NOT_REQUIRED"
+        reasons = []
+        if not oos_brier_improves:
+            reasons.append(f"out-of-sample Brier did not improve ({before_metrics['brier_score']:.5f} -> {loocv_metrics['brier_score']:.5f})")
+        if not oos_ece_improves:
+            ece_b = before_metrics["ece"]
+            ece_l = loocv_metrics["ece"]
+            reasons.append(f"out-of-sample ECE did not improve ({ece_b} -> {ece_l})")
+        if any_diversity_collapse:
+            which = "in-sample" if insample_collapsed else "LOOCV"
+            detail = insample_collapse_detail if insample_collapsed else loocv_collapse_detail
+            reasons.append(f"class diversity collapsed ({which}: {detail})")
+        final_classification_reason = (
+            f"At checkpoint n>={checkpoint_reached}: " + "; ".join(reasons) + ". "
+            f"calibration_mode remains \"identity\"; system remains in SHADOW_HARDENING."
+        )
+
     # ── protected-file hash check (read-only confirmation) ──
     hashes = {
         "shadow_predictions.jsonl": _sha256_file(PRED_LOG),
@@ -325,6 +384,14 @@ def run_evidence() -> dict:
         "approval_requirements": requirements,
         "verdict": verdict,
         "verdict_reason": verdict_reason,
+        "class_diversity": {
+            "insample_collapsed": insample_collapsed,
+            "insample_detail": insample_collapse_detail,
+            "loocv_collapsed": loocv_collapsed,
+            "loocv_detail": loocv_collapse_detail,
+        },
+        "final_classification": final_classification,
+        "final_classification_reason": final_classification_reason,
     }
 
 
@@ -449,16 +516,38 @@ def generate_report(result: dict) -> str:
     A("*below n=20 — see verdict below.*")
     A("")
 
-    A("## 6. VERDICT")
+    A("## 6. VERDICT (legacy 4-requirement gate, retained for audit continuity)")
     A(f"### **{result['verdict']}**")
     A("")
     A(result["verdict_reason"])
     A("")
+
+    cd = result["class_diversity"]
+    A("## 7. FINAL CLASSIFICATION")
+    A("Per current task spec: recommend calibration only if it improves BOTH "
+      "out-of-sample Brier Score AND out-of-sample ECE, AND does not collapse "
+      "class diversity.")
+    A("```")
+    A(f"Out-of-sample (LOOCV) Brier improves : {'YES' if lo['brier_score'] < b['brier_score'] else 'NO'}  "
+      f"(identity={b['brier_score']:.5f}, LOOCV={lo['brier_score']:.5f})")
+    ece_line = (f"(identity={b['ece']:.5f}, LOOCV={lo['ece']:.5f})"
+                if b['ece'] is not None and lo['ece'] is not None else "(n<20 — ECE not yet computable)")
+    ece_improves = b['ece'] is not None and lo['ece'] is not None and lo['ece'] < b['ece']
+    A(f"Out-of-sample (LOOCV) ECE improves   : {'YES' if ece_improves else 'NO'}  {ece_line}")
+    A(f"Class diversity preserved (in-samp)  : {'NO — COLLAPSED' if cd['insample_collapsed'] else 'YES'}  ({cd['insample_detail']})")
+    A(f"Class diversity preserved (LOOCV)    : {'NO — COLLAPSED' if cd['loocv_collapsed'] else 'YES'}  ({cd['loocv_detail']})")
+    A("```")
+    A(f"### **{result['final_classification']}**")
+    A("")
+    A(result["final_classification_reason"])
+    A("")
     A("**Action:** `calibration_mode` remains `\"identity\"` in the live pipeline (no change). "
-      "System remains in **SHADOW_HARDENING**. No PAPER-phase transition.")
+      "System remains in **SHADOW_HARDENING**. No PAPER-phase transition. No isotonic "
+      "regression, probability generation, confidence scoring, or Poisson/Elo/GBM changes "
+      "were made.")
     A("")
 
-    A("## 7. PROTECTED-FILE INTEGRITY (read-only confirmation)")
+    A("## 8. PROTECTED-FILE INTEGRITY (read-only confirmation)")
     A("```")
     for fname, h in result["protected_file_hashes"].items():
         A(f"{fname:<42} {h}")
