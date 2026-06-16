@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-16T11:59:45.138639+00:00",
+  "generated_at": "2026-06-16T12:03:01.201669+00:00",
   "work_package": "R-1 Phase 2 \u2014 Evidence Collection Only",
   "roadmap_phase": "SHADOW_HARDENING",
   "n_settled": 16,
@@ -274,10 +274,57 @@
   "verdict_reason": "n_settled=16 has not yet reached the first formal checkpoint (n>=20). Per task instructions, no APPROVE/REJECT determination is made below n=20.",
   "class_diversity": {
     "insample_collapsed": true,
-    "insample_detail": "1 distinct predicted classes, top class DRAW=100.0%",
-    "loocv_collapsed": true,
-    "loocv_detail": "2 distinct predicted classes, top class DRAW=93.8%"
+    "insample_detail": "1 distinct predicted classes, shares={'HOME_WIN': 0.0, 'DRAW': 100.0, 'AWAY_WIN': 0.0}",
+    "loocv_collapsed": false,
+    "loocv_detail": "2 distinct predicted classes, shares={'HOME_WIN': 6.25, 'DRAW': 93.75, 'AWAY_WIN': 0.0}"
   },
+  "class_distribution": {
+    "identity": {
+      "counts": {
+        "HOME_WIN": 13,
+        "DRAW": 0,
+        "AWAY_WIN": 3
+      },
+      "shares_pct": {
+        "HOME_WIN": 81.25,
+        "DRAW": 0.0,
+        "AWAY_WIN": 18.75
+      },
+      "distinct_classes": 2
+    },
+    "after_insample": {
+      "counts": {
+        "HOME_WIN": 0,
+        "DRAW": 16,
+        "AWAY_WIN": 0
+      },
+      "shares_pct": {
+        "HOME_WIN": 0.0,
+        "DRAW": 100.0,
+        "AWAY_WIN": 0.0
+      },
+      "distinct_classes": 1
+    },
+    "after_loocv": {
+      "counts": {
+        "HOME_WIN": 1,
+        "DRAW": 15,
+        "AWAY_WIN": 0
+      },
+      "shares_pct": {
+        "HOME_WIN": 6.25,
+        "DRAW": 93.75,
+        "AWAY_WIN": 0.0
+      },
+      "distinct_classes": 2
+    }
+  },
+  "diversity_ratio_loocv": 1.0,
+  "draw_share_loocv_pct": 93.75,
+  "auto_reject_reasons": [
+    "DRAW share of LOOCV predictions (93.8%) exceeds 70%",
+    "out-of-sample ECE did not improve (None -> None)"
+  ],
   "final_classification": "NEED_MORE_DATA",
   "final_classification_reason": "n_settled=16 has not yet reached the first formal checkpoint (n>=20)."
 }

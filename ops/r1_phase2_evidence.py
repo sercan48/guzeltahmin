@@ -291,64 +291,94 @@ def run_evidence() -> dict:
             f"in SHADOW_HARDENING."
         )
 
-    # ── class-diversity collapse check (out-of-sample AND in-sample) ──
-    # "does not collapse class diversity": flags the degenerate case where
-    # isotonic_draw predicts the same single outcome for (almost) every
-    # fixture, regardless of whether that happens to read well on accuracy.
-    def _diversity_collapse(rows: list[dict]) -> tuple[bool, str]:
+    # ── class distribution / diversity ratio / draw share (LOOCV vs identity) ──
+    # Step 3+4 of the checkpoint protocol: compare identity vs isotonic using
+    # LOOCV (out-of-sample) only, and report class distribution + diversity
+    # ratio + draw-rate bias explicitly (not folded into a generic collapse
+    # heuristic), so the automatic rejection rules below are auditable
+    # against these exact numbers.
+    def _class_distribution(rows: list[dict]) -> dict:
         from collections import Counter
         counts = Counter(r["predicted_outcome"] for r in rows)
         m = len(rows)
-        distinct = len(counts)
-        max_label, max_count = counts.most_common(1)[0]
-        max_share = max_count / m
-        collapsed = distinct < 2 or max_share >= 0.9
-        detail = f"{distinct} distinct predicted classes, top class {max_label}={max_share*100:.1f}%"
-        return collapsed, detail
+        return {
+            "counts": {o: counts.get(o, 0) for o in OUTCOMES},
+            "shares_pct": {o: round(counts.get(o, 0) / m * 100, 2) for o in OUTCOMES},
+            "distinct_classes": len([o for o in OUTCOMES if counts.get(o, 0) > 0]),
+        }
 
-    insample_collapsed, insample_collapse_detail = _diversity_collapse(after_rows)
-    loocv_collapsed, loocv_collapse_detail = _diversity_collapse(loocv_rows)
-    any_diversity_collapse = insample_collapsed or loocv_collapsed
+    dist_identity = _class_distribution(before_rows)
+    dist_insample = _class_distribution(after_rows)
+    dist_loocv = _class_distribution(loocv_rows)
 
-    # ── final classification (per current task spec) ──
-    # A) CALIBRATION_REQUIRED      — recommend switching default away from identity
-    # B) CALIBRATION_NOT_REQUIRED  — checkpoint reached, calibration does not clear the bar
-    # C) NEED_MORE_DATA            — checkpoint not yet reached
+    diversity_ratio_loocv = (
+        dist_loocv["distinct_classes"] / dist_identity["distinct_classes"]
+        if dist_identity["distinct_classes"] > 0 else 0.0
+    )
+    draw_share_loocv = dist_loocv["shares_pct"]["DRAW"] / 100.0
+
     oos_brier_improves = loocv_metrics["brier_score"] < before_metrics["brier_score"]
     oos_ece_improves = (
         loocv_metrics["ece"] is not None and before_metrics["ece"] is not None
         and loocv_metrics["ece"] < before_metrics["ece"]
     )
+
+    # ── automatic rejection rules (per current checkpoint protocol, step 5) ──
+    auto_reject_reasons = []
+    if diversity_ratio_loocv < 0.5:
+        auto_reject_reasons.append(
+            f"predicted class diversity ({dist_loocv['distinct_classes']} distinct classes, "
+            f"LOOCV) dropped below 50% of identity's ({dist_identity['distinct_classes']} "
+            f"distinct classes) — ratio={diversity_ratio_loocv:.2f}"
+        )
+    if draw_share_loocv > 0.70:
+        auto_reject_reasons.append(
+            f"DRAW share of LOOCV predictions ({draw_share_loocv*100:.1f}%) exceeds 70%"
+        )
+    if not oos_ece_improves:
+        ece_b, ece_l = before_metrics["ece"], loocv_metrics["ece"]
+        auto_reject_reasons.append(f"out-of-sample ECE did not improve ({ece_b} -> {ece_l})")
+    if not oos_brier_improves:
+        auto_reject_reasons.append(
+            f"out-of-sample Brier did not improve "
+            f"({before_metrics['brier_score']:.5f} -> {loocv_metrics['brier_score']:.5f})"
+        )
+
+    # ── final classification ──
+    # CALIBRATION_REQUIRED      — checkpoint reached, none of the automatic
+    #                              rejection rules triggered
+    # CALIBRATION_NOT_REQUIRED  — checkpoint reached, at least one rejection
+    #                              rule triggered (auto-rejected)
+    # NEED_MORE_DATA            — checkpoint not yet reached
     if checkpoint_reached is None:
         final_classification = "NEED_MORE_DATA"
         final_classification_reason = (
             f"n_settled={n} has not yet reached the first formal checkpoint (n>=20)."
         )
-    elif oos_brier_improves and oos_ece_improves and not any_diversity_collapse:
+    elif not auto_reject_reasons:
         final_classification = "CALIBRATION_REQUIRED"
         final_classification_reason = (
-            f"At checkpoint n>={checkpoint_reached}: out-of-sample (LOOCV) Brier improves "
-            f"({before_metrics['brier_score']:.5f} -> {loocv_metrics['brier_score']:.5f}) AND "
-            f"out-of-sample ECE improves ({before_metrics['ece']:.5f} -> {loocv_metrics['ece']:.5f}) "
-            f"AND class diversity is preserved ({loocv_collapse_detail})."
+            f"At checkpoint n>={checkpoint_reached}: none of the automatic rejection rules "
+            f"triggered (diversity_ratio={diversity_ratio_loocv:.2f}, "
+            f"draw_share={draw_share_loocv*100:.1f}%, ECE and Brier both improved out-of-sample)."
         )
     else:
         final_classification = "CALIBRATION_NOT_REQUIRED"
-        reasons = []
-        if not oos_brier_improves:
-            reasons.append(f"out-of-sample Brier did not improve ({before_metrics['brier_score']:.5f} -> {loocv_metrics['brier_score']:.5f})")
-        if not oos_ece_improves:
-            ece_b = before_metrics["ece"]
-            ece_l = loocv_metrics["ece"]
-            reasons.append(f"out-of-sample ECE did not improve ({ece_b} -> {ece_l})")
-        if any_diversity_collapse:
-            which = "in-sample" if insample_collapsed else "LOOCV"
-            detail = insample_collapse_detail if insample_collapsed else loocv_collapse_detail
-            reasons.append(f"class diversity collapsed ({which}: {detail})")
         final_classification_reason = (
-            f"At checkpoint n>={checkpoint_reached}: " + "; ".join(reasons) + ". "
+            f"At checkpoint n>={checkpoint_reached}, auto-rejected: "
+            + "; ".join(auto_reject_reasons) + ". "
             f"calibration_mode remains \"identity\"; system remains in SHADOW_HARDENING."
         )
+
+    # kept for the report's class-diversity section
+    insample_collapsed = dist_insample["distinct_classes"] < 2
+    loocv_collapsed = dist_loocv["distinct_classes"] < 2
+    insample_collapse_detail = (
+        f"{dist_insample['distinct_classes']} distinct predicted classes, shares={dist_insample['shares_pct']}"
+    )
+    loocv_collapse_detail = (
+        f"{dist_loocv['distinct_classes']} distinct predicted classes, shares={dist_loocv['shares_pct']}"
+    )
 
     # ── protected-file hash check (read-only confirmation) ──
     hashes = {
@@ -390,6 +420,14 @@ def run_evidence() -> dict:
             "loocv_collapsed": loocv_collapsed,
             "loocv_detail": loocv_collapse_detail,
         },
+        "class_distribution": {
+            "identity": dist_identity,
+            "after_insample": dist_insample,
+            "after_loocv": dist_loocv,
+        },
+        "diversity_ratio_loocv": round(diversity_ratio_loocv, 3),
+        "draw_share_loocv_pct": round(draw_share_loocv * 100, 2),
+        "auto_reject_reasons": auto_reject_reasons,
         "final_classification": final_classification,
         "final_classification_reason": final_classification_reason,
     }
@@ -522,21 +560,59 @@ def generate_report(result: dict) -> str:
     A(result["verdict_reason"])
     A("")
 
-    cd = result["class_diversity"]
-    A("## 7. FINAL CLASSIFICATION")
-    A("Per current task spec: recommend calibration only if it improves BOTH "
-      "out-of-sample Brier Score AND out-of-sample ECE, AND does not collapse "
-      "class diversity.")
+    dd = result["class_distribution"]
+    A("## 7. CLASS DISTRIBUTION (identity vs isotonic, LOOCV out-of-sample)")
     A("```")
-    A(f"Out-of-sample (LOOCV) Brier improves : {'YES' if lo['brier_score'] < b['brier_score'] else 'NO'}  "
-      f"(identity={b['brier_score']:.5f}, LOOCV={lo['brier_score']:.5f})")
-    ece_line = (f"(identity={b['ece']:.5f}, LOOCV={lo['ece']:.5f})"
-                if b['ece'] is not None and lo['ece'] is not None else "(n<20 — ECE not yet computable)")
+    A(f"{'Outcome':<12}{'Identity':>12}{'Isotonic(in-s)':>16}{'Isotonic(LOOCV)':>17}")
+    for o in OUTCOMES:
+        A(f"{o:<12}{dd['identity']['shares_pct'][o]:>11.1f}%{dd['after_insample']['shares_pct'][o]:>15.1f}%{dd['after_loocv']['shares_pct'][o]:>16.1f}%")
+    A(f"{'distinct':<12}{dd['identity']['distinct_classes']:>12}{dd['after_insample']['distinct_classes']:>16}{dd['after_loocv']['distinct_classes']:>17}")
+    A("```")
+    A(f"Diversity ratio (LOOCV distinct / identity distinct): **{result['diversity_ratio_loocv']:.2f}**  ")
+    A(f"DRAW share of LOOCV predictions: **{result['draw_share_loocv_pct']:.1f}%**  ")
+    A(f"Draw-rate bias — identity: {b['draw_bias_pp']:+.2f}pp ({b['draw_bias_classification']})  "
+      f"vs isotonic LOOCV: {lo['draw_bias_pp']:+.2f}pp ({lo['draw_bias_classification']})")
+    A("")
+
+    A("## 8. CALIBRATION CURVES (reliability bins, gated n>=20)")
+    if b["reliability_bins"]:
+        A("```")
+        A(f"{'Conf band':<10}{'n(id)':>7}{'acc(id)':>10}{'n(loocv)':>10}{'acc(loocv)':>12}")
+        loocv_bins_by_band = {rb["band"]: rb for rb in lo["reliability_bins"]}
+        for rb in b["reliability_bins"]:
+            lrb = loocv_bins_by_band.get(rb["band"], {})
+            acc_id = f"{rb['accuracy']:.1f}%" if rb["accuracy"] is not None else "n/a"
+            acc_lo = f"{lrb.get('accuracy'):.1f}%" if lrb.get("accuracy") is not None else "n/a"
+            A(f"{rb['band']:<10}{rb['n']:>7}{acc_id:>10}{lrb.get('n', 0):>10}{acc_lo:>12}")
+        A("```")
+        A("Perfect calibration would show acc(band) == mean-confidence-of-band; large gaps "
+          "indicate over/under-confidence within that band.")
+    else:
+        A(f"STUB(n<20) — calibration curves require n>=20 settled fixtures; n={n} currently.")
+    A("")
+
+    A("## 9. AUTOMATIC REJECTION CHECK")
+    A("Per checkpoint protocol, isotonic is auto-rejected if ANY of:")
+    A("```")
+    A(f"diversity_ratio < 0.50                : {'TRIGGERED' if result['diversity_ratio_loocv'] < 0.5 else 'clear'}  (ratio={result['diversity_ratio_loocv']:.2f})")
+    A(f"DRAW share (LOOCV) > 70%               : {'TRIGGERED' if result['draw_share_loocv_pct'] > 70 else 'clear'}  ({result['draw_share_loocv_pct']:.1f}%)")
+    ece_b_str = f"{b['ece']:.5f}" if b['ece'] is not None else "STUB(n<20)"
+    ece_l_str = f"{lo['ece']:.5f}" if lo['ece'] is not None else "STUB(n<20)"
     ece_improves = b['ece'] is not None and lo['ece'] is not None and lo['ece'] < b['ece']
-    A(f"Out-of-sample (LOOCV) ECE improves   : {'YES' if ece_improves else 'NO'}  {ece_line}")
-    A(f"Class diversity preserved (in-samp)  : {'NO — COLLAPSED' if cd['insample_collapsed'] else 'YES'}  ({cd['insample_detail']})")
-    A(f"Class diversity preserved (LOOCV)    : {'NO — COLLAPSED' if cd['loocv_collapsed'] else 'YES'}  ({cd['loocv_detail']})")
+    A(f"ECE does not improve (out-of-sample)   : {'TRIGGERED' if not ece_improves else 'clear'}  (identity={ece_b_str}, LOOCV={ece_l_str})")
+    brier_improves = lo['brier_score'] < b['brier_score']
+    A(f"Brier does not improve (out-of-sample) : {'TRIGGERED' if not brier_improves else 'clear'}  (identity={b['brier_score']:.5f}, LOOCV={lo['brier_score']:.5f})")
     A("```")
+    if result["auto_reject_reasons"]:
+        A("Triggered reasons:")
+        for reason in result["auto_reject_reasons"]:
+            A(f"- {reason}")
+    else:
+        A("No automatic rejection rule triggered." if result["checkpoint_reached"] else
+          "Not evaluated — checkpoint n>=20 not yet reached.")
+    A("")
+
+    A("## 10. FINAL CLASSIFICATION")
     A(f"### **{result['final_classification']}**")
     A("")
     A(result["final_classification_reason"])
@@ -547,7 +623,7 @@ def generate_report(result: dict) -> str:
       "were made.")
     A("")
 
-    A("## 8. PROTECTED-FILE INTEGRITY (read-only confirmation)")
+    A("## 11. PROTECTED-FILE INTEGRITY (read-only confirmation)")
     A("```")
     for fname, h in result["protected_file_hashes"].items():
         A(f"{fname:<42} {h}")
