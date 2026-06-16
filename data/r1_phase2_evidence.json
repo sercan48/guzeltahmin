@@ -1,0 +1,275 @@
+{
+  "generated_at": "2026-06-16T07:23:35.928122+00:00",
+  "work_package": "R-1 Phase 2 \u2014 Evidence Collection Only",
+  "roadmap_phase": "SHADOW_HARDENING",
+  "n_settled": 16,
+  "checkpoints_required": [
+    20,
+    30
+  ],
+  "checkpoint_reached": null,
+  "protected_file_hashes": {
+    "shadow_predictions.jsonl": "758a2b783b425117c96070aba4bf3ca52c1b1ac54e0f053aa0a9ea1073b4966c",
+    "shadow_settlements.jsonl": "526124b1da01ed4e4b1aa0cf0eacfa9c7f45d9b012ff48fc40794113efdda54f",
+    "ops/result_settler.py": "7819b8cafde155fc5f1da88171847b6d7c355e4eeab613c081ed03825a434e87",
+    "src/model/wc_intelligence_engine.py": "ad1d531d4457f9712a5ff79e230cff5888465a529e53766e0266a91e9be8a56b"
+  },
+  "before": {
+    "n": 16,
+    "n_correct": 8,
+    "accuracy_pct": 50.0,
+    "n_draws_predicted": 0,
+    "n_draws_actual": 8,
+    "predicted_mean_draw_pct": 20.45,
+    "actual_draw_rate_pct": 50.0,
+    "draw_bias_pp": 29.55,
+    "draw_bias_classification": "CRITICAL",
+    "brier_score": 0.70504,
+    "brier_available": false,
+    "log_loss": 1.15049,
+    "ece": null,
+    "ece_available": false,
+    "reliability_bins": [],
+    "confusion_matrix": {
+      "HOME_WIN": {
+        "HOME_WIN": 7,
+        "DRAW": 6,
+        "AWAY_WIN": 0
+      },
+      "DRAW": {
+        "HOME_WIN": 0,
+        "DRAW": 0,
+        "AWAY_WIN": 0
+      },
+      "AWAY_WIN": {
+        "HOME_WIN": 0,
+        "DRAW": 2,
+        "AWAY_WIN": 1
+      }
+    }
+  },
+  "after_insample": {
+    "n": 16,
+    "n_correct": 8,
+    "accuracy_pct": 50.0,
+    "n_draws_predicted": 16,
+    "n_draws_actual": 8,
+    "predicted_mean_draw_pct": 50.0,
+    "actual_draw_rate_pct": 50.0,
+    "draw_bias_pp": 0.0,
+    "draw_bias_classification": "NORMAL",
+    "brier_score": 0.56264,
+    "brier_available": false,
+    "log_loss": 0.89199,
+    "ece": null,
+    "ece_available": false,
+    "reliability_bins": [],
+    "confusion_matrix": {
+      "HOME_WIN": {
+        "HOME_WIN": 0,
+        "DRAW": 0,
+        "AWAY_WIN": 0
+      },
+      "DRAW": {
+        "HOME_WIN": 7,
+        "DRAW": 8,
+        "AWAY_WIN": 1
+      },
+      "AWAY_WIN": {
+        "HOME_WIN": 0,
+        "DRAW": 0,
+        "AWAY_WIN": 0
+      }
+    }
+  },
+  "after_loocv": {
+    "n": 16,
+    "n_correct": 7,
+    "accuracy_pct": 43.75,
+    "n_draws_predicted": 15,
+    "n_draws_actual": 8,
+    "predicted_mean_draw_pct": 47.37,
+    "actual_draw_rate_pct": 50.0,
+    "draw_bias_pp": 2.63,
+    "draw_bias_classification": "NORMAL",
+    "brier_score": 0.70079,
+    "brier_available": false,
+    "log_loss": 1.206,
+    "ece": null,
+    "ece_available": false,
+    "reliability_bins": [],
+    "confusion_matrix": {
+      "HOME_WIN": {
+        "HOME_WIN": 0,
+        "DRAW": 1,
+        "AWAY_WIN": 0
+      },
+      "DRAW": {
+        "HOME_WIN": 7,
+        "DRAW": 7,
+        "AWAY_WIN": 1
+      },
+      "AWAY_WIN": {
+        "HOME_WIN": 0,
+        "DRAW": 0,
+        "AWAY_WIN": 0
+      }
+    }
+  },
+  "confidence_intervals_95pct": {
+    "accuracy_before_pct": [
+      27.999563606162738,
+      72.00043639383726
+    ],
+    "accuracy_after_insample_pct": [
+      27.999563606162738,
+      72.00043639383726
+    ],
+    "accuracy_after_loocv_pct": [
+      23.098652401800678,
+      66.82144360579572
+    ],
+    "draw_rate_actual_pct": [
+      27.999563606162738,
+      72.00043639383726
+    ],
+    "draw_bias_before_pp": [
+      5.050450187500001,
+      54.049549812500004
+    ],
+    "draw_bias_after_insample_pp": [
+      -24.4995498125,
+      24.4995498125
+    ],
+    "draw_bias_after_loocv_pp": [
+      -21.869549812499997,
+      27.129549812500002
+    ]
+  },
+  "draw_precision_recall_f1": {
+    "before": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 8,
+      "precision": null,
+      "recall": 0.0,
+      "f1": null
+    },
+    "after_insample": {
+      "tp": 8,
+      "fp": 8,
+      "fn": 0,
+      "precision": 50.0,
+      "recall": 100.0,
+      "f1": 66.67
+    },
+    "after_loocv": {
+      "tp": 7,
+      "fp": 8,
+      "fn": 1,
+      "precision": 46.67,
+      "recall": 87.5,
+      "f1": 60.87
+    }
+  },
+  "loocv_flips_correct_to_incorrect": [
+    {
+      "home": "Mexico",
+      "away": "South Africa",
+      "date": "2026-06-11",
+      "actual_outcome": "HOME_WIN",
+      "identity_pred": "HOME_WIN",
+      "loocv_pred": "DRAW",
+      "loocv_d_pct": 53.85
+    },
+    {
+      "home": "South Korea",
+      "away": "Czechia",
+      "date": "2026-06-12",
+      "actual_outcome": "HOME_WIN",
+      "identity_pred": "HOME_WIN",
+      "loocv_pred": "DRAW",
+      "loocv_d_pct": 53.85
+    },
+    {
+      "home": "United States",
+      "away": "Paraguay",
+      "date": "2026-06-13",
+      "actual_outcome": "HOME_WIN",
+      "identity_pred": "HOME_WIN",
+      "loocv_pred": "DRAW",
+      "loocv_d_pct": 53.85
+    },
+    {
+      "home": "Haiti",
+      "away": "Scotland",
+      "date": "2026-06-14",
+      "actual_outcome": "AWAY_WIN",
+      "identity_pred": "AWAY_WIN",
+      "loocv_pred": "DRAW",
+      "loocv_d_pct": 53.85
+    },
+    {
+      "home": "Australia",
+      "away": "Turkey",
+      "date": "2026-06-14",
+      "actual_outcome": "HOME_WIN",
+      "identity_pred": "HOME_WIN",
+      "loocv_pred": "DRAW",
+      "loocv_d_pct": 53.85
+    },
+    {
+      "home": "Germany",
+      "away": "Cura\u00e7ao",
+      "date": "2026-06-14",
+      "actual_outcome": "HOME_WIN",
+      "identity_pred": "HOME_WIN",
+      "loocv_pred": "DRAW",
+      "loocv_d_pct": 53.33
+    },
+    {
+      "home": "Ivory Coast",
+      "away": "Ecuador",
+      "date": "2026-06-14",
+      "actual_outcome": "HOME_WIN",
+      "identity_pred": "HOME_WIN",
+      "loocv_pred": "DRAW",
+      "loocv_d_pct": 53.85
+    },
+    {
+      "home": "Sweden",
+      "away": "Tunisia",
+      "date": "2026-06-15",
+      "actual_outcome": "HOME_WIN",
+      "identity_pred": "HOME_WIN",
+      "loocv_pred": "DRAW",
+      "loocv_d_pct": 53.85
+    }
+  ],
+  "diagnosis": {
+    "overfitting": {
+      "evidence": "In-sample fit uses 14 distinct predicted-D% values across 16 fixtures (near 1:1), so PAVA pools almost nothing and the isotonic step function can memorise per-fixture labels. In-sample, the model degenerates to predicting DRAW for all 16/16 fixtures \u2014 its in-sample accuracy (50.00%) matching identity's (50.00%) is coincidental (it equals the raw actual draw rate), not evidence of a good fit. LOOCV accuracy is 43.75% (identity=50.00%).",
+      "confirmed": true
+    },
+    "sample_instability": {
+      "evidence": "Each LOOCV fold refits on only 15 points; with 16 total fixtures, removing any single point can materially shift the fitted step function (high-leverage points). 8 of 8 previously-correct decisive (non-draw) calls flipped to incorrect under LOOCV \u2014 a high flip rate relative to fold count indicates the fit is not stable under leave-one-out perturbation.",
+      "confirmed": true
+    },
+    "class_imbalance": {
+      "evidence": "Actual outcome counts in the settled sample: HOME_WIN=7, DRAW=8, AWAY_WIN=1 (n=16). AWAY_WIN is severely under-represented, so any fold that removes the sole/rare AWAY_WIN example(s) leaves the isotonic fit with no signal to keep the draw curve from dominating that region of predicted-D%.",
+      "confirmed": true
+    },
+    "draw_overshoot": {
+      "evidence": "8 of 8 flips from correct-under-identity to incorrect-under-LOOCV are flips specifically *to* a DRAW prediction that was wrong \u2014 i.e. the calibrated D% overtakes H%/A% for fixtures that were not actually draws.",
+      "confirmed": true
+    }
+  },
+  "approval_requirements": {
+    "draw_bias_below_10pp": true,
+    "brier_improves": true,
+    "ece_improves": false,
+    "accuracy_not_materially_degraded": false
+  },
+  "verdict": "NEED_MORE_DATA",
+  "verdict_reason": "n_settled=16 has not yet reached the first formal checkpoint (n>=20). Per task instructions, no APPROVE/REJECT determination is made below n=20."
+}

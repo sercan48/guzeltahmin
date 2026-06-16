@@ -1,19 +1,19 @@
 {
-  "generated_at": "2026-06-16T01:15:52.373032+00:00",
-  "n_settled": 15,
+  "generated_at": "2026-06-16T07:20:39.966492+00:00",
+  "n_settled": 16,
   "n_correct": 8,
-  "overall_accuracy_pct": 53.33,
-  "log_loss": 1.12625,
+  "overall_accuracy_pct": 50.0,
+  "log_loss": 1.15049,
   "n_draws_predicted": 0,
-  "n_draws_actual": 7,
-  "draw_rate_predicted": 20.347,
-  "draw_rate_actual": 46.667,
-  "draw_rate_bias": 26.32,
+  "n_draws_actual": 8,
+  "draw_rate_predicted": 20.45,
+  "draw_rate_actual": 50.0,
+  "draw_rate_bias": 29.55,
   "draw_bias_available": true,
   "confusion_matrix": {
     "HOME_WIN": {
       "HOME_WIN": 7,
-      "DRAW": 5,
+      "DRAW": 6,
       "AWAY_WIN": 0
     },
     "DRAW": {
@@ -34,9 +34,9 @@
       "accuracy": 25.0
     },
     "TIER_B": {
-      "n": 8,
+      "n": 9,
       "correct": 4,
-      "accuracy": 50.0
+      "accuracy": 44.44
     },
     "TIER_C": {
       "n": 3,
@@ -58,10 +58,10 @@
       "accuracy": 33.33
     },
     "50-69": {
-      "n": 8,
-      "mean_conf": 59.79,
+      "n": 9,
+      "mean_conf": 58.96,
       "correct": 3,
-      "accuracy": 37.5
+      "accuracy": 33.33
     },
     "30-49": {
       "n": 4,
@@ -71,8 +71,8 @@
     }
   },
   "rolling_7d": {
-    "n": 15,
-    "accuracy": 53.33,
+    "n": 16,
+    "accuracy": 50.0,
     "cutoff": "2026-06-09"
   },
   "brier_score": null,
@@ -81,6 +81,6 @@
   "ece_available": false,
   "reliability_bins": [],
   "flags": [
-    "DRAW_CALIBRATION_CONFIRMED \u2014 bias=+26.32pp"
+    "DRAW_CALIBRATION_CONFIRMED \u2014 bias=+29.55pp"
   ]
 }
