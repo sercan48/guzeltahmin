@@ -1,19 +1,19 @@
 {
-  "generated_at": "2026-06-15T11:30:05.010836+00:00",
-  "n_settled": 12,
+  "generated_at": "2026-06-16T01:15:52.373032+00:00",
+  "n_settled": 15,
   "n_correct": 8,
-  "overall_accuracy_pct": 66.67,
-  "log_loss": 0.97064,
+  "overall_accuracy_pct": 53.33,
+  "log_loss": 1.12625,
   "n_draws_predicted": 0,
-  "n_draws_actual": 4,
-  "draw_rate_predicted": 21.067,
-  "draw_rate_actual": 33.333,
-  "draw_rate_bias": null,
-  "draw_bias_available": false,
+  "n_draws_actual": 7,
+  "draw_rate_predicted": 20.347,
+  "draw_rate_actual": 46.667,
+  "draw_rate_bias": 26.32,
+  "draw_bias_available": true,
   "confusion_matrix": {
     "HOME_WIN": {
       "HOME_WIN": 7,
-      "DRAW": 3,
+      "DRAW": 5,
       "AWAY_WIN": 0
     },
     "DRAW": {
@@ -23,20 +23,20 @@
     },
     "AWAY_WIN": {
       "HOME_WIN": 0,
-      "DRAW": 1,
+      "DRAW": 2,
       "AWAY_WIN": 1
     }
   },
   "by_tier": {
     "TIER_A": {
-      "n": 2,
+      "n": 4,
       "correct": 1,
-      "accuracy": 50.0
+      "accuracy": 25.0
     },
     "TIER_B": {
-      "n": 7,
+      "n": 8,
       "correct": 4,
-      "accuracy": 57.14
+      "accuracy": 50.0
     },
     "TIER_C": {
       "n": 3,
@@ -52,16 +52,16 @@
       "accuracy": null
     },
     "70-89": {
-      "n": 2,
-      "mean_conf": 76.25,
+      "n": 3,
+      "mean_conf": 78.87,
       "correct": 1,
-      "accuracy": 50.0
+      "accuracy": 33.33
     },
     "50-69": {
-      "n": 6,
-      "mean_conf": 57.42,
+      "n": 8,
+      "mean_conf": 59.79,
       "correct": 3,
-      "accuracy": 50.0
+      "accuracy": 37.5
     },
     "30-49": {
       "n": 4,
@@ -71,14 +71,16 @@
     }
   },
   "rolling_7d": {
-    "n": 12,
-    "accuracy": 66.67,
-    "cutoff": "2026-06-08"
+    "n": 15,
+    "accuracy": 53.33,
+    "cutoff": "2026-06-09"
   },
   "brier_score": null,
   "brier_available": false,
   "ece": null,
   "ece_available": false,
   "reliability_bins": [],
-  "flags": []
+  "flags": [
+    "DRAW_CALIBRATION_CONFIRMED \u2014 bias=+26.32pp"
+  ]
 }
