@@ -1,0 +1,4 @@
+# Minimal deps for daily-bulletin.yml CI job.
+# Only what ops/wc_paper_shadow.py actually imports at runtime.
+requests>=2.31.0
+python-dotenv>=1.0.0
