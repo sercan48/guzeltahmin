@@ -21,6 +21,8 @@ Environment:
     TELEGRAM_BOT_TOKEN          Bot token (required for --deliver).
     TELEGRAM_PERSONAL_CHANNEL   Personal chat id (required for --deliver).
     FOOTBALL_DATA_ORG_KEY       Fixture source — falls back gracefully if absent.
+    ODDS_API_KEY                The Odds API key (the-odds-api.com, free tier).
+                                If absent, odds line is silently omitted from bulletin.
 """
 from __future__ import annotations
 
@@ -306,6 +308,97 @@ def fetch_wc_matches_from_api(date_str: str) -> tuple[list[dict], str]:
 
 
 # ---------------------------------------------------------------------------
+# Odds fetch (The Odds API — the-odds-api.com, free tier 500 req/month)
+# ---------------------------------------------------------------------------
+
+def _norm_team(name: str) -> str:
+    """Normalize a team name for fuzzy matching across API sources."""
+    import unicodedata
+    n = unicodedata.normalize("NFD", name.lower())
+    n = "".join(c for c in n if unicodedata.category(c) != "Mn")  # strip accents
+    # common canonical substitutions
+    subs = {
+        "usa": "united states", "us": "united states",
+        "south korea": "korea republic", "republic of ireland": "ireland",
+        "ivory coast": "cote d'ivoire", "cote divoire": "cote d'ivoire",
+        "cape verde": "cape verde islands",
+        "curacao": "curacao",
+    }
+    for src, dst in subs.items():
+        n = n.replace(src, dst)
+    return n.strip()
+
+
+def fetch_odds_the_odds_api(date_str: str) -> dict[tuple[str, str], dict]:
+    """
+    Fetch 1X2 (h2h) decimal odds from The Odds API for WC 2026 matches.
+    Returns {(home_norm, away_norm): {'h': float, 'd': float, 'a': float}}
+    or {} on failure / missing key. Never raises — delivery must not break.
+
+    Key: ODDS_API_KEY in .env (free tier: 500 req/month, no card required).
+    """
+    import requests
+    odds_key = os.getenv("ODDS_API_KEY", "").strip()
+    if not odds_key:
+        return {}
+    try:
+        resp = requests.get(
+            "https://api.the-odds-api.com/v4/sports/soccer_fifa_world_cup/odds/",
+            params={
+                "apiKey":  odds_key,
+                "regions": "eu",
+                "markets": "h2h",
+                "oddsFormat": "decimal",
+            },
+            timeout=10,
+        )
+        if resp.status_code == 401:
+            logger.warning("Odds API: invalid key (401)")
+            return {}
+        if resp.status_code == 422:
+            logger.warning("Odds API: 422 — sport key or region may be wrong")
+            return {}
+        if resp.status_code != 200:
+            logger.warning("Odds API: HTTP %d", resp.status_code)
+            return {}
+
+        remaining = resp.headers.get("x-requests-remaining", "?")
+        logger.info("Odds API: %s requests remaining this month", remaining)
+
+        result: dict[tuple[str, str], dict] = {}
+        for event in resp.json():
+            h_norm = _norm_team(event.get("home_team", ""))
+            a_norm = _norm_team(event.get("away_team", ""))
+            # average across bookmakers for a consensus line
+            h_list, d_list, a_list = [], [], []
+            for bk in event.get("bookmakers", []):
+                for mkt in bk.get("markets", []):
+                    if mkt.get("key") != "h2h":
+                        continue
+                    outcomes = {o["name"].lower(): o["price"] for o in mkt.get("outcomes", [])}
+                    # The Odds API h2h: home / away / Draw
+                    home_key = event["home_team"].lower()
+                    away_key = event["away_team"].lower()
+                    if home_key in outcomes:
+                        h_list.append(outcomes[home_key])
+                    if away_key in outcomes:
+                        a_list.append(outcomes[away_key])
+                    if "draw" in outcomes:
+                        d_list.append(outcomes["draw"])
+            if h_list and a_list and d_list:
+                result[(h_norm, a_norm)] = {
+                    "h": round(sum(h_list) / len(h_list), 2),
+                    "d": round(sum(d_list) / len(d_list), 2),
+                    "a": round(sum(a_list) / len(a_list), 2),
+                }
+        logger.info("Odds API: fetched odds for %d WC matches", len(result))
+        return result
+    except Exception as e:
+        logger.warning("Odds API fetch failed: %s", e)
+        return {}
+
+
+# ---------------------------------------------------------------------------
 # DB source
 # ---------------------------------------------------------------------------
 
@@ -399,7 +492,23 @@ def _team_name_safe(match: dict) -> str:
 # Formatting
 # ---------------------------------------------------------------------------
 
-def format_match_block(db, match: dict, pred: dict) -> str:
+def _lookup_odds(home: str, away: str, odds_map: dict) -> dict | None:
+    """Find odds for a match using normalized team-name matching."""
+    if not odds_map:
+        return None
+    h_norm = _norm_team(home)
+    a_norm = _norm_team(away)
+    # exact normalized match first
+    if (h_norm, a_norm) in odds_map:
+        return odds_map[(h_norm, a_norm)]
+    # substring fallback: one team name contains the other (handles short vs long variants)
+    for (oh, oa), o in odds_map.items():
+        if (h_norm in oh or oh in h_norm) and (a_norm in oa or oa in a_norm):
+            return o
+    return None
+
+
+def format_match_block(db, match: dict, pred: dict, odds_map: dict | None = None) -> str:
     """Format one match's prediction as an HTML Telegram block."""
     home    = match.get("home_name") or _team_name(db, match.get("home_team_id"))
     away    = match.get("away_name") or _team_name(db, match.get("away_team_id"))
@@ -418,6 +527,12 @@ def format_match_block(db, match: dict, pred: dict) -> str:
     else:
         status = "✅ İZLENİYOR"
 
+    odds = _lookup_odds(home, away, odds_map or {})
+    odds_line = (
+        f"\n💰 <b>Oran (ort.):</b> 1: {odds['h']} | X: {odds['d']} | 2: {odds['a']}"
+        if odds else ""
+    )
+
     return (
         f"🏟️ <b>{home}</b> vs <b>{away}</b>  —  🕒 {kickoff}  [{tier}]\n"
         f"🛡️ <b>Statü:</b> {status}\n"
@@ -427,6 +542,7 @@ def format_match_block(db, match: dict, pred: dict) -> str:
         f"❌ %{round(float(pred.get('draw_prob', 0)), 1)} | "
         f"2️⃣ %{round(float(pred.get('away_win_prob', 0)), 1)}\n"
         f"📊 <i>xG: {pred.get('expected_goals_a', 0)} - {pred.get('expected_goals_b', 0)}</i>"
+        f"{odds_line}"
     )
 
 
@@ -500,6 +616,9 @@ def run_shadow_session(
             _empty_report("no_matches"),
         )
 
+    # --- fetch odds (graceful — never breaks delivery) ---------------------
+    odds_map = fetch_odds_the_odds_api(date_str)
+
     # --- generate predictions ----------------------------------------------
     match_results: list[dict] = []
     blocks: list[str] = []
@@ -509,6 +628,7 @@ def run_shadow_session(
         away = m.get("away_name") or _team_name(db, m.get("away_team_id"))
         pred = shadow_predict(m)
 
+        odds = _lookup_odds(home, away, odds_map)
         match_results.append({
             "match":         f"{home} v {away}",
             "kickoff":       m.get("time", "—"),
@@ -519,8 +639,9 @@ def run_shadow_session(
             "confidence":    pred["final_confidence"],
             "tier":          pred.get("tier", "—"),
             "is_no_bet":     pred.get("is_no_bet", False),
+            "odds":          odds,
         })
-        blocks.append(format_match_block(db, m, pred))
+        blocks.append(format_match_block(db, m, pred, odds_map))
 
     if not blocks:
         bulletin = header + "\n⚠️ Maçlar bulundu ancak tahmin üretilemedi."
