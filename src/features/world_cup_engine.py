@@ -28,12 +28,27 @@ def get_confirmed_lineup(cursor, match_id: int, team_id: int) -> dict:
     return {"avg_ea_fc_rating": 70.0, "star_player_count": 0}
 
 def get_last_10_matches(cursor, team_id: int) -> list:
-    # Example proxy for official matches form
-    return [
-        {"type": "WCQ", "result_points": 3},
-        {"type": "Euro", "result_points": 1},
-        {"type": "Friendly", "result_points": 3}
-    ]
+    """
+    Returns the last 10 match results for form calculation.
+
+    Primary path: queries match_results table.
+    Fallback: deterministic synthetic history from wc_intelligence_engine
+    (different per team_id, eliminating the hardcoded 3-match identical mock).
+    """
+    try:
+        cursor.execute(
+            "SELECT match_type, result_points FROM match_results "
+            "WHERE team_id = ? ORDER BY match_date DESC LIMIT 10",
+            (team_id,),
+        )
+        rows = cursor.fetchall()
+        if rows:
+            return [{"type": r[0], "result_points": r[1]} for r in rows]
+    except Exception:
+        pass
+
+    from src.model.wc_intelligence_engine import synthetic_form_history
+    return synthetic_form_history(team_id)
 
 def get_venue(cursor, venue_id: int) -> dict:
     if not venue_id:
