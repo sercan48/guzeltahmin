@@ -533,16 +533,32 @@ def format_match_block(db, match: dict, pred: dict, odds_map: dict | None = None
         if odds else ""
     )
 
+    # --- derivative markets (read-only, display only) -----------------------
+    from src.model.wc_intelligence_engine import btts_predict, over_under_predict
+
+    xg_h = float(pred.get("expected_goals_a", 0))
+    xg_a = float(pred.get("expected_goals_b", 0))
+    btts  = btts_predict(xg_h, xg_a)
+    ou    = over_under_predict(xg_h, xg_a, line=2.5)
+
+    h_pct = round(float(pred.get("home_win_prob", 0)), 1)
+    d_pct = round(float(pred.get("draw_prob", 0)), 1)
+    a_pct = round(float(pred.get("away_win_prob", 0)), 1)
+    dc_1x = round(h_pct + d_pct, 1)
+    dc_x2 = round(d_pct + a_pct, 1)
+    dc_12 = round(h_pct + a_pct, 1)
+
     return (
         f"🏟️ <b>{home}</b> vs <b>{away}</b>  —  🕒 {kickoff}  [{tier}]\n"
         f"🛡️ <b>Statü:</b> {status}\n"
         f"🎯 <b>Model Seçimi:</b> {_pick_label(pred.get('raw_prediction', 'DRAW'))}\n"
         f"⚽ <b>Güven:</b> %{round(float(pred.get('final_confidence', 0)), 1)}\n"
-        f"1️⃣ %{round(float(pred.get('home_win_prob', 0)), 1)} | "
-        f"❌ %{round(float(pred.get('draw_prob', 0)), 1)} | "
-        f"2️⃣ %{round(float(pred.get('away_win_prob', 0)), 1)}\n"
-        f"📊 <i>xG: {pred.get('expected_goals_a', 0)} - {pred.get('expected_goals_b', 0)}</i>"
-        f"{odds_line}"
+        f"1️⃣ %{h_pct} | ❌ %{d_pct} | 2️⃣ %{a_pct}\n"
+        f"📊 <i>xG: {xg_h} - {xg_a}</i>"
+        f"{odds_line}\n"
+        f"⚽ <b>KG Var:</b> %{btts['btts_yes']} | <b>KG Yok:</b> %{btts['btts_no']}\n"
+        f"📈 <b>2.5 Üst:</b> %{ou['over_2.5']} | <b>2.5 Alt:</b> %{ou['under_2.5']}\n"
+        f"🔀 <b>Çifte:</b> 1X %{dc_1x} | X2 %{dc_x2} | 12 %{dc_12}"
     )
 
 
