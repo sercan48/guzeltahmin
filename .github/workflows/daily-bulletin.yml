@@ -26,6 +26,12 @@ jobs:
       - name: Bağımlılıkları yükle
         run: pip install -r requirements-bulletin.txt
 
+      - name: Dünün sonuçlarını kaydet
+        continue-on-error: true
+        env:
+          FOOTBALL_DATA_ORG_KEY: ${{ secrets.FOOTBALL_DATA_ORG_KEY }}
+        run: python ops/result_settler.py --settle
+
       - name: Bülten gönder
         env:
           TELEGRAM_BOT_TOKEN:        ${{ secrets.TELEGRAM_BOT_TOKEN }}
