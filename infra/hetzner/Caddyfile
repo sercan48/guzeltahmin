@@ -1,0 +1,10 @@
+n8n.DOMAININ.com {
+    reverse_proxy n8n:5678
+
+    # Güvenlik başlıkları
+    header {
+        X-Frame-Options DENY
+        X-Content-Type-Options nosniff
+        Referrer-Policy no-referrer
+    }
+}
