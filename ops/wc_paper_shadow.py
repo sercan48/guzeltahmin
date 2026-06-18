@@ -55,6 +55,58 @@ def _pick_label(prediction: str) -> str:
     }.get(prediction, prediction)
 
 
+def _pick_secondary(pred: dict) -> tuple[str, float, str]:
+    """
+    Choose the highest-quality secondary market that is orthogonal to the
+    primary 1X2 prediction.
+
+    Returns (label, probability_0_to_1, market_type)
+
+    Logic (priority order):
+      1. TIER_A + confidence >= 55 → Double Chance (covers primary direction
+         + draw; odds ~1.35, structural edge against draw blindspot)
+      2. Both xG >= 0.9 AND P(BTTS) >= 0.45 → KG_VAR (both teams attack-
+         minded; independent of who wins; odds ~1.80)
+      3. Total xG >= 2.3 → 2.5 Üst (high-scoring game expected)
+      4. Default → 2.5 Alt (defensive/low-xG game)
+    """
+    import math
+
+    xg_h = float(pred.get("expected_goals_a", 0))
+    xg_a = float(pred.get("expected_goals_b", 0))
+    tier  = pred.get("tier", "TIER_C")
+    conf  = float(pred.get("final_confidence", 0))
+    primary = pred.get("raw_prediction", "")
+    probs = {
+        "H": float(pred.get("home_win_prob", 0)),
+        "D": float(pred.get("draw_prob", 0)),
+        "A": float(pred.get("away_win_prob", 0)),
+    }
+
+    # 1. Double Chance for strong favorites
+    if tier == "TIER_A" and conf >= 55:
+        if primary == "HOME_WIN":
+            return "1X", (probs["H"] + probs["D"]) / 100, "DC"
+        if primary == "AWAY_WIN":
+            return "X2", (probs["D"] + probs["A"]) / 100, "DC"
+
+    # 2. BTTS when both teams are genuinely attack-minded
+    p_btts = (1.0 - math.exp(-xg_h)) * (1.0 - math.exp(-xg_a))
+    if xg_h >= 0.9 and xg_a >= 0.9 and p_btts >= 0.45:
+        return "KG_VAR", p_btts, "BTTS"
+
+    # 3/4. Over/Under based on total xG
+    total_xg = xg_h + xg_a
+    p_under = sum(
+        (total_xg ** k * math.exp(-total_xg)) / math.factorial(k)
+        for k in range(3)   # P(0) + P(1) + P(2) = P(≤2)
+    )
+    p_over = 1.0 - p_under
+    if total_xg >= 2.3:
+        return "2.5_ÜST", p_over, "OU"
+    return "2.5_ALT", p_under, "OU"
+
+
 def _team_name(db, team_id) -> str:
     """Resolve a team name from DB; fall back to the raw id string."""
     if team_id is None:
@@ -548,17 +600,30 @@ def format_match_block(db, match: dict, pred: dict, odds_map: dict | None = None
     dc_x2 = round(d_pct + a_pct, 1)
     dc_12 = round(h_pct + a_pct, 1)
 
+    # --- primary / secondary selection ------------------------------------
+    sec_label, sec_prob, sec_type = _pick_secondary(pred)
+    _sec_display = {
+        "1X":      f"Çifte Şans 1X  %{dc_1x}",
+        "X2":      f"Çifte Şans X2  %{dc_x2}",
+        "12":      f"Çifte Şans 12  %{dc_12}",
+        "KG_VAR":  f"KG Var  %{btts['btts_yes']}",
+        "2.5_ÜST": f"2.5 Üst  %{ou['over_2.5']}",
+        "2.5_ALT": f"2.5 Alt  %{ou['under_2.5']}",
+    }
+    sec_str = _sec_display.get(sec_label, sec_label)
+
     return (
         f"🏟️ <b>{home}</b> vs <b>{away}</b>  —  🕒 {kickoff}  [{tier}]\n"
         f"🛡️ <b>Statü:</b> {status}\n"
-        f"🎯 <b>Model Seçimi:</b> {_pick_label(pred.get('raw_prediction', 'DRAW'))}\n"
-        f"⚽ <b>Güven:</b> %{round(float(pred.get('final_confidence', 0)), 1)}\n"
+        f"🥇 <b>Ana Seçim:</b> {_pick_label(pred.get('raw_prediction', 'DRAW'))}  "
+        f"<i>(%{round(float(pred.get('final_confidence', 0)), 1)} güven)</i>\n"
+        f"🥈 <b>İkincil Seçim:</b> {sec_str}\n"
+        f"─────────────────────\n"
         f"1️⃣ %{h_pct} | ❌ %{d_pct} | 2️⃣ %{a_pct}\n"
         f"📊 <i>xG: {xg_h} - {xg_a}</i>"
         f"{odds_line}\n"
-        f"⚽ <b>KG Var:</b> %{btts['btts_yes']} | <b>KG Yok:</b> %{btts['btts_no']}\n"
-        f"📈 <b>2.5 Üst:</b> %{ou['over_2.5']} | <b>2.5 Alt:</b> %{ou['under_2.5']}\n"
-        f"🔀 <b>Çifte:</b> 1X %{dc_1x} | X2 %{dc_x2} | 12 %{dc_12}"
+        f"⚽ KG Var %{btts['btts_yes']} · 2.5Ü %{ou['over_2.5']} · "
+        f"1X %{dc_1x} · X2 %{dc_x2}"
     )
 
 
