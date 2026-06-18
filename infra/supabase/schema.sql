@@ -15,7 +15,7 @@ create extension if not exists "uuid-ossp";
 -- JWT claim tabanlı tenant izolasyonu.
 -- n8n'den gelen isteklerde JWT'ye app_metadata.tenant_id eklenir.
 -- ---------------------------------------------------------------------------
-create or replace function auth.current_tenant_id()
+create or replace function public.current_tenant_id()
 returns text
 language sql
 stable
@@ -78,8 +78,8 @@ create policy "service_role_all" on public.users
 
 create policy "tenant_all" on public.users
   for all to authenticated
-  using (tenant_id = auth.current_tenant_id())
-  with check (tenant_id = auth.current_tenant_id());
+  using (tenant_id = public.current_tenant_id())
+  with check (tenant_id = public.current_tenant_id());
 
 create index idx_users_tenant_telegram on public.users(tenant_id, telegram_id);
 
@@ -108,8 +108,8 @@ create policy "service_role_all" on public.affiliates
 
 create policy "tenant_all" on public.affiliates
   for all to authenticated
-  using (tenant_id = auth.current_tenant_id())
-  with check (tenant_id = auth.current_tenant_id());
+  using (tenant_id = public.current_tenant_id())
+  with check (tenant_id = public.current_tenant_id());
 
 create index idx_affiliates_code on public.affiliates(tenant_id, code);
 
@@ -136,7 +136,7 @@ create policy "service_role_all" on public.legal_logs
 
 create policy "tenant_select" on public.legal_logs
   for select to authenticated
-  using (tenant_id = auth.current_tenant_id());
+  using (tenant_id = public.current_tenant_id());
 
 -- Silme yasağı — trigger ile enforce et
 create or replace function public.prevent_legal_log_delete()
@@ -179,8 +179,8 @@ create policy "service_role_all" on public.subscriptions
 
 create policy "tenant_all" on public.subscriptions
   for all to authenticated
-  using (tenant_id = auth.current_tenant_id())
-  with check (tenant_id = auth.current_tenant_id());
+  using (tenant_id = public.current_tenant_id())
+  with check (tenant_id = public.current_tenant_id());
 
 create index idx_subscriptions_active on public.subscriptions(tenant_id, status, premium_end_date)
   where status = 'active';
@@ -216,7 +216,7 @@ create policy "service_role_all" on public.transactions
 
 create policy "tenant_select" on public.transactions
   for select to authenticated
-  using (tenant_id = auth.current_tenant_id());
+  using (tenant_id = public.current_tenant_id());
 
 create index idx_transactions_order on public.transactions(cryptomus_order_id);
 create index idx_transactions_tenant_status on public.transactions(tenant_id, status);
