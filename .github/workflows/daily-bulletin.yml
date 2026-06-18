@@ -39,3 +39,12 @@ jobs:
           FOOTBALL_DATA_ORG_KEY:     ${{ secrets.FOOTBALL_DATA_ORG_KEY }}
           ODDS_API_KEY:              ${{ secrets.ODDS_API_KEY }}
         run: python -m ops.wc_paper_shadow --deliver
+
+      - name: Kota takibini kaydet
+        if: always()
+        run: |
+          git config user.email "github-actions@github.com"
+          git config user.name "GitHub Actions"
+          git add data/odds_quota.json || true
+          git diff --cached --quiet || git commit -m "chore: odds quota snapshot [skip ci]"
+          git push || true

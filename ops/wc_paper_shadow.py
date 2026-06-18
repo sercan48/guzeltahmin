@@ -31,7 +31,8 @@ import hashlib
 import json
 import logging
 import os
-from datetime import datetime
+from datetime import datetime, timezone
+from pathlib import Path
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger("wc_paper_shadow")
@@ -363,6 +364,64 @@ def fetch_wc_matches_from_api(date_str: str) -> tuple[list[dict], str]:
 # Odds fetch (The Odds API — the-odds-api.com, free tier 500 req/month)
 # ---------------------------------------------------------------------------
 
+_PREDICTIONS_FILE = Path("data/shadow_predictions.jsonl")
+_QUOTA_FILE       = Path("data/odds_quota.json")
+_QUOTA_THRESHOLD  = 50  # kredi bu sayının altına düşünce fetch durdur
+
+
+def _has_matches_today(date_str: str) -> bool:
+    """Bugün tahmin edilmiş maç var mı? Yoksa API kredisi yakma."""
+    if not _PREDICTIONS_FILE.exists():
+        return True  # dosya yoksa güvenli taraf: fetch et
+    with open(_PREDICTIONS_FILE) as f:
+        for line in f:
+            try:
+                if json.loads(line).get("match_date") == date_str:
+                    return True
+            except Exception:
+                continue
+    return False
+
+
+def _quota_ok() -> bool:
+    """data/odds_quota.json'dan kalan krediyi oku. Dosya yoksa izin ver."""
+    if not _QUOTA_FILE.exists():
+        return True
+    try:
+        data = json.loads(_QUOTA_FILE.read_text())
+        return int(data.get("remaining", 9999)) >= _QUOTA_THRESHOLD
+    except Exception:
+        return True
+
+
+def _save_quota(remaining: int, used: int) -> None:
+    """API response header'ından gelen kota bilgisini diske kaydet."""
+    try:
+        _QUOTA_FILE.write_text(json.dumps({
+            "remaining":  remaining,
+            "used":       used,
+            "updated_at": datetime.now(timezone.utc).isoformat(),
+        }, indent=2))
+    except Exception as e:
+        logger.warning("Quota dosyası yazılamadı: %s", e)
+
+
+def _cache_max_age_hours(earliest_kickoff_utc: datetime | None) -> float:
+    """
+    CLV-aware cache geçerlilik süresi.
+    Maça 2 saatten az kalmışsa 0 döndür (her zaman taze çek).
+    n8n'e geçildiğinde ve günde 2 kez çalıştırıldığında devreye girer.
+    """
+    if earliest_kickoff_utc is None:
+        return 8.0
+    hours_left = (earliest_kickoff_utc - datetime.now(timezone.utc)).total_seconds() / 3600
+    if hours_left <= 2:
+        return 0.0   # kapanış oranı penceresi — cache bypass
+    if hours_left <= 6:
+        return 1.5
+    return 8.0
+
+
 def _norm_team(name: str) -> str:
     """Normalize a team name for fuzzy matching across API sources."""
     import unicodedata
@@ -383,70 +442,127 @@ def _norm_team(name: str) -> str:
 
 def fetch_odds_the_odds_api(date_str: str) -> dict[tuple[str, str], dict]:
     """
-    Fetch 1X2 (h2h) decimal odds from The Odds API for WC 2026 matches.
-    Returns {(home_norm, away_norm): {'h': float, 'd': float, 'a': float}}
-    or {} on failure / missing key. Never raises — delivery must not break.
+    Fetch 1X2 + Over/Under 2.5 + BTTS decimal odds from The Odds API.
 
-    Key: ODDS_API_KEY in .env (free tier: 500 req/month, no card required).
+    Returns {(home_norm, away_norm): {
+        'h', 'd', 'a',                    # 1X2 ortalama ondalık oran
+        'over_2_5', 'under_2_5',          # Totals market (None eğer yoksa)
+        'btts_yes', 'btts_no',            # BTTS market (None eğer yoksa)
+    }}
+
+    Maliyet: 3 market × 1 bölge = 3 kredi / çağrı.
+    Hiç raise etmez — delivery asla kırılmamalı.
     """
     import requests
+
+    # ── GUARD 1: bugün maç yoksa kredi yakma ───────────────────────────────
+    if not _has_matches_today(date_str):
+        logger.info("Odds API: %s için maç bulunamadı, skip.", date_str)
+        return {}
+
+    # ── GUARD 2: aylık kota kritik eşiğin altındaysa durdur ───────────────
+    if not _quota_ok():
+        logger.warning(
+            "Odds API: kota %d kredi altında, bu çalışma skip edildi.", _QUOTA_THRESHOLD
+        )
+        return {}
+
     odds_key = os.getenv("ODDS_API_KEY", "").strip()
     if not odds_key:
         return {}
+
     try:
         resp = requests.get(
             "https://api.the-odds-api.com/v4/sports/soccer_fifa_world_cup/odds/",
             params={
-                "apiKey":  odds_key,
-                "regions": "eu",
-                "markets": "h2h",
+                "apiKey":     odds_key,
+                "regions":    "eu",               # tek bölge — asla çoğaltma
+                "markets":    "h2h,totals,btts",  # 3 kredi; player_props YOK
                 "oddsFormat": "decimal",
+                "bookmakers": "bet365,pinnacle,unibet",  # 3 bookie = payload ~5x küçük
             },
             timeout=10,
         )
         if resp.status_code == 401:
-            logger.warning("Odds API: invalid key (401)")
+            logger.warning("Odds API: geçersiz key (401)")
             return {}
         if resp.status_code == 422:
-            logger.warning("Odds API: 422 — sport key or region may be wrong")
+            logger.warning("Odds API: 422 — sport key veya region hatalı")
             return {}
         if resp.status_code != 200:
             logger.warning("Odds API: HTTP %d", resp.status_code)
             return {}
 
-        remaining = resp.headers.get("x-requests-remaining", "?")
-        logger.info("Odds API: %s requests remaining this month", remaining)
+        # ── kota takibi: dosyaya yaz (bir sonraki run okuyacak) ───────────
+        try:
+            remaining = int(resp.headers.get("x-requests-remaining", "9999"))
+            used      = int(resp.headers.get("x-requests-used", "0"))
+            _save_quota(remaining, used)
+            logger.info("Odds API: %d kullanıldı, %d kaldı", used, remaining)
+        except (ValueError, TypeError):
+            pass
 
         result: dict[tuple[str, str], dict] = {}
+
         for event in resp.json():
             h_norm = _norm_team(event.get("home_team", ""))
             a_norm = _norm_team(event.get("away_team", ""))
-            # average across bookmakers for a consensus line
+            home_key = event["home_team"].lower()
+            away_key = event["away_team"].lower()
+
             h_list, d_list, a_list = [], [], []
+            over_list, under_list  = [], []
+            btts_yes_list, btts_no_list = [], []
+
             for bk in event.get("bookmakers", []):
                 for mkt in bk.get("markets", []):
-                    if mkt.get("key") != "h2h":
-                        continue
-                    outcomes = {o["name"].lower(): o["price"] for o in mkt.get("outcomes", [])}
-                    # The Odds API h2h: home / away / Draw
-                    home_key = event["home_team"].lower()
-                    away_key = event["away_team"].lower()
-                    if home_key in outcomes:
-                        h_list.append(outcomes[home_key])
-                    if away_key in outcomes:
-                        a_list.append(outcomes[away_key])
-                    if "draw" in outcomes:
-                        d_list.append(outcomes["draw"])
+                    key = mkt.get("key", "")
+
+                    if key == "h2h":
+                        outcomes = {o["name"].lower(): o["price"]
+                                    for o in mkt.get("outcomes", [])}
+                        if home_key in outcomes:
+                            h_list.append(outcomes[home_key])
+                        if away_key in outcomes:
+                            a_list.append(outcomes[away_key])
+                        if "draw" in outcomes:
+                            d_list.append(outcomes["draw"])
+
+                    elif key == "totals":
+                        for o in mkt.get("outcomes", []):
+                            # The Odds API totals: {"name":"Over","point":2.5,"price":1.85}
+                            if o.get("name", "").lower() == "over" and o.get("point") == 2.5:
+                                over_list.append(o["price"])
+                            elif o.get("name", "").lower() == "under" and o.get("point") == 2.5:
+                                under_list.append(o["price"])
+
+                    elif key == "btts":
+                        for o in mkt.get("outcomes", []):
+                            name = o.get("name", "").lower()
+                            if name == "yes":
+                                btts_yes_list.append(o["price"])
+                            elif name == "no":
+                                btts_no_list.append(o["price"])
+
             if h_list and a_list and d_list:
+                def _avg(lst: list) -> float | None:
+                    return round(sum(lst) / len(lst), 2) if lst else None
+
                 result[(h_norm, a_norm)] = {
-                    "h": round(sum(h_list) / len(h_list), 2),
-                    "d": round(sum(d_list) / len(d_list), 2),
-                    "a": round(sum(a_list) / len(a_list), 2),
+                    "h":         _avg(h_list),
+                    "d":         _avg(d_list),
+                    "a":         _avg(a_list),
+                    "over_2_5":  _avg(over_list),
+                    "under_2_5": _avg(under_list),
+                    "btts_yes":  _avg(btts_yes_list),
+                    "btts_no":   _avg(btts_no_list),
                 }
-        logger.info("Odds API: fetched odds for %d WC matches", len(result))
+
+        logger.info("Odds API: %d maç için oran çekildi", len(result))
         return result
+
     except Exception as e:
-        logger.warning("Odds API fetch failed: %s", e)
+        logger.warning("Odds API fetch başarısız: %s", e)
         return {}
 
 
@@ -580,10 +696,14 @@ def format_match_block(db, match: dict, pred: dict, odds_map: dict | None = None
         status = "✅ İZLENİYOR"
 
     odds = _lookup_odds(home, away, odds_map or {})
-    odds_line = (
-        f"\n💰 <b>Oran (ort.):</b> 1: {odds['h']} | X: {odds['d']} | 2: {odds['a']}"
-        if odds else ""
-    )
+    if odds:
+        odds_line = f"\n💰 <b>Oran (ort.):</b> 1: {odds['h']} | X: {odds['d']} | 2: {odds['a']}"
+        if odds.get("over_2_5"):
+            odds_line += f"  |  2.5Ü: {odds['over_2_5']}"
+        if odds.get("btts_yes"):
+            odds_line += f"  |  KG+: {odds['btts_yes']}"
+    else:
+        odds_line = ""
 
     # --- derivative markets (read-only, display only) -----------------------
     from src.model.wc_intelligence_engine import btts_predict, over_under_predict
