@@ -116,14 +116,52 @@ Bu noktada Supabase free tier sınırına yaklaşılır.
 
 ---
 
+## Veri API Maliyetleri
+
+### football-data.org
+
+Kontrol edildi — **ücretsiz tier WC + tüm büyük ligleri kapsıyor:**
+
+| Lig | Ücretsiz mi? |
+|-----|-------------|
+| FIFA World Cup | ✅ Ücretsiz |
+| Premier League | ✅ Ücretsiz |
+| La Liga | ✅ Ücretsiz |
+| Bundesliga | ✅ Ücretsiz |
+| Serie A | ✅ Ücretsiz |
+| Ligue 1 | ✅ Ücretsiz |
+| Eredivisie | ✅ Ücretsiz |
+
+**Rate limit:** 10 istek/dakika — günlük bülten için fazlasıyla yeterli.
+
+**Ne zaman ücretli olur?** Dakikada 10'dan fazla istek gerekirse
+(çok sayıda lig × birden fazla sorgu). Bu noktada ~€30/ay.
+Ama mevcut mimari için **öngörülemeyen bir gelecek.**
+
+### The Odds API (the-odds-api.com)
+
+| Plan | Ücret | Kota |
+|------|-------|------|
+| Free | **$0** | 500 istek/ay |
+| Starter | $79/ay | 30.000 istek/ay |
+
+Günlük 1 bülten = 1 istek/gün = **30 istek/ay** → free tier'ın %6'sı.
+500 müşteriye kadar ücretsiz kalır.
+
+**Ne zaman ücretli olur?** Aynı bot'u birden fazla lig/ülke için
+çok sık sorgulamaya başlarsan. Şu an için **$0.**
+
+---
+
 ## Gizli / Göz Ardı Edilen Maliyetler
 
 | Kalem | Maliyet | Ne Zaman |
 |-------|---------|----------|
 | Cryptomus komisyonu | **%1** işlem başına | Her ödemede |
+| football-data.org ücretli | €30/ay | 10+ istek/dk gerekirse |
+| The Odds API ücretli | $79/ay | 500+ istek/ay gerekirse |
 | US LLC devlet ücreti (yıllık) | $50–300/yıl | Kurulan eyalete göre |
 | Muhasebe/vergi | $200–500/yıl | Gelir başlayınca |
-| football-data.org ücretli API | $30–60/ay | Lig verileri için (şimdilik WC ücretsiz) |
 
 ---
 
