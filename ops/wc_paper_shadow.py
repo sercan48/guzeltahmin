@@ -501,26 +501,38 @@ def fetch_odds_the_odds_api(date_str: str) -> dict[tuple[str, str], dict]:
     if not odds_key:
         return {}
 
+    # WC 2026 aktif — sport key sırası: önce standart, sonra yıl-bazlı
+    _SPORT_KEYS = [
+        "soccer_fifa_world_cup",
+        "soccer_fifa_world_cup_2026",
+    ]
+
+    resp = None
     try:
-        resp = requests.get(
-            "https://api.the-odds-api.com/v4/sports/soccer_fifa_world_cup/odds/",
-            params={
-                "apiKey":     odds_key,
-                "regions":    "eu",               # tek bölge — asla çoğaltma
-                "markets":    "h2h,totals,btts",  # 3 kredi; player_props YOK
-                "oddsFormat": "decimal",
-                "bookmakers": "bet365,pinnacle,unibet",  # 3 bookie = payload ~5x küçük
-            },
-            timeout=10,
-        )
-        if resp.status_code == 401:
-            logger.warning("Odds API: geçersiz key (401)")
-            return {}
-        if resp.status_code == 422:
-            logger.warning("Odds API: 422 — sport key veya region hatalı")
-            return {}
-        if resp.status_code != 200:
-            logger.warning("Odds API: HTTP %d", resp.status_code)
+        for sport_key in _SPORT_KEYS:
+            resp = requests.get(
+                f"https://api.the-odds-api.com/v4/sports/{sport_key}/odds/",
+                params={
+                    "apiKey":     odds_key,
+                    "regions":    "eu",
+                    "markets":    "h2h",      # sadece h2h — kredi tasarrufu
+                    "oddsFormat": "decimal",
+                },
+                timeout=10,
+            )
+            if resp.status_code == 401:
+                logger.warning("Odds API: geçersiz key (401)")
+                return {}
+            if resp.status_code == 422:
+                logger.warning("Odds API: 422 — %s denenecek diğer key: %s",
+                               sport_key, resp.text[:120])
+                continue  # bir sonraki sport_key'i dene
+            if resp.status_code != 200:
+                logger.warning("Odds API: HTTP %d (%s)", resp.status_code, sport_key)
+                continue
+            break  # başarılı
+        else:
+            logger.warning("Odds API: hiçbir sport_key çalışmadı — oranlar alınamadı")
             return {}
 
         # ── kota takibi: dosyaya yaz (bir sonraki run okuyacak) ───────────
