@@ -364,16 +364,46 @@ def fetch_wc_matches_from_api(date_str: str) -> tuple[list[dict], str]:
 # Odds fetch (The Odds API — the-odds-api.com, free tier 500 req/month)
 # ---------------------------------------------------------------------------
 
-_PREDICTIONS_FILE = Path("data/shadow_predictions.jsonl")
+def _is_sniper(pred: dict, odds: dict | None) -> bool:
+    """
+    Sniper pick kriterleri (hepsi sağlanmalı):
+    - TIER_A veya TIER_B (Elo farkı ≥ 50)
+    - is_no_bet değil
+    - final_confidence ≥ 62
+    - Oran varsa: modelimizin olasılığı piyasa implied'ından yüksek (pozitif EV)
+    """
+    if pred.get("is_no_bet"):
+        return False
+    if pred.get("tier", "TIER_C") == "TIER_C":
+        return False
+    if float(pred.get("final_confidence", 0)) < 62:
+        return False
+    if odds:
+        raw = pred.get("raw_prediction", "")
+        key_map = {"HOME_WIN": "h", "DRAW": "d", "AWAY_WIN": "a"}
+        mkt_key = key_map.get(raw)
+        if mkt_key and odds.get(mkt_key):
+            market_prob = 1.0 / odds[mkt_key]
+            model_prob  = float(pred.get(
+                {"HOME_WIN": "home_win_prob", "DRAW": "draw_prob", "AWAY_WIN": "away_win_prob"}.get(raw, "home_win_prob"), 0
+            )) / 100.0
+            if model_prob <= market_prob:
+                return False
+    return True
+
+
+_PREDICTIONS_LOG = Path("data/shadow_predictions.jsonl")
+_PREDICTIONS_FILE = Path("data/shadow_predictions.jsonl")   # eski compat alias
 _QUOTA_FILE       = Path("data/odds_quota.json")
 _QUOTA_THRESHOLD  = 50  # kredi bu sayının altına düşünce fetch durdur
 
 
 def _has_matches_today(date_str: str) -> bool:
     """Bugün tahmin edilmiş maç var mı? Yoksa API kredisi yakma."""
-    if not _PREDICTIONS_FILE.exists():
+    f_path = _PREDICTIONS_LOG if _PREDICTIONS_LOG.exists() else _PREDICTIONS_FILE
+    if not f_path.exists():
         return True  # dosya yoksa güvenli taraf: fetch et
-    with open(_PREDICTIONS_FILE) as f:
+    with open(f_path) as f:
         for line in f:
             try:
                 if json.loads(line).get("match_date") == date_str:
@@ -682,6 +712,10 @@ def format_match_block(db, match: dict, pred: dict, odds_map: dict | None = None
     away    = match.get("away_name") or _team_name(db, match.get("away_team_id"))
     kickoff = match.get("time") or "—"
     tier    = pred.get("tier", "—")
+    odds    = _lookup_odds(home, away, odds_map or {})
+
+    sniper = _is_sniper(pred, odds)
+    sniper_prefix = "⭐ " if sniper else ""
 
     if pred.get("raw_prediction") == "NO_DATA":
         return (
@@ -694,8 +728,6 @@ def format_match_block(db, match: dict, pred: dict, odds_map: dict | None = None
         status = f"⛔ OYNANMAZ ({pred.get('market_note') or 'No-Bet'})"
     else:
         status = "✅ İZLENİYOR"
-
-    odds = _lookup_odds(home, away, odds_map or {})
     if odds:
         odds_line = f"\n💰 <b>Oran (ort.):</b> 1: {odds['h']} | X: {odds['d']} | 2: {odds['a']}"
         if odds.get("over_2_5"):
@@ -733,7 +765,7 @@ def format_match_block(db, match: dict, pred: dict, odds_map: dict | None = None
     sec_str = _sec_display.get(sec_label, sec_label)
 
     return (
-        f"🏟️ <b>{home}</b> vs <b>{away}</b>  —  🕒 {kickoff}  [{tier}]\n"
+        f"{sniper_prefix}🏟️ <b>{home}</b> vs <b>{away}</b>  —  🕒 {kickoff}  [{tier}]\n"
         f"🛡️ <b>Statü:</b> {status}\n"
         f"🥇 <b>Ana Seçim:</b> {_pick_label(pred.get('raw_prediction', 'DRAW'))}  "
         f"<i>(%{round(float(pred.get('final_confidence', 0)), 1)} güven)</i>\n"
@@ -744,6 +776,7 @@ def format_match_block(db, match: dict, pred: dict, odds_map: dict | None = None
         f"{odds_line}\n"
         f"⚽ KG Var %{btts['btts_yes']} · 2.5Ü %{ou['over_2.5']} · "
         f"1X %{dc_1x} · X2 %{dc_x2}"
+        + (f"\n🎯 <b>SNIPER — Piyasa EV pozitif</b>" if sniper else "")
     )
 
 
@@ -824,12 +857,16 @@ def run_shadow_session(
     match_results: list[dict] = []
     blocks: list[str] = []
 
+    sniper_summaries: list[str] = []
+
     for m in matches:
         home = m.get("home_name") or _team_name(db, m.get("home_team_id"))
         away = m.get("away_name") or _team_name(db, m.get("away_team_id"))
         pred = shadow_predict(m)
 
-        odds = _lookup_odds(home, away, odds_map)
+        odds   = _lookup_odds(home, away, odds_map)
+        sniper = _is_sniper(pred, odds)
+
         match_results.append({
             "match":         f"{home} v {away}",
             "kickoff":       m.get("time", "—"),
@@ -840,14 +877,62 @@ def run_shadow_session(
             "confidence":    pred["final_confidence"],
             "tier":          pred.get("tier", "—"),
             "is_no_bet":     pred.get("is_no_bet", False),
+            "is_sniper":     sniper,
             "odds":          odds,
         })
         blocks.append(format_match_block(db, m, pred, odds_map))
 
-    if not blocks:
-        bulletin = header + "\n⚠️ Maçlar bulundu ancak tahmin üretilemedi."
+        # --- CLV log: tahmin anındaki oranları kaydet -----------------------
+        if pred["raw_prediction"] not in ("NO_DATA",):
+            log_entry = {
+                "match_date":    date_str,
+                "session_id":    session_id,
+                "home":          home,
+                "away":          away,
+                "kickoff":       m.get("time", "—"),
+                "prediction":    pred["raw_prediction"],
+                "predicted_prob_home": round(pred["home_win_prob"] / 100, 4),
+                "predicted_prob_draw": round(pred["draw_prob"] / 100, 4),
+                "predicted_prob_away": round(pred["away_win_prob"] / 100, 4),
+                "confidence":    pred["final_confidence"],
+                "tier":          pred.get("tier", "—"),
+                "is_sniper":     sniper,
+                "market_odds_h": odds["h"] if odds else None,
+                "market_odds_d": odds["d"] if odds else None,
+                "market_odds_a": odds["a"] if odds else None,
+                "logged_at":     datetime.now(timezone.utc).isoformat(),
+            }
+            try:
+                _PREDICTIONS_LOG.parent.mkdir(parents=True, exist_ok=True)
+                with open(_PREDICTIONS_LOG, "a", encoding="utf-8") as fh:
+                    fh.write(json.dumps(log_entry, ensure_ascii=False) + "\n")
+            except Exception as e:
+                logger.warning("Predictions log yazılamadı: %s", e)
+
+        if sniper and pred["raw_prediction"] not in ("NO_DATA",):
+            raw = pred["raw_prediction"]
+            lbl = _pick_label(raw)
+            conf = round(float(pred["final_confidence"]), 1)
+            mkt_key = {"HOME_WIN": "h", "DRAW": "d", "AWAY_WIN": "a"}.get(raw, "h")
+            mkt_odd = f"@{odds[mkt_key]}" if odds and odds.get(mkt_key) else ""
+            sniper_summaries.append(
+                f"  ⭐ <b>{home} - {away}</b>  {lbl}  {mkt_odd}  <i>({conf}% güven)</i>"
+            )
+
+    # --- sniper özet başlığa ekle -----------------------------------------
+    if sniper_summaries:
+        sniper_block = (
+            f"\n🎯 <b>SNIPER SEÇİMLER ({len(sniper_summaries)} maç)</b>\n"
+            + "\n".join(sniper_summaries)
+            + "\n<i>Piyasaya göre pozitif EV — maç başlamadan önce oynayın</i>\n"
+        )
     else:
-        bulletin = header + "\n" + "\n\n".join(blocks)
+        sniper_block = "\n<i>Bugün sniper kriterleri karşılayan maç yok.</i>\n"
+
+    if not blocks:
+        bulletin = header + sniper_block + "\n⚠️ Maçlar bulundu ancak tahmin üretilemedi."
+    else:
+        bulletin = header + sniper_block + "\n" + "\n\n".join(blocks)
 
     report = _build_run_report(
         session_id, date_str, data_source_label,

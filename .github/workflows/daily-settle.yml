@@ -31,11 +31,16 @@ jobs:
           FOOTBALL_DATA_ORG_KEY: ${{ secrets.FOOTBALL_DATA_ORG_KEY }}
         run: python ops/result_settler.py --settle
 
+      - name: CLV Tracker güncelle
+        continue-on-error: true
+        run: python ops/clv_tracker.py --update
+
       - name: Settlement verisini commit et
         if: always()
         run: |
           git config user.email "github-actions@github.com"
           git config user.name "GitHub Actions"
           git add data/shadow_settlements.jsonl data/shadow_accuracy.json || true
-          git diff --cached --quiet || git commit -m "chore: daily settlement [skip ci]"
+          git add data/clv_log.jsonl data/clv_summary.json data/shadow_predictions.jsonl || true
+          git diff --cached --quiet || git commit -m "chore: daily settlement + CLV update [skip ci]"
           git push || true
