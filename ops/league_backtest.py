@@ -65,6 +65,7 @@ LEAGUES: dict[str, dict] = {
     "Ligue1":     {"id": 61,  "country": "France",      "name": "Ligue 1"},
     "Eredivisie": {"id": 88,  "country": "Netherlands", "name": "Eredivisie"},
     "SuperLig":   {"id": 203, "country": "Turkey",      "name": "Süper Lig"},
+    "PrimeiraLiga": {"id": 94, "country": "Portugal", "name": "Primeira Liga"},
 }
 
 # ---------------------------------------------------------------------------
