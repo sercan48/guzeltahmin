@@ -1,0 +1,107 @@
+{
+  "generated_at": "2026-06-19T19:27:55.701544+00:00",
+  "source": "league_backtest",
+  "league": "Bundesliga",
+  "season": 2024,
+  "n_settled": 306,
+  "n_correct": 154,
+  "overall_accuracy_pct": 50.33,
+  "log_loss": 1.03094,
+  "brier_score": 0.6179,
+  "n_draws_predicted": 0,
+  "n_draws_actual": 77,
+  "draw_rate_predicted": 24.849,
+  "draw_rate_actual": 25.163,
+  "draw_rate_bias": 0.314,
+  "confusion_matrix": {
+    "HOME_WIN": {
+      "HOME_WIN": 98,
+      "DRAW": 40,
+      "AWAY_WIN": 55
+    },
+    "DRAW": {
+      "HOME_WIN": 0,
+      "DRAW": 0,
+      "AWAY_WIN": 0
+    },
+    "AWAY_WIN": {
+      "HOME_WIN": 20,
+      "DRAW": 37,
+      "AWAY_WIN": 56
+    }
+  },
+  "by_confidence_band": {
+    "90-92": {
+      "n": 0,
+      "mean_conf": null,
+      "correct": 0,
+      "accuracy": null
+    },
+    "70-89": {
+      "n": 0,
+      "mean_conf": null,
+      "correct": 0,
+      "accuracy": null
+    },
+    "50-69": {
+      "n": 49,
+      "mean_conf": 55.35,
+      "correct": 38,
+      "accuracy": 77.55
+    },
+    "30-49": {
+      "n": 257,
+      "mean_conf": 38.04,
+      "correct": 116,
+      "accuracy": 45.14
+    }
+  },
+  "ece": 0.09518,
+  "ece_available": true,
+  "reliability_bins": [
+    {
+      "band": "30-40",
+      "n": 166,
+      "mean_conf": 34.67,
+      "accuracy": 43.98
+    },
+    {
+      "band": "40-50",
+      "n": 91,
+      "mean_conf": 44.17,
+      "accuracy": 47.25
+    },
+    {
+      "band": "50-60",
+      "n": 41,
+      "mean_conf": 54.02,
+      "accuracy": 78.05
+    },
+    {
+      "band": "60-70",
+      "n": 8,
+      "mean_conf": 62.16,
+      "accuracy": 75.0
+    },
+    {
+      "band": "70-80",
+      "n": 0,
+      "mean_conf": null,
+      "accuracy": null
+    },
+    {
+      "band": "80-93",
+      "n": 0,
+      "mean_conf": null,
+      "accuracy": null
+    }
+  ],
+  "elo_coverage": {
+    "found": 306,
+    "missing": 0,
+    "total": 306
+  },
+  "flags": [
+    "BRIER_HIGH \u2014 0.6179"
+  ]
+}

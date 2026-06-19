@@ -1,0 +1,107 @@
+{
+  "generated_at": "2026-06-19T19:27:55.672532+00:00",
+  "source": "league_backtest",
+  "league": "PrimeiraLiga",
+  "season": 2024,
+  "n_settled": 306,
+  "n_correct": 162,
+  "overall_accuracy_pct": 52.94,
+  "log_loss": 1.02929,
+  "brier_score": 0.61612,
+  "n_draws_predicted": 0,
+  "n_draws_actual": 79,
+  "draw_rate_predicted": 24.899,
+  "draw_rate_actual": 25.817,
+  "draw_rate_bias": 0.918,
+  "confusion_matrix": {
+    "HOME_WIN": {
+      "HOME_WIN": 120,
+      "DRAW": 62,
+      "AWAY_WIN": 53
+    },
+    "DRAW": {
+      "HOME_WIN": 0,
+      "DRAW": 0,
+      "AWAY_WIN": 0
+    },
+    "AWAY_WIN": {
+      "HOME_WIN": 12,
+      "DRAW": 17,
+      "AWAY_WIN": 42
+    }
+  },
+  "by_confidence_band": {
+    "90-92": {
+      "n": 0,
+      "mean_conf": null,
+      "correct": 0,
+      "accuracy": null
+    },
+    "70-89": {
+      "n": 0,
+      "mean_conf": null,
+      "correct": 0,
+      "accuracy": null
+    },
+    "50-69": {
+      "n": 39,
+      "mean_conf": 53.49,
+      "correct": 35,
+      "accuracy": 89.74
+    },
+    "30-49": {
+      "n": 267,
+      "mean_conf": 37.01,
+      "correct": 127,
+      "accuracy": 47.57
+    }
+  },
+  "ece": 0.13827,
+  "ece_available": true,
+  "reliability_bins": [
+    {
+      "band": "30-40",
+      "n": 200,
+      "mean_conf": 34.55,
+      "accuracy": 41.5
+    },
+    {
+      "band": "40-50",
+      "n": 67,
+      "mean_conf": 44.39,
+      "accuracy": 65.67
+    },
+    {
+      "band": "50-60",
+      "n": 39,
+      "mean_conf": 53.49,
+      "accuracy": 89.74
+    },
+    {
+      "band": "60-70",
+      "n": 0,
+      "mean_conf": null,
+      "accuracy": null
+    },
+    {
+      "band": "70-80",
+      "n": 0,
+      "mean_conf": null,
+      "accuracy": null
+    },
+    {
+      "band": "80-93",
+      "n": 0,
+      "mean_conf": null,
+      "accuracy": null
+    }
+  ],
+  "elo_coverage": {
+    "found": 306,
+    "missing": 0,
+    "total": 306
+  },
+  "flags": [
+    "BRIER_HIGH \u2014 0.6161"
+  ]
+}

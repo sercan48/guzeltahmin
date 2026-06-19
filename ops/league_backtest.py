@@ -230,6 +230,8 @@ _STATIC_ELO: dict[str, float] = {
     "vfl bochum": 1700.0, "bochum": 1700.0,
     "holstein kiel": 1680.0, "kiel": 1680.0,
     "fc st. pauli": 1700.0, "st. pauli": 1700.0, "st pauli": 1700.0,
+    "fc koln": 1750.0, "1. fc köln": 1750.0, "koln": 1750.0, "köln": 1750.0,
+    "hamburger sv": 1760.0, "hamburg": 1760.0, "hsv": 1760.0,
     # ── Serie A ─────────────────────────────────────────────────────────────
     "inter milan": 1980.0, "internazionale": 1980.0, "inter": 1980.0,
     "atalanta": 1930.0, "atalanta bc": 1930.0,
@@ -251,6 +253,9 @@ _STATIC_ELO: dict[str, float] = {
     "venezia": 1680.0, "venezia fc": 1680.0,
     "parma": 1700.0, "parma calcio": 1700.0,
     "como": 1680.0, "como 1907": 1680.0,
+    "sassuolo": 1700.0, "us sassuolo": 1700.0,
+    "pisa": 1690.0, "ac pisa": 1690.0,
+    "cremonese": 1680.0, "us cremonese": 1680.0,
     # ── Ligue 1 ─────────────────────────────────────────────────────────────
     "paris saint-germain": 2040.0, "psg": 2040.0, "paris sg": 2040.0,
     "lille": 1840.0, "losc lille": 1840.0,
@@ -270,6 +275,9 @@ _STATIC_ELO: dict[str, float] = {
     "saint-etienne": 1720.0, "st etienne": 1720.0,
     "angers": 1690.0, "angers sco": 1690.0,
     "auxerre": 1700.0, "aj auxerre": 1700.0,
+    "lorient": 1720.0, "fc lorient": 1720.0,
+    "metz": 1700.0, "fc metz": 1700.0,
+    "paris fc": 1710.0,
     # ── Eredivisie ──────────────────────────────────────────────────────────
     "psv": 1900.0, "psv eindhoven": 1900.0,
     "feyenoord": 1860.0,
@@ -287,8 +295,12 @@ _STATIC_ELO: dict[str, float] = {
     "excelsior": 1690.0, "sbv excelsior": 1690.0,
     "pec zwolle": 1690.0, "zwolle": 1690.0,
     "almere city": 1680.0, "almere": 1680.0,
-    "fortuna sittard": 1690.0, "fortuna": 1690.0,
+    "fortuna sittard": 1690.0, "fortuna": 1690.0, "for sittard": 1690.0,
     "waalwijk": 1700.0,
+    "nac breda": 1680.0, "nac": 1680.0,
+    "willem ii": 1690.0,
+    "telstar": 1660.0,
+    "volendam": 1670.0, "fc volendam": 1670.0,
     # ── Süper Lig ───────────────────────────────────────────────────────────
     "galatasaray": 1880.0,
     "fenerbahce": 1870.0, "fenerbahçe": 1870.0,
@@ -314,6 +326,10 @@ _STATIC_ELO: dict[str, float] = {
     "bodrumspor": 1660.0,
     "goztepe": 1690.0, "göztepe": 1690.0,
     "sakaryaspor": 1660.0,
+    "ad. demirspor": 1700.0,
+    "buyuksehyr": 1780.0, "buyuksehir": 1780.0,
+    "genclerbirligi": 1660.0, "gençlerbirliği": 1660.0,
+    "kocaelispor": 1660.0,
     # ── Primeira Liga ───────────────────────────────────────────────────────
     "benfica": 1900.0, "sl benfica": 1900.0,
     "porto": 1890.0, "fc porto": 1890.0,
@@ -335,6 +351,20 @@ _STATIC_ELO: dict[str, float] = {
     "chaves": 1680.0, "gd chaves": 1680.0,
     "santa clara": 1690.0, "cd santa clara": 1690.0,
     "avs": 1670.0,
+    "sp lisbon": 1900.0,
+    "alverca": 1670.0, "fc alverca": 1670.0,
+    "tondela": 1670.0, "cd tondela": 1670.0,
+    # ── La Liga aliases (football-data.co.uk short names) ───────────────────
+    "ath bilbao": 1830.0,
+    "ath madrid": 1950.0,
+    "espanol": 1710.0,
+    "levante": 1700.0, "levante ud": 1700.0,
+    "elche": 1680.0, "elche cf": 1680.0,
+    "oviedo": 1680.0, "real oviedo": 1680.0,
+    # ── Premier League aliases ───────────────────────────────────────────────
+    "burnley": 1700.0,
+    "leeds": 1730.0, "leeds united": 1730.0,
+    "sunderland": 1700.0, "sunderland afc": 1700.0,
 }
 
 

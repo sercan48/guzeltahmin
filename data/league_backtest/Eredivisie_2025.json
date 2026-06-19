@@ -1,0 +1,107 @@
+{
+  "generated_at": "2026-06-19T19:28:05.173763+00:00",
+  "source": "league_backtest",
+  "league": "Eredivisie",
+  "season": 2025,
+  "n_settled": 306,
+  "n_correct": 160,
+  "overall_accuracy_pct": 52.29,
+  "log_loss": 1.04381,
+  "brier_score": 0.62682,
+  "n_draws_predicted": 0,
+  "n_draws_actual": 80,
+  "draw_rate_predicted": 24.945,
+  "draw_rate_actual": 26.144,
+  "draw_rate_bias": 1.199,
+  "confusion_matrix": {
+    "HOME_WIN": {
+      "HOME_WIN": 117,
+      "DRAW": 54,
+      "AWAY_WIN": 47
+    },
+    "DRAW": {
+      "HOME_WIN": 0,
+      "DRAW": 0,
+      "AWAY_WIN": 0
+    },
+    "AWAY_WIN": {
+      "HOME_WIN": 19,
+      "DRAW": 26,
+      "AWAY_WIN": 43
+    }
+  },
+  "by_confidence_band": {
+    "90-92": {
+      "n": 0,
+      "mean_conf": null,
+      "correct": 0,
+      "accuracy": null
+    },
+    "70-89": {
+      "n": 0,
+      "mean_conf": null,
+      "correct": 0,
+      "accuracy": null
+    },
+    "50-69": {
+      "n": 19,
+      "mean_conf": 52.25,
+      "correct": 16,
+      "accuracy": 84.21
+    },
+    "30-49": {
+      "n": 287,
+      "mean_conf": 37.12,
+      "correct": 144,
+      "accuracy": 50.17
+    }
+  },
+  "ece": 0.1423,
+  "ece_available": true,
+  "reliability_bins": [
+    {
+      "band": "30-40",
+      "n": 208,
+      "mean_conf": 34.6,
+      "accuracy": 44.23
+    },
+    {
+      "band": "40-50",
+      "n": 79,
+      "mean_conf": 43.75,
+      "accuracy": 65.82
+    },
+    {
+      "band": "50-60",
+      "n": 19,
+      "mean_conf": 52.25,
+      "accuracy": 84.21
+    },
+    {
+      "band": "60-70",
+      "n": 0,
+      "mean_conf": null,
+      "accuracy": null
+    },
+    {
+      "band": "70-80",
+      "n": 0,
+      "mean_conf": null,
+      "accuracy": null
+    },
+    {
+      "band": "80-93",
+      "n": 0,
+      "mean_conf": null,
+      "accuracy": null
+    }
+  ],
+  "elo_coverage": {
+    "found": 306,
+    "missing": 0,
+    "total": 306
+  },
+  "flags": [
+    "BRIER_HIGH \u2014 0.6268"
+  ]
+}
