@@ -261,22 +261,56 @@ def fetch_fixtures_api(league_id: int, season: int) -> list[dict]:
     return fixtures
 
 
+def _parse_fdc_date(raw: str) -> str:
+    """Convert football-data.co.uk DD/MM/YY or DD/MM/YYYY to YYYY-MM-DD."""
+    raw = raw.strip()
+    for fmt in ("%d/%m/%y", "%d/%m/%Y"):
+        try:
+            from datetime import datetime
+            return datetime.strptime(raw, fmt).strftime("%Y-%m-%d")
+        except ValueError:
+            continue
+    return raw  # already ISO or unknown — pass through
+
+
 def fetch_fixtures_csv(csv_path: str) -> list[dict]:
-    """Load fixtures from a local CSV (columns: date,home,away,home_goals,away_goals)."""
+    """Load fixtures from a local CSV.
+
+    Accepts two formats (auto-detected from header):
+    1. Native: date,home,away,home_goals,away_goals
+    2. football-data.co.uk: Date,HomeTeam,AwayTeam,FTHG,FTAG,...
+    """
     fixtures = []
-    with open(csv_path, newline="", encoding="utf-8") as f:
-        for row in csv.DictReader(f):
+    with open(csv_path, newline="", encoding="utf-8-sig") as f:
+        reader = csv.DictReader(f)
+        headers = reader.fieldnames or []
+        is_fdc = "HomeTeam" in headers  # football-data.co.uk layout
+        for row in reader:
             try:
-                fixtures.append({
-                    "date":       row["date"].strip(),
-                    "home":       row["home"].strip(),
-                    "away":       row["away"].strip(),
-                    "home_goals": int(row["home_goals"]),
-                    "away_goals": int(row["away_goals"]),
-                })
+                if is_fdc:
+                    hg = row.get("FTHG", "").strip()
+                    ag = row.get("FTAG", "").strip()
+                    if not hg or not ag:
+                        continue
+                    fixtures.append({
+                        "date":       _parse_fdc_date(row["Date"]),
+                        "home":       row["HomeTeam"].strip(),
+                        "away":       row["AwayTeam"].strip(),
+                        "home_goals": int(hg),
+                        "away_goals": int(ag),
+                    })
+                else:
+                    fixtures.append({
+                        "date":       row["date"].strip(),
+                        "home":       row["home"].strip(),
+                        "away":       row["away"].strip(),
+                        "home_goals": int(row["home_goals"]),
+                        "away_goals": int(row["away_goals"]),
+                    })
             except Exception:
                 continue
-    print(f"  [CSV] {len(fixtures)} fixtures from {csv_path}")
+    fmt_label = "football-data.co.uk" if is_fdc else "native"
+    print(f"  [CSV/{fmt_label}] {len(fixtures)} fixtures from {csv_path}")
     return fixtures
 
 
