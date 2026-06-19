@@ -1,0 +1,398 @@
+TITLE: tipstrr: a Betting Community you can Trust
+URL: https://www.football-data.co.uk/blog/tipstrr.php
+DATE: 23rd April 2018
+
+I spent 14 years verifying online sports betting advisory services through my service Sports-Tipsters. In 2012 I wrote my second book about that journey, revealing the truth about this industry: its very limited ability to turn luck into skill, its overconfidence, its survivorship bias, and occasionally its fraudulent tactics. Those of you who have followed me will know I place a lot of emphasis on simply being upfront and telling the truth when it comes to the buying and selling of betting tips. From the tipster's perspective, that obviously means not changing tips histories. But it also means not presenting results in a manner that makes you look better than you are, not claiming retrospectively tested results that pre-date the age of your service. not using bookmakers who are obviously joke brands with reputations for immediate stake limitation or outright bans, and taking a mature view regards the subscription fees you charge, the number of customers you have and the impact odds movements will have on the ability of your customers to back the prices you advise. Suffice it to say, I won't suffer fools in this industry, and if I see someone taking the piss I'll tell others that they are taking the piss. Consequently, it is rare when I find a website that I actually have respect for what they are trying to achieve. One of these is tipstrr, an online sports betting and tipping community where punters can follow free and subscription tips from advisory services using their platform. Run by Damien Fearn, a former sports data analyst for English football clubs and latterly a sports trader, he and his team aim to put punters in touch with tipsters with a view to maximising the chances of making a long term profit. I won't mince my words here but having met him Damien won't mind me doing so: most of the tipsters that will use the tipstrr platform to sell their services will probably not be offering anything much more than luck. As with any tipster supermarket, the vast majority of profitable tipsters will not be able to sustain short term successes over the long run. Damien has agreed to allow me to analyse his database of nearly a million tips to find out if the distribution of tipster performance looks much like others I have found in the past. In due course I hope to report the findings. What sets Damien and tipstrr apart, however, is their willingness to embrace an honest and realistic approach. In addition to freely acknowledging that many of the tipsters using tipstrr will ultimately prove to be largely unskilled, the platform also limits the number of bookmakers that tipsters can use when advising betting prices. What is the point of quoting odds from a brand like Marathonbet, when the customer will almost certainly be limited to $1 stakes or less every time they try to use them after just a handful of wagers? People use tipsters in an attempt to make a meaningful profit. No one will be doing that at a brand like Marathonbet, and if anyone is it's because Marathonbet have strong reasons for believing you're an idiot who will give it all back to them in the future. Of the small number of bookmakers the tipstrr platform allows, Pinnacle and SBObet are two of them, both known for allowing winning customers. Taking such an approach creates an air of credibility to the prices the tipsters are advising and which the tipstrr platform is recording for tip histories. Since the news broke last year that certain tipsters were deliberately offering losing tips to customers to help them earn an affiliate revenue with bookmakers, the industry has been awash with judgments and criticisms, some of them fair, some of them uninformed, about the incompatibility of tipsters seeking to profit directly from punters losses whilst allegedly distributing tips that make a profit. tipstrr has taken the decision to sidestep the controversy and simply refuse to enter into affiliate partnerships with bookmakers. Regardless of the rights or wrongs of tipsters choosing to follow the affiliation route, by taking this decision, tipstrr has left no room for criticism. You know where you stand: they will not be making money from punters losses, just their agreed percentage share for tipsters' subscriptions. Some years ago when I first discovered tipstrr, my concern with it was that it was claiming a level of verification that lacked a credible independence. My Sports-Tipsters never took any money from the sale of tips, and existed purely as a 3rd party independent monitor of tipping services. As tipstrr is taking a percentage share of subscriptions it cannot be regarded as truly independent. This is a drawback that Damien has acknowledged to me, but then how do you go about getting an independent third party to verify potentially thousands of tipsters and hundreds of thousands of tips that would simply be replicating what the tipstrr platform is doing anyway? Perhaps reproducing the same published performance from a randomised sample would be the way to do it. I'm sure Damien will be open to anyone with ideas. When I met with Damien, he also explained to me other aspects of the management philosophy that focuses on achieving respect through credibility rather than simply profits via embellishment. For example, tipsters who are caught trying to manipulate the system in an attempt to enhance their records will be given a warning, followed by removal if persisting in such activity. Other features like comparing tipsters' advised prices to closing prices are also being considered. I won't tell you that if you buy tips from a tipstrr tipster you will be guaranteed to make money. But what I am confident of is that you will be dealing with a platform that has the customer's interests at heart and which you can trust. Trust is often a limited commodity in the sports tipping sector, so when you find it, take note.
+TITLE: What can Betshare tell us about a betting market?
+URL: https://www.football-data.co.uk/blog/betshare.php
+DATE: 22nd January 2017
+
+It's often assumed that the efficiency of a betting market, that is to say the accuracy of its betting prices, is a reflection of the preferences of a wise betting crowd and the bookmaker's attempts at balancing or equalising the action on either side of a result. But is this necessarily the case? Without information about how many people are actually betting on particular propositions, and what money they are staking, we can't be entirely sure how the market is being formed and managed by the bookmaker. Fortunately, Pinnacle.com, recognised as the world's sharpest odds setter, publishes data on the percentage of customers placing bet via its twitter feed. This article analyses a sample of those percentages, called betshares, for the football total goals betting market to see what clues it might offer.
+
+Trawling through the last year or so of betshare tweets from Pinnacle.com, I have collected a sample of 200 football matches with the goal line (typically between 2 and 3.25) and the percentage of bets placed on both Over and Under. Also shown are the opening and closing odds for those lines (taken from Oddsportal.com). Matches include those from the English Premier League, German Bundesliga, Spanish La Liga, Champions League, Europa Cup and international competitions including friendlies. 75% of matches witnessed a preference for betting on the Over (betshare greater than 50%) whilst the average Overs betshare was 62%. This bias towards betting over the bookmaker's goal line is something that other sources have reported, including betting social media platform Pyckio and sports betting analytics website SportsInsights. If we were to assume a priori that the expected betshare should be evenly distributed between Over and Under, such a bias is highly statistically significant (2-tailed, 2-sample paired t-test) with about a 10 in a quintillion probability that this difference over 200 matches would have arisen by chance.
+
+What are the implications of this bias? Well, firstly, if we were to assume that all bettors betting Over and Under wager roughly the same stakes on average, the bookmaker would be heavily exposed to losses should the Over win. The corollary is that the bookmaker should shorten his odds on the Over dramatically in an attempt to balance the action on both sides of the betting line. For example, for fair odds of 2.00 for both over and under 2.5 goals, a 62% betshare for the Over would necessitate odds shortening to 1.61, with a corresponding lengthening to 2.58 for the Under. Clearly, such a dramatic odds shift would create an obvious and significant value opportunity for Under bettors, which in turn would influence the betshare.
+
+Speaking to SportsInsights, Scott Cooley, an Odds Consultant for the market-setting Bookmaker.eu, makes the case that this is not what actually happens at all: "I think a common misconception is that books are feverishly trying to balance out the sides. Yes, in a perfect world it'd be nice to have equal action on both sides so our risk is zero, but that obviously doesn't happen for every game. We will certainly accept the unbalanced action if we feel we're in the right position. Sometimes we're right, and sometimes we're wrong."
+
+Perhaps bookmakers are willing to be part of the action when required. Furthermore, how likely is it that bettors targeting Over or Under are staking in the same general way? Pinnacle.com have hinted that where betshares are heavily skewed in favour of one side over the other, the implication is that those betting on the smaller betshare option are doing so in larger volumes.
+
+Evidently, then, where bettors on difference sides of the line are staking in different ways, the bookmaker is still able to manage his liabilities without having to offer too much value to the sharper bettor. SportsInsights have suggested that squares, those recreational punters who will more usually stake small to moderate sizes, have a tendency to pound the Overs. Sharps, by contrast, stake bigger and are more likely to focus on the Unders given the potential for value that might exist.
+
+Analysing the over/under 2.5 goals opening betting odds from Pinnacle.com for 83,634 football matches played from 2007 to 2016 showed returns of 97.2% and 96.4% for blanket Overs and Unders betting respectively. The difference between the two is not statistically significant (p-value = 0.22, 2-tailed 2-sample paired t-test). Such evidence would appear to confirm that despite any preference towards Overs betting, Pinnacle at any rate are not offering up any meaningful value to sharps looking to exploit the cognitively biased preferences of squares.
+
+To all intents and purposes there is, on average, almost no odds movement at all, and what little there is, is actually against the Overs which are preferred by the majority of bettors. Furthermore, plotting the distribution of individual odds movements reveals them to be effectively normally or randomly distributed. The greater the betshare for the Overs option, the more it will actually lengthen between market opening and closure. This would appear to contradict the suggestion that the pounding of Overs by squares creates value opportunities for sharps in the Unders.
+
+With the average shift between opening and closing prices for the most disproportionate betshares barely 5%, on average at least there would seem be little theoretical advantage to be gained knowing betshare information.
+
+What does all this mean for the way a bookmaker like Pinnacle manages its total goals betting market? Without actual turnover data we are still very much in the dark about how liabilities are being managed precisely. Nevertheless, the insignificant difference between returns for blanket betting Overs versus Unders, the apparent random nature of odds movement between market opening and closure, and the very limited relationship between betshare percentage and price movement would seem to point to there being limited scope for developing a consistently viable betting system based on betshare knowledge alone.
+
+What is not in doubt is that bettors, as an aggregate, are heavily biased towards betting on the Overs market. Perhaps the most intriguing question is why bettors prefer the Over? In my recent book Squares & Sharps I proposed a simple hypothesis: loss aversion. In prospect theory, loss aversion refers to the tendency for people to strongly prefer avoiding losses in comparison to acquiring gains. According to Amos Tversky and Daniel Kahneman who developed the theory, losses are as much as twice as psychologically powerful as gains in decision-making environments under uncertainty.
+
+In an Over/Under betting market, our aversion to losses might be explained in the following way. By its very structure, at the start of a match, one side, the Under, is automatically a winner, and remains so until such time as enough goals are scored to transform it into a loser. In contrast, the Over starts out as a loser and remains so until enough goals are scored to transform it into a winner. In light of what prospect theory informs us, bettors may prefer the possibility of seeing a loser transformed into a winner rather than the other way around.
+TITLE: Using the Closing Betting Odds to test for a Tipster's Skill (Analysing Tipsters)
+URL: https://www.football-data.co.uk/blog/closing_odds.php
+DATE: 20th December 2016
+
+In August I wrote an article showing how the Pinnacle closing line (or closing odds) can be used to estimate the advantage we might hold. Specifically, with the bookmaker's margin removed, my data analysis revealed that the ratio of the odds you bet to Pinnacle's odds at closing is a good predictor of your expectation. For example, if you bet odds of 1.8 and they closed at 1.65 (with a margin of 3%), your predicted profit expectation would be given by 1.8 divided by 1.65 divided by 1.03, or about 5.9%.
+
+I've also previously looked at whether a set of 48 tennis tipsters was beating the market in aggregate by outperforming the closing odds. This time I want to look at 4 individual tipping records separately to give you an idea of how we can use the closing line of an efficient bookmaker to test for whether a tipster is skilled, lucky or faking it.
+
+The first of these records comes from the football tipster Jeremy Price. Now verifying to Betrush, he was for many years the top football tipster working at the tipster supermarket Betadvisor. Since beginning to submit tips to Betrush in November 2016 Jeremy has advised a total of 26 tips. Of these, 23 saw a shortening in price from his advised figure to the one published by closing, with only 3 lengthening. Assuming we would expect 50% to shorten and lengthen where the tipster was just guessing, a chi-square test comparing expectation and observation shows his performance to be highly statistically significant (p-value about 1 in 100,000). On average Jeremy outperforms the closing market by about 10%. With a typical margin of about 3% in his tips we should expect his long term yield to be around 6 to 7%. We have managed to predict this from just 26 tips and a record of only 2 months.
+
+The second record comes from Betrush tipster Eredivisie2000, who bets only on Dutch football. My analysis of 23 of his most recent tips leaves a question mark as to whether his 6% yield from 700+ picks is just chance. Although 17 of the 23 picks witnessed a price shortening by closing, his average advantage over the closing odds was only 2%. After Pinnacle's margin is removed, I would predict that he'll barely break even over the long term.
+
+The third record comes from Betadvisor's Aris Papadopoulos, a football tipster showing a 25% yield from nearly 300 picks. By any stretch this would be very strong evidence of a skilled tipster. Sadly, the analysis of closing prices paints a different picture. Neither the chi-square test nor t-test are remotely significant for his 21 picks in December, with 8 lengthening, 13 shortening, and an average advantage over the closing odds of just 1%. Pinnacle clearly isn't particularly bothered by his appearance in their betting markets. The suggestion is that long term his record will simply regress towards the mean.
+
+The final record comes from Pinnacle Tipster, claiming a 78% win rate from over 1,000 picks averaging even-money prices — translating into a yield of around 55%. Analysis of 18 picks shows that 5 prices shortened and 13 lengthened. The average ratio of tip odds to closing Pinnacle odds was 0.976. Pinnacle Tipster appears not to have the slightest idea how to spot a mistake in the betting market. Such a finding would be completely at odds with a tipster claiming a 55% long-term advantage. The conclusion is obvious: Pinnacle Tipster is cheating. Many of the losing tips are likely removed from the record before it is published.
+
+In summary, the closing line, and more specifically that of Pinnacle.com, can be used with great effectiveness as another tool to assess the quality of a tipster. Before you consider buying their tips, always check to see if they are beating the closing market, no matter how good their profits record may appear to be.
+TITLE: How consistently do football teams cover their Asian Handicap?
+URL: https://www.football-data.co.uk/blog/asian_handicap.php
+DATE: 8th September 2016
+
+Pinnacle.com recently published an article looking at the use of historical Asian handicap data as a predictive tool to find betting value. For example, since Mark Hughes took over at Stoke, the team has covered their Asian handicap more than 50% of the time every season. Teams with an average percentage of over 50% have essentially beaten the bookmakers in the Asian handicap betting. Liverpool, by contrast, has on average failed to cover the spread every season during the last six seasons. What this would have meant for bettors is that betting on Liverpool's opponents to cover their spread throughout the season might well have proven to be profitable. But are these historical patterns evidence of something real and consistent or just lucky flukes?
+
+Taking the whole of last season's Asian handicap and full time scores from this website, I have calculated an average goal excess for every team in my database. For example, if a team's handicap was -1 goal and it won its game 3-1, this equates to a +1 goal excess for that game. The size of the average excess therefore provides a measure of how well the team had performed during the 2015/16 season relative to what the betting market had expected.
+
+Average goal excess scores varied from a maximum of 0.836 for French Championship winners Paris St. Germain, to a minimum of -0.76 for Troyes. The average was zero, whilst the standard deviation was 0.265. 68% of scores were within plus or minus one standard deviation of average, whilst 95% were within two standard deviations. Such figures imply these scores are normally distributed. Any data that are normally distributed provide strong evidence that they arise as a consequence of randomness.
+
+Average goal excess scores for each team were then calculated for the first and second half of the season. If such scores could be considered predictive of future performance, we might reasonably expect a high/low score in the first half of the season to more readily be followed by a high/low score in the second half of the season. The analysis reveals that for the 404 teams as a whole this is not the case. There is essentially no correlation between first and second half season scores, implying virtually complete randomness and no predictability by this measure.
+
+Really it is unsurprising that such randomness is found. If a team is outperforming its market expectation, that market will readjust by increasing the size of handicaps until performance regresses towards the mean. This is really a restatement of the efficient market hypothesis: where mistakes in prices (or handicaps) exist, they will be exploited to the point where they no longer exist. Of course, the elimination of such errors will not be instantaneous. Those bettors who spot the mistakes earliest are most likely the ones who will be able to exploit them for any possible profitability.
+TITLE: The Efficiency of the Pinnacle.com Closing Line (Closing Odds)
+URL: https://www.football-data.co.uk/blog/pinnacle_efficiency.php
+DATE: 4th August 2016
+
+In a previous article I talked about the importance of the closing line as a means of assessing whether a punter or tipster is capable of consistently beating the market. Pinnacle.com have published an article identifying what distinguishes winning bettors from losing ones. To reiterate, bettors can and do show profitability. The more important question is whether they are doing that because they have been lucky or because they are skilled. If the former, those profits will regress to the mean (i.e. disappear). If the latter, they should be more consistent and long lasting. One way to set about analysing the distinction is to see by how much the bettor can anticipate the future movement of the market. And arguably the best way to measure that is to measure the magnitude by which he can beat the closing odds.
+
+According to the efficient market hypothesis, the closing odds provide the most efficient or most accurate representation of the probabilities of actual results, since they reflect the most amount of information expressed in the form of wagers by the betting public. I have shown just how efficient Pinnacle's closing odds prove to be. In that article, I formulated a hypothesis: the ratio of the odds bet by the bettor to the closing odds should provide a prediction of expected value he has managed to achieve. For example, if he bet a team at a price of 2.50 which subsequently closed at 2.00, his expected value would be 2.50/2.00 or 25%. This expected value would thus be equivalent to his expected yield over a larger sample of wagers.
+
+Football-Data has made available 4-seasons of closing match betting odds from Pinnacle.com dating back to 2012/13. This gives a database of 87,960 betting odds pairs, including the original pre-closing market betting price and the final market closing price. A ratio of pre-closing to closing price has been calculated for each pair, and these have been analysed for actual returns to level stakes.
+
+Given the strength of the correlation and its almost perfect 1:1 relationship between expected and observed yields, it is clear that not only are the closing odds highly efficient, but that the amount by which a pre-closing-market price beats the closing price provides an excellent means to predict the size of expected value.
+
+Football-Data has chosen to make Pinnacle.com's closing odds available precisely because it will allow bettors to analyse whether their betting performance is beating that market consistently. By comparing the odds you bet to Pinnacle.com's closing odds, you will be able to determine whether you genuinely hold an edge over the market through skill, instead of wondering whether your profits and losses are the result of good and bad fortune.
+TITLE: How Unpredictable was the 2015/16 Premier League season?
+URL: https://www.football-data.co.uk/blog/premiership_unpredictable.php
+DATE: 20th May 2016
+
+With 5,000/1 shots Leicester City winning the 2015/16 Premiership, and previous Champions Chelsea finishing 10th, many have commented that this season has been one of the most unpredictable. But just how unpredictable has it been in comparison to previous seasons, and could we expect to see this sort of thing again?
+
+One method to assess predictability (or the lack of it) uses what is called the Brier Score, which measures the accuracy of probabilistic predictions. In this case, these are defined by the betting odds. With the bookmaker's margin removed, odds of 2.00, for example, imply an outcome probability of 50% (or 0.5). The Brier score per match is simply the sum of the square difference of the probability and actual results, where outcomes are assigned scores either of 1 (it happened) and 0 (it didn't happen). For example, the estimated probabilities for the game between Manchester United and Bournemouth on 17th May 2016 were 0.592 (home win), 0.236 (draw) and 0.172 (away win). With Manchester United winning the game, the Brier score is: (0.592-1)² + (0.236-0)² + (0.172-0)² = 0.251. For random propositions where home, draw and away are assumed to be equally likely, the Brier score will be 0.667 irrespective of the outcome.
+
+Another way of measuring the unpredictability of the season is to compare actual points collected by each team to their expected points total. The method involves calculating the standard deviation in the differences between actual and predicted points across the 20 Premiership teams. The unpredictability scores for the last 10 seasons reveal 2015/16 (score: 10.339) was far more unpredictable than any of the 9 preceding seasons. The next highest was 2011/12 at 8.056.
+
+A Monte Carlo simulation of 100,000 runs produced unpredictability scores ranging from 2.58 to 13.32, with a mean of 6.39. Just 0.44% were higher than the 2015/16 score, telling us that this season was arguably a 1-in-200 year event. Much of the surprise factor arose because of the performances of Leicester City (+28 points over expectation), Chelsea (-18) and West Ham (+15). Leicester City's outlier value of +28 has a return expectation of about 1-in-33,000.
+TITLE: Betting Psychology & the Addictive Power of Maybe
+URL: https://www.football-data.co.uk/blog/psychology_of_betting.php
+DATE: 2nd November 2017
+
+When people strike a bet it is reasonable to assume that they do so in the belief that they hold some advantage over the odds. More specifically, whilst most punters are aware that the bookmaker shortens his odds as a way of paying himself a commission, they nonetheless still make those bets. We are thus faced with two alternatives.
+
+1) Punters are behaving irrationally. Rational choice theory dictates that we always make rational decisions by trying to maximise our advantage whilst minimising our losses. Financially, that means doing things that will increase our wealth, whilst not doing things that will decrease it. If the bookmaker's margin ensures that, on average, his customers are facing negative expectation, this would imply that punters are behaving irrationally. Of course, most people aren't irrational. They don't like throwing money away simply for the sake of it.
+
+2) Punters are overconfident. Alternatively, whilst punters may understand that betting is, on average, a losers' game, their perceived skills ensure that this rule does not apply to them. Ask a group of 100 people whether they believe they are good drivers. Typically more than three-quarters say they are better than average. Of course, it's not possible for more than half of them to be above average. The same will arguably be true in sports betting. Most people will believe they've made a bet because it's a good bet, with a good chance of winning, otherwise they would not have placed the bet in the first place. Yet most punters will end up losing money over the long run.
+
+Psychologists describe the bias of overconfidence as illusory superiority. What breeds such illusory superiority? The answer can be found in the illusion of causality. Illusions of causality occur when people develop the belief that there is a causal connection between two events that are actually unrelated. In linear environments like hitting a tennis ball, the way I hold and swing a racquet will have a significant influence on my quality of play. In mostly random environments like sports betting markets, the links between cause and effect are far more tenuous.
+
+As Nobel-prize winning psychologist Daniel Kahneman explains in Thinking, Fast & Slow, seeing patterns where regularities appear by design, not chance, was part of a general threat detection and avoidance mechanism. Consequently, it's easy to assume that when we win a bet our knowledge and forecasting prowess had something to do with it. 'I made money from my predictions, therefore I am skilled at prediction' is a far more coherent and psychologically rewarding narrative than 'I was merely guessing and got lucky.'
+
+The addictive power of maybe: The engine for much betting behaviour can be found in a part of the brain called the limbic system. The hormone dopamine is implicated in directing you to get what you want. Contrary to popular belief, however, it is not about reward per se, but about the anticipation of reward, or the craving response. Dopamine levels for a bettor will be at their highest not when they win, but when they are anticipating a successful outcome.
+
+The dopamine response is greatest when outcomes are uncertain. Professor Robert Sapolsky explains what happens to monkeys where rewards are only given 50% of the time: their dopamine levels "go through the roof." When rewards are guaranteed, there is no longer any need for the brain to elicit a craving response. When rewards are uncertain, a craving response ensures that you keep trying, even after the reward has failed to materialise. Sapolsky calls this the addictive power of 'maybe.'
+
+Win a bet and the reward centre constructs a pattern of causality for the purposes of anticipating future rewards. Whilst most sports betting is random, we prefer not to see it that way. Instead of switching off, of getting bored by the haphazard payouts, our dopamine neurons become obsessed. The random rewards of gambling are much more seductive than a more predictable or even guaranteed reward cycle. It is the uncertainty and anticipation in sports betting, rather than the financial rewards themselves, that are utility-causing. In fact we are simply playing to play, rather than playing to win.
+TITLE: Steamers and Drifters in a Football Match Betting Market
+URL: https://www.football-data.co.uk/blog/steamers_and_drifters.php
+DATE: 11th February 2016
+
+According to the efficient market hypothesis, betting prices that hold positive value expectation will be exploited until that value no longer exists. Prices shorten when people bet them, and lengthen when they don't. Consequently, one can reason that the direction in which a betting price is moving can provide clues as to whether the original betting price held value or not.
+
+Analysis of English football match betting odds for the 2010/11 through 2014/15 seasons (5 seasons, 10,180 matches, 30,540 individual prices) showed that betting odds that had been shortening (steaming) prior to kick-off had not shortened enough. Conversely, odds that had been lengthening (drifting) had not sufficiently drifted. That is to say, discounting for the bookmaker's profit margin, steamers and drifters still held positive expected value at market closure.
+
+Key findings from drifters analysis:
+- Price change >5%: Average pre-closing odds 3.65, closing odds 3.98. Pre-closing yield: -18.49%, Closing yield: -11.20%
+- Price change 2.5-5%: Pre-closing yield -18.50%, Closing yield -15.63%
+- Price change 0-2.5%: Pre-closing yield -9.41%, Closing yield -8.38%
+
+Key findings from steamers analysis:
+- Price change >5%: Average pre-closing odds 3.43, closing odds 3.15. Pre-closing yield: +7.09%, Closing yield: -1.41%
+- Price change 2.5-5%: Pre-closing yield +1.78%, Closing yield -1.77%
+- Price change 0-2.5%: Pre-closing yield -5.40%, Closing yield -6.47%
+
+The biggest steamers were actually offering positive value expectation with profitable pre-closing betting returns. The most interesting observation is from the closing prices: the drifters didn't drift enough, and the steamers didn't steam enough. This difference is highly statistically significant (p-value = 0.0002).
+
+This consistent pattern of insufficient steaming and drifting persisted across all 5 seasons. Removing the bookmaker's margin still reveals the closing market inefficiency: steamers returned +3.40% and drifters -1.90% at fair closing prices.
+
+Had one chosen to bet the closing market average prices for all 597 selections over this 5-season period that witnessed an odds shortening of more than 10%, one would have made a 7.5% profit over turnover. The probability that such a performance might happen by chance is about 2%. That's statistically significant at the 95% level, but not at the 99% level. Of course, targeting bookmakers who offer prices way in excess of the market average carries the risk of having betting accounts restricted.
+TITLE: Do Tipsters Beat the Odds in a Betting Market? (How Good are Tipsters?)
+URL: https://www.football-data.co.uk/blog/beat_the_market.php
+DATE: 26th January 2016
+
+For 14 years between 2001 and 2015 I verified sports betting advisory services. My conclusions were stark: few tipsters are capable of making a profit beyond that which could be expected to happen by chance alone.
+
+A few have argued that I set the burden of proof too high. There is another way to determine whether a tipster possesses skill: see whether they are beating the market. If bettors are backing prices which more readily fall than rise after they have backed them, this implies they possess information about events not yet taken into account by the market.
+
+Taking a sample of 48 tennis tipsters with closing prices for their match bets (7,170 bets total), backing these tips to level stakes returned a yield of -0.94% at average odds of 2.466. This compares to a yield of -2.66% had those tips been backed at closing market prices. 59.1% of advised prices beat the closing market. 38 out of 48 (79%) of the tipsters managed to beat the closing market on more than 50% of occasions.
+
+Nevertheless, despite bringing this information to the market, it was not enough to secure an overall aggregate profit. When checking against fair prices (removing the bookmaker's margin), the expected yield was -0.90%. Only 14 of the 48 tipsters (29%) achieved better than 50% success against fair prices. Not one managed a positive profit expectation that was even remotely statistically significant.
+
+This analysis reveals that sports betting tipsters might be capable of outperforming the market through possession of superior information. Unfortunately, for this collection of tipsters at least, that information was not sufficient to overcome the costs of playing in the market. They have been unable to secure betting prices superior to those implied by fair probabilities of outcomes.
+
+Readers should consider evaluating their own performances against closing markets and their implied fair market equivalents, since arguably this provides another useful method to see whether you are smart enough to secure a profit from sports betting in the long run.
+TITLE: Do Bettors Create their own "Hot Hand" Winning Streaks? (Betting Hot Hands)
+URL: https://www.football-data.co.uk/blog/hot_hand_streaks.php
+DATE: 18th January 2016
+
+Two common gambling fallacies: the gambler's fallacy (the mistaken belief that if something happens more frequently than normal, it will happen less frequently in the future) and the hot hand fallacy (the belief that a person who has experienced success has a greater chance of further success in additional attempts).
+
+Xu and Harvey (UCL, 2014) analysed 565,915 bets from 776 gamblers during 2010 and concluded that gamblers who won were more likely to win again (choosing safer odds), while losers were more likely to lose again (choosing riskier odds). They concluded bettors suffered from the gambler's fallacy and thus created their own hot hands.
+
+This article debunks their conclusions. Everything can be explained by survivorship bias in the data. Longer winning streaks survive longer simply because bettors experiencing them were betting shorter odds overall — not because they chose to shorten their odds after winning. A hypothetical dataset of 99 gamblers betting at fixed odds (each gambler always betting the same odds) replicates the same "hot hand" pattern purely through survivorship bias. Average odds for the 21st bet in a 20-win streak drop to 1.33 — yet no bettor changed their odds at all.
+
+Xu and Harvey's secondary analysis also failed to account for the influence of variable betting history lengths. Bettors who place far more wagers can expect longer winning sequences simply by virtue of being in the game longer. Analysis of Pyckio data (nearly a million tips) confirms this: the odds within winning sequences are essentially flat, with no shortening visible.
+
+Furthermore, Xu and Harvey had no idea whether 'next bets' were placed before or after the results of 'previous bets' were known — making any causal conclusions impossible. Only 11.6% of Pyckio bets were placed after the previous one had settled; for the vast majority no choice was being made in response to prior results.
+
+In short: the "hot hand" created by bettors is an illusion created by survivorship bias and variable betting history lengths, not by any conscious choice to shorten odds after winning.
+TITLE: The Favourite-Longshot Bias Revisited
+URL: https://www.football-data.co.uk/blog/favourite_longshot_bias_revisited.php
+DATE: 30th November 2015
+
+The overbetting of low probability outcomes in sports and racing has been a well observed and frequently studied phenomenon for many decades. In a typical betting market, the odds quoted by a bookmaker add up to more than 100%, and the overround provides a measure of the bookmaker's profit margin. What happens with heavy favourites? Rather than spreading the margin equally, bookmakers disproportionately apply it: a team at true 1.25 (80% probability) might be offered at 1.21 (shortening by 3%), whilst a longshot at true 5.00 (20%) might be offered at 4.44 (shortening by 12%). This disproportionate application gives rise to the favourite-longshot bias.
+
+The most compelling explanation comes from prospect theory and the certainty and possibility effects. Daniel Kahneman explains: how much would you pay to increase a 95% chance of winning $1 million to 100%? Much more than the mathematically fair $50,000, because we are risk-averse about near-certainties. This is the certainty effect. At the opposite end: a 0% to 5% improvement transforms impossible into possible — the possibility effect — and people overweight these tiny probabilities dramatically.
+
+These effects mean we don't weight probabilities linearly. Improbable outcomes (longshots) are over-weighted; near-certain outcomes (favourites) are underweighted. Bookmakers exploit this non-linearity.
+
+Why don't betting exchanges show this bias? At exchanges, prices are set by players themselves with no risk management costs. David McDonald (Southampton) proposed that bookmakers' optimal policy is to impose the bias to reflect bettors' biased preferences — essentially, bookmakers deliberately manipulate odds because they know bettors will not notice or care when longshot prices are too short. The odds tolerance ratio (how much shorter average odds are versus best market odds) grows dramatically as odds lengthen, confirming that bettors become increasingly insensitive to price as the odds lengthen.
+TITLE: Favourite-Longshot Bias: A Bias or Not a Bias?
+URL: https://www.football-data.co.uk/blog/favourite_longshot_bias_revisited_again.php
+DATE: 14th November 2023
+
+In April 2022, former poker player and betting analyst Dan Abrams published an article on Pinnacle arguing that the favourite-longshot bias is in fact not a bias at all, but the logical outcome of rational bookmakers seeking to optimise their management of capital growth.
+
+Consider a bookmaker offering bets on "six" vs "no six" on a die roll. If they apply a 3% margin equally to both sides, there is only a 1.7% chance that a customer profits after 1,000 bets on the favourite, but a 33.6% chance for the longshot. To balance this risk, the bookmaker should apply a smaller margin to the favourite and a larger margin to the longshot. For the odds of 5.5 ("six") and 1.179 ("no six"), there is now a 10% chance the customer profits from either side — the margin weights are 1.78% and 9.09% respectively. This asymmetry in margin weights looks just like the favourite-longshot bias.
+
+Dan Abrams showed formally that for both sides of a 2-way book to have the same maximum expected capital growth (via the Kelly criterion), the odds must satisfy a specific relationship. This is almost identical to the "odds ratio" and "margin proportional to odds" methods previously used in the Wisdom of Crowds methodology.
+
+Testing against Pinnacle's closing odds for 47,269 ATP and WTA matches (2014–2023) confirms this: actual losses closely match expected losses calculated using Dan's equation. A t-test comparing them gives p-value = 0.50 — no statistical difference whatsoever.
+
+This suggests the favourite-longshot bias may not be a bias at all, but rather a rational application of classical probability theory by bookmakers balancing outcome likelihoods and maximum expected bankroll growth. Put simply: "it's just variance, stupid."
+TITLE: Favourites Bias in American Point Spreads (Point Spread Bias)
+URL: https://www.football-data.co.uk/blog/unwise_points_spread.php
+DATE: 19th November 2015
+
+American economist Steven Levitt (Freakonomics) challenged the traditional view that point spread bookmakers balance the book. Analysing 19,770 bets on 242 NFL games during 2001, he found that over 60% of bets were placed on the favourite. With only 48% of favourites covering spreads in the preceding 21 NFL seasons, he speculated that bookmakers intentionally bias spreads slightly against the favourite, taking a position to yield greater long-term profitability.
+
+Joseph Simmons (Wharton) and Leif Nelson (Berkeley) provided a psychological account: intuitive confidence. Tracking thousands of predictions on Yahoo.com (2003–2004), they found 65% of NFL bettors backed favourites to cover. Crucially, the more people believed a team would win outright, the more likely they were to back them to cover the spread — even though these are separate questions. This is attribute substitution: replacing the complex judgment (will they cover?) with an easier one (will they win?).
+
+Even when told the spread had been artificially manipulated to favour underdogs, 83% of uninformed bettors still wagered more on the favourite. Interestingly, those asked to estimate the actual point differential (a more cognitively demanding task) correctly chose underdogs 83% of the time — because the harder task forced them to focus on the actual dimension that matters.
+
+Conclusion: point spread bettors may be acting unwisely simply because they have been given the opportunity to do so — and bookmakers know it. This same logic — bookmaker manipulation exploiting bettor irrationality — may also account for the favourite-longshot bias in fixed odds markets.
+TITLE: Testing the Profitability of Football Power Ratings
+URL: https://www.football-data.co.uk/blog/power_ratings.php
+DATE: 5th October 2015
+
+Paul Steele's "Power Ratings" method (from Profitable Football Betting, 2002) was ranked as his best predictive system from tests over the 1997/98 to 2001/02 seasons. Power Ratings take into account opposition quality and goals scored:
+
+Rating change for home team = [goal difference - ratings difference - home advantage)] × Adjuster (0.25)
+Home advantage = 0.5 (twice the adjuster)
+
+Testing over 5 English football seasons (2010/11 to 2014/15), the Power Ratings were calculated and converted into probability estimates via linear regression. Betting all home and away "value bets" (where Power Ratings implied a higher probability than the bookmaker) returned a yield of 0.33%, virtually identical to blind betting all home and away outcomes (0.37%).
+
+As the value margin threshold was increased (requiring larger expected value before betting), yields appeared to improve — but average odds lengthened dramatically, and p-values remained well above 0.05 throughout. The likelihood is that these improved yields were simply luck from longer-odds selection.
+
+Paul Steele's original top-700 prediction success rates fell from 73%/55% (first test period) to 67%/46% in his book, and further to 60%/44% in this analysis. The question must be asked: why choose the top 700 predictions specifically? This sort of data mining leads to spurious conclusions. In general, Power Ratings do a good job of replicating bookmaker odds, but no more.
+TITLE: Wisdom of the Crowd (in Betting Markets)
+URL: https://www.football-data.co.uk/blog/wisdom_of_the_crowd.php
+DATE: 19th August 2015
+
+The wisdom of the crowd phenomenon was first observed by Sir Francis Galton at a 1906 Plymouth country fair: 787 people estimated the weight of a butchered ox, and the median guess (1207 lbs) was accurate to within 1% of the true weight (1198 lbs), more accurate than the vast majority of individual estimates.
+
+In betting markets, removing the bookmaker's margin reveals that markets do a phenomenal job of replicating the 'true' probabilities of outcomes. Betfair exchange data from 52,411 worldwide football matches shows an almost perfect correlation (r = 0.995) between pre-match odds-implied probabilities and actual outcome frequencies.
+
+Four conditions make a crowd wise: diversity (many different approaches to forecasting), independence (people acting on private information without following each other), decentralisation (no top-down authority), and aggregation (the price mechanism that converts private information into a public signal).
+
+Pinnacle Sports are the wisest crowd in betting because they rely on professional odds management algorithms, accept high volume, take no position, and attract the sharpest bettors. Their closing odds are highly efficient.
+
+To identify value, the article describes a margin-removal model using differential margin weighting proportional to odds. Testing on 3 seasons (22,318 European football matches), betting every home/draw/away price that exceeded the estimated fair Pinnacle price returned a yield of 3.4%, vs -3.08% for prices below fair value.
+
+Caveats: yields will be small, requiring patience through long losing stretches; and bookmakers offering prices above Pinnacle fair value will likely restrict customers who exploit this consistently.
+TITLE: What is the true expected profit for the Wisdom of the Crowd Betting System?
+URL: https://www.football-data.co.uk/blog/wisdom_of_crowd_betting_system_closing_odds.php
+
+Since 2015, live bet suggestions have been published using the Wisdom of the Crowd betting methodology. After nearly 16,000 live-published selections, the actual profit trend almost perfectly matches the expected one. The key question explored here: when calculating expected profit for each bet, should Pinnacle's odds at the time the value is found be used, or the closing odds?
+
+Using a data sample going back to 2012/13 (26,960 1X2 bet selections with minimum 2% expected value), the actual yield was 4.90%. Expected profit calculated using pre-closing odds gave 4.13%, while expected profit using closing odds gave 2.88%.
+
+A t-test comparing actual to closing-odds-expected gives p-value = 0.05 (weak significance); comparing actual to pre-closing-odds-expected gives p-value = 0.47 (no significant difference).
+
+A hypothesis is proposed for why closing odds may be less efficient for this specific sample: arbitrage. For matches where the system finds value with other bookmakers, Pinnacle itself may be the other side of the arbitrage. Arbitrage money on outcomes B and/or C forces Pinnacle's odds away from their efficient level, making closing odds paradoxically less accurate for this specific sample.
+
+Evidence: 48.8% of matches where the system found at least 2% value had an arbitrage opportunity — vs only 19.0% of all matches. Pre-closing odds were 3.63 on average vs closing odds of 3.76 for system bets, a larger divergence than the overall population (3.58 vs 3.62).
+TITLE: Is Sports Betting Completely Random?
+URL: https://www.football-data.co.uk/blog/sports_betting_random.php
+DATE: 25th March 2015
+
+Analysis of over 1,073,029 picks from 6,044 tipsters on Pyckio.com (June 2014 to February 2015) compared to a randomly generated baseline shows that sports betting tipsters, as a whole, do nothing more than replicate what chance would predict.
+
+The aggregated yield for all picks was -2.17%, close to Pinnacle Sports' typical margin. The randomly generated comparison (using the same number of bets with expectations set by odds) produced -2.27%. A t-test comparing the two shows no statistically significant difference (p-value = 0.47).
+
+The distribution of risk-adjusted t-scores (measuring each tipster's performance relative to what chance would produce) closely matches what a normal distribution predicts from random outcomes. Just 35.4% of tipsters were profitable, compared to 41.6% in the random simulation — meaning profitable tipsters were actually rarer than random chance would predict.
+
+For the 2,690 tipsters with records of more than 30 bets: the distribution of t-test scores is virtually identical to the randomly predicted distribution. 69.6% fall within plus/minus one standard deviation (random predicts 68.3%); 95.2% within two standard deviations (random predicts 95.5%).
+
+The 249 tipsters with 1,000+ picks showed slight statistical differences from random, but these are likely explained by survivorship bias: long-running tipsters survived precisely because they were (at least temporarily) above expectation — not necessarily because of skill.
+
+Conclusion: if any skilled forecasters exist in sports betting, they probably number not in one-in-tens or one-in-hundreds, but perhaps one-in-thousands or even one-in-ten-thousands. Everybody else is just tossing coins.
+TITLE: All Monkeys Are Throwing Darts. But Some Monkeys Are Better Than Others
+URL: https://www.football-data.co.uk/blog/monkeys_throwing_darts.php
+
+In 2015, analysis of 6,000+ Pyckio tipsters showed their performances were virtually indistinguishable from random coin-tossers. However, a re-analysis reveals this was looking for skill in the wrong place: betting outcomes are too noisy to detect skill directly.
+
+Using Closing Line Value (CLV) — whether tipsters' advised odds shortened by market close — reveals a very different picture. CLV t-scores are much more precise than profit/loss t-scores because they have much lower variance.
+
+Analysing 1,525 Pyckio tipsters with CLV data collected from January 2021: the distribution of CLV t-scores is much wider than pure randomness would predict, confirming that significant variation in betting IQ exists across the population. Some bettors are supremely gifted at finding CLV; others are so bad they perform far worse than guessing.
+
+Key findings: CLV t-scores are NOT normally distributed (they deviate from a normal bell curve with fewer extreme outliers). The distribution of actual CLV t-scores is much broader than the random distribution. There are many bettors with t-scores beyond ±3 (less than 1-in-1,000 probability by chance).
+
+However, of the 1,525 bettors only 60 had profitable CLV, and close to three-quarters of those weren't statistically significant. About 1% of bettors had CLV sufficient to suggest long-term profitability.
+
+Most importantly: CLV PERSISTS over time. For 887 bettors with 100+ picks in each half of their record, the correlation between first-half and second-half CLV t-scores explains 50% of the variance — a strong, robust result proving CLV is causal, not random. By contrast, profits regress completely to the mean.
+
+Implication: All monkeys are throwing darts, but some monkeys are genuinely better than others. Their skill shows up in CLV, not (yet) in profits — because the variance in profits is 75 times larger than the variance in CLV.
+TITLE: How Many People Win at Sports Betting?
+URL: https://www.football-data.co.uk/blog/sports-betting_winners_and_losers.php
+DATE: 10th December 2013
+
+Sports betting is a "winner takes all" contest like professional tennis. Even small differences in skill level quickly produce diverging results over many bets. With just a 2% edge at even-money prices, a stronger player is nearly twice as likely to beat a weaker one after just 400 bets. At 5%, the weaker player has less than a 15% chance of being ahead after 400 bets.
+
+Analysis of professional tennis data (56,267 matches from 2000–2014, 1,844 players) illustrates this: just 193 players (10.5%) had a positive win-loss record. In a hypothetical betting game with these match outcomes and a 5% commission on wins, only 8.2% of all players would have been profitable — and just 26 (1.4%) would have made more than $100 profit.
+
+For sports betting to approach this, we must note that (1) a mug punter can face a professional at any time (unlike tennis where low-ranking players rarely face top seeds), and (2) the profitable bettors will naturally stake more as their bankroll grows, meaning losses concentrate among the many.
+
+Conclusion: if sports betting is anything like professional tennis, fewer than 10% of punters make a long-term profit, and probably less than 1% show anything that might be described as professional skill. In reality the figures are likely even lower, as the range of skill levels among bettors is far more divergent than among professional tennis players.
+TITLE: A Profitable Betting System? Exploiting the Hot Hand Fallacy
+URL: https://www.football-data.co.uk/blog/profitable_betting_system.php
+DATE: 20th November 2018
+
+This article describes a contrarian betting system that exploits the hot hand fallacy. The hot hand fallacy (Tversky et al. 1985) is the mistaken belief in the existence of winning streaks beyond what randomness predicts. Bettors expressing this fallacy will over-bet teams on a relative winning streak and under-bet teams on a relative losing streak.
+
+A scoring system was constructed: a team receives +[1 - 1/odds] points for a win and -[1/odds] for failing to win, using Pinnacle closing prices with margin removed. This is odds-adjusted: bigger wins against weaker opposition add more than wins expected. The sum over the last 6 matches gives a "heat" rating. Match rating = difference between the two teams' heat ratings.
+
+Testing on 28,386 extra-leagues matches (16 European and worldwide divisions): backing all 22,873 "relatively colder" teams returned 102.75% ROI at fair odds vs 98.45% for "hotter" teams. The difference is statistically significant (p-value 0.002).
+
+For matches with ratings less than -1.5 vs greater than +1.5 (7,795 bets): cold teams returned 105.48% ROI vs 95.83% for hot teams — highly significant (p-value = 0.00009).
+
+To Pinnacle's closing odds (their ~3% margin): cold teams with match ratings ≤ -1.5 returned 101.35% ROI — a 1.35% profit over turnover. This demonstrates an underlying market inefficiency arising from bettors' expression of the hot hand fallacy.
+
+Caveats: p-values tell us chance is unlikely, not that something is definitely real. Past performance does not guarantee future results. You will always have to work hard to stay one step ahead.
+TITLE: Luck Versus Skill in Sports Betting: Analysing a Betting Record
+URL: https://www.football-data.co.uk/blog/luck_skill_sports_betting.php
+DATE: 30th May 2013
+
+The core question: when analysing a betting record, how do we determine whether results are due to skill or chance? The answer requires statistical hypothesis testing.
+
+The approach parallels coin tossing: if we toss a coin 1,000 times and see only 400 heads, the probability that an unbiased coin would produce this result is approximately 1 in 7 billion — providing strong evidence the coin is biased. For sports betting, we compare a tipster's record against the baseline expectation (what would happen if they were simply guessing).
+
+The student's t-test offers a practical method: it produces a probability (p-value) that the observed record could have arisen by chance. For analysing a betting record, a downloadable P-value calculator is available at football-data.co.uk. Key inputs: number of bets, yield (as a decimal), and average odds.
+
+Important: longer-odds bets require much higher yields to achieve the same statistical significance. To achieve 1-in-100 statistical significance at even money: about 540 bets at 10% yield. At 9/1 (10.0): about 540 bets at 34% yield.
+
+Applying this to an example: a tipster showing 66% winners from 200 picks at average odds of 1.66 gives a yield of ~10% and a p-value of 3.7%. While this sounds impressive, there is still a 1-in-27 chance of it arising by chance — insufficient evidence of skill at the 99% confidence level.
+
+For detecting fraudulent records: Fixed-Bets.com showed 88.5% strike rate from 165 tips at average odds of 2.28 (yield 103%). The p-value is approximately 2 in 10^41 — effectively impossible by chance. The conclusion: the picks were fake, most likely by selectively removing losing tips from the record.
+
+The moral: testing statistical significance helps separate lucky profits from genuine skill — and can expose fraud.
+TITLE: The Pitfalls of using Kelly Staking in Sports Betting
+URL: https://www.football-data.co.uk/blog/kelly_staking.php
+
+Kelly staking (named after Bell Labs researcher John Kelly Jr.) is a proportional staking method that maximises the rate of bankroll growth. The Kelly stake percentage = expected value / (decimal odds - 1). For example, if odds are 2.2 and you estimate true odds as 2.00, expected value is 10%, and Kelly stake = 0.1/1.2 = 8.33%.
+
+The key pitfall: Kelly staking dramatically increases the range of possible outcomes compared to flat staking. A series of 1,000 point spread wagers at odds of 1.909 with 2.5% expected value (Kelly stake 2.75%) shows a log-normal distribution of bankroll outcomes. The most likely outcome is a 41% increase, but there is about a 34% chance of making a loss — much higher than the 18% chance under flat staking.
+
+The critical danger: if you overestimate your expected value. If your true edge is 2.5% but you think it's 5% (Kelly stake 5.5%), the most likely outcome shifts to break even, and the probability of losing becomes 50%. If you overestimate by 3x (thinking 7.5%), you're more likely to lose than win, despite actually having a positive edge.
+
+This is why fractional Kelly is commonly recommended: half-Kelly raises the probability of profit from 66% to 73% whilst reducing the most likely growth only from 41% to 29%. At half-Kelly, the chance of seeing your bank halved drops from 10% to 1%.
+
+Kelly staking offers great potential but requires accurate expected value estimation and tolerance for large bankroll swings. In doubt: use fractional Kelly.
+TITLE: The Stupidity of Martingale Progressive Staking in Sports Betting (Progressive Staking)
+URL: https://www.football-data.co.uk/blog/martingale_progressive_staking.php
+DATE: 21st May 2013
+
+Martingale (or "progressive") staking is loss chasing: after each losing bet, you increase your stake to recover previous losses plus a small profit. In roulette, the classical form involves doubling stakes after each loss.
+
+The mathematical analysis shows this is fundamentally flawed. Consider all possible 3-bet outcomes for even-money Martingale: the overall profit expectancy is exactly 0, the same as for level staking. All Martingale achieves is converting 4 profitable scenarios (level stakes) into 5 profitable scenarios — at the cost of one catastrophic loss scenario.
+
+For sports betting, the rate of stake progression depends on odds: Martingale progression rate = odds / (odds - 1). At 2.00, this is 2 (doubling). At 1.5, it's 3 (tripling). At 3.00, it's 1.5.
+
+The real danger lies in losing sequences. For a 1,000x bankroll at even-money bets: the maximum losing sequence accommodated without ruin is 8 consecutive losses. Over just 365 bets, such a sequence would occur on average once. At 10.00 odds: the maximum tolerable losing sequence is 43, but this occurs on average 3 times in 365 bets.
+
+Simple conclusion: for bankrolls up to 1,000 times the initial stake, disaster will arrive quickly regardless of odds. For much larger bankrolls, it takes forever to accumulate meaningful profit.
+
+For a punter without a genuine edge over the bookmaker, progressive staking makes things even worse. And for a punter who does have an edge, it converts a winning system into a coin-tossing machine. Progressive staking: you have been warned.
+TITLE: Is there any value in tipster verification?
+URL: https://www.football-data.co.uk/blog/tipster-verification.php
+DATE: 7th April 2020
+
+The world of sports tipping is a secondary market feeding off the betting industry. There are really very few tipsters worth paying — almost all profitable records arise from luck, not skill. When the distribution of a large population of tipsters is plotted, it looks almost identical to coin-tossers.
+
+Independent verification matters: without it, a tipster's self-reported results are useless. True independence requires the verifier to have no financial stake in the tipster's performance.
+
+Cheating by monitors: VerifiedTipsters.com (now defunct) secretly promoted its own services for years. TipsterConnection continues to do so, with verified tipsters showing 80-90% win rates at average odds of ~2.00 — mathematically impossible given the randomness of sports betting. Domain analysis, CSS stylesheets, and Google Analytics account IDs often reveal the connection between monitor and verified services.
+
+Survivorship bias plagues legitimate monitors too. When unprofitable tipsters stop submitting picks and are removed from view, only the (temporarily) successful survivors remain. A population of pure coin-tossers would collectively show a healthy yield if the losers disappear. Ask any monitor to provide full historical data including removed tipsters. If they refuse, that's a red flag.
+
+The unsolvable problem of odds availability: the best verified tipsters, by virtue of having many customers, will cause markets to shorten on their advised prices. Customers may never be able to get the advised odds in practice. This is an inherent tension between tipping success and tipping utility.
+
+Smartbet.io attempts to solve this by instantly and simultaneously distributing picks to all followers with automatic bet placement — the recorded price is the price customers get.
+
+Conclusion: independent verification is necessary but not sufficient. Understand survivorship bias, check for cheating, and accept that even an honest profitable tipster record may not be exploitable in practice.
+TITLE: How to Spot a Tipster's Fake Betting History (Scam Tipsters)
+URL: https://www.football-data.co.uk/blog/Wald_Wolfowitz.php
+DATE: 31st March 2017
+
+Human beings are poor judges of randomness. We suffer from the clustering illusion — a tendency to consider inevitable runs or clusters in random sequences as meaningful. We avoid putting long streaks in our fake records, making those records identifiably non-random.
+
+The Wald-Wolfowitz runs test for randomness tests whether a binary sequence (wins and losses) arises from a random process. It works by comparing the number of observed runs (streaks of consecutive wins or losses) to the number expected from a truly random sequence with the same number of wins and losses.
+
+Example: the expected number of runs in a 10W/20L sequence is 11. A sequence of 10 wins then 10 losses would have only 2 runs — a massive deviation from expectation, suggesting the sequence is artificial.
+
+The test statistic Z = (Ro - E[R]) / SD[R], where Ro is observed runs, E[R] is expected runs, and SD[R] is the standard deviation. Converting Z to a p-value gives the probability the sequence is random. A p-value < 0.05 suggests the sequence may be non-random.
+
+Case study: AH Betting (verified from 2009-2011) showed z-score 0.86, p-value 0.39 for their verification-period record — properly random. However, their pre-verification record of 14.9% yield from 771 picks showed z-score 5.16, p-value 0.0000002 — clearly not random, with far too few streaks. The owner had removed losing picks or constructed a fake history without considering the streakiness of genuine random results.
+
+Testing yourself: even knowing about this bias, constructing a convincingly random sequence is extremely hard. In 10 personal attempts, 6 failed the 5% significance test. Randomly generated sequences passed in all 10 cases.
+
+A Monte Carlo version of the test is available for records with varied betting odds.
+TITLE: VerifiedTipsters.com Scam (Scam Tipsters 2)
+URL: https://www.football-data.co.uk/blog/verifiedtipsters_scam.php
+DATE: 28th July 2015
+
+VerifiedTipsters claimed to be an independent tipster monitor growing from a Ph.D. thesis. By 2013 it had reached 60,000 verified tips since 2007, showing an aggregate yield of 5.1% — significantly higher than other large datasets (Pyckio ~-2%, Oddsportal community ~1%). Three explanations: their tipsters are disproportionately better, they were exceptionally lucky, or the figures were manipulated.
+
+Investigation revealed the aggregate yield across its database was actually 6.8-7.1% (higher than the management's own claim). A subset of 58 suspicious services (BetAttitude, EliteTipsters, EuroPunters, etc.) showed a 14.5% aggregate yield from 34,543 tips. The remaining 237 services showed 1.5% — more in line with other data sets. The suspicious services all showed profitable first months (53/58), versus ~50% for other services. Probability of this occurring by chance: about 1 in 50 billion.
+
+Evidence of connected fraud: all suspicious service websites had similar designs; most had only 2 inbound links (from BettingAdvice forum and VerifiedTipsters itself); service domain registrants traced back to the same individuals; multiple services used identical CSS stylesheets and the same Google Analytics account IDs; the registrant "Gregory Pappas" in Athens was linked to multiple services.
+
+The Ph.D. thesis claimed by the VerifiedTipsters founder was confirmed by leading academics to almost certainly not exist. The thesis reference was only added to the website in spring 2013, nearly 6 years after it opened.
+
+The scam operated by manipulating results when no subscribers were watching, then showing honest results once subscribers joined. With 58 services each charging €100 for a few months, this generated significant annual income. Denial was the only response — no Ph.D. was ever produced, and no admission of guilt ever made.
+TITLE: Testing your Betting Model (Betting Model Testing)
+URL: https://www.football-data.co.uk/blog/model_testing.php
+DATE: 16th August 2018
+
+Three years after first publishing Wisdom of the Crowd live selections (6,562 picks), the raw performance was:
+- Expected Yield: 4.19%
+- Actual Yield: 3.79%
+- Average Odds: 3.92
+
+The actual system underperformed by 0.449% relative to expected. Is this significant? Using the two-sample unequal variance t-test in Excel: =TTEST(A:A,B:B,2,3), where column A contains expected profits for each bet and column B contains actual profits. Result: p-value = 0.838. There is an 83.8% probability that actual results would be even more different from expected simply by chance — not statistically significant.
+
+Three methods for testing betting model validity produce consistent results: the Excel TTEST function, a simplified P-value calculator, and Monte Carlo simulation (10,000 runs). All three give p-values around 0.83.
+
+Over shorter time windows, however, much larger deviations occur. A 1,000-bet running average of performance shows spikes with 1-in-60 and 1-in-40 improbabilities at various points — which on their own would pass statistical significance tests. But both times performance regressed back toward expectation, suggesting these were lucky/unlucky streaks rather than model failure.
+
+Key lesson: we are much more likely to question our model when it's performing badly than when it's performing too well, due to loss aversion. We should always be questioning the model, even during over-performance. Tracking the time series of deviation from expectation (rather than just cumulative profit) helps maintain this vigilance.
