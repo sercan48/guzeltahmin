@@ -2,13 +2,18 @@ name: Daily WC Bulletin
 
 on:
   schedule:
-    # Her gün 07:00 UTC — maçlardan önce sabah bülteni
-    - cron: '0 7 * * *'
+    # 21:00 UTC = gece yarısı Türkiye — yarınki maçların tahminleri
+    # Amerika maçları (01:00-03:00 UTC kickoff) bu sayede kaçmaz
+    - cron: '0 21 * * *'
   workflow_dispatch:
-    # Manuel tetikleme: GitHub Actions sekmesinden "Run workflow" butonu
+    inputs:
+      date:
+        description: 'Tarih (YYYY-MM-DD). Boş = yarın UTC.'
+        required: false
+        default: ''
 
 jobs:
-  deliver:
+  bulletin:
     runs-on: ubuntu-latest
     timeout-minutes: 5
 
@@ -26,19 +31,19 @@ jobs:
       - name: Bağımlılıkları yükle
         run: pip install -r requirements-bulletin.txt
 
-      - name: Dünün sonuçlarını kaydet
-        continue-on-error: true
-        env:
-          FOOTBALL_DATA_ORG_KEY: ${{ secrets.FOOTBALL_DATA_ORG_KEY }}
-        run: python ops/result_settler.py --settle
-
       - name: Bülten gönder
         env:
           TELEGRAM_BOT_TOKEN:        ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_PERSONAL_CHANNEL: ${{ secrets.TELEGRAM_PERSONAL_CHANNEL }}
           FOOTBALL_DATA_ORG_KEY:     ${{ secrets.FOOTBALL_DATA_ORG_KEY }}
           ODDS_API_KEY:              ${{ secrets.ODDS_API_KEY }}
-        run: python -m ops.wc_paper_shadow --deliver
+        run: |
+          DATE="${{ github.event.inputs.date }}"
+          if [ -z "$DATE" ]; then
+            DATE=$(date -u -d "+1 day" +%Y-%m-%d)
+          fi
+          echo "Bülten tarihi: $DATE"
+          python -m ops.wc_paper_shadow --deliver --date "$DATE"
 
       - name: Kota takibini kaydet
         if: always()
