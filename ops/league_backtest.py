@@ -121,7 +121,12 @@ def _load_clubelo_month(date_str: str) -> dict[str, float]:
 
 
 def _get_club_elo(team_name: str, date_str: str) -> float | None:
-    """Return Club Elo for a team at the given match date (month-level precision)."""
+    """Return Club Elo for a team at the given match date (month-level precision).
+
+    Lookup priority:
+    1. Live api.clubelo.com data (monthly cached)
+    2. _STATIC_ELO table (approximate 2024/25 ratings — fallback when API unavailable)
+    """
     ym = date_str[:7]
     if ym not in _elo_month_cache:
         _elo_month_cache[ym] = _load_clubelo_month(date_str)
@@ -129,11 +134,21 @@ def _get_club_elo(team_name: str, date_str: str) -> float | None:
     ratings = _elo_month_cache[ym]
     key     = team_name.lower().strip()
 
+    # 1. Exact match from live API cache
     if key in ratings:
         return ratings[key]
 
-    # Partial / substring match (handles "Man City" → "manchester city" etc.)
+    # 2. Partial / substring match from live API cache
     for k, v in ratings.items():
+        if key in k or k in key:
+            return v
+
+    # 3. Static table — exact match
+    if key in _STATIC_ELO:
+        return _STATIC_ELO[key]
+
+    # 4. Static table — substring match
+    for k, v in _STATIC_ELO.items():
         if key in k or k in key:
             return v
 
@@ -149,6 +164,208 @@ _CLUB_ELO_SCALE = 300.0
 _CLUB_BASE_GOALS = 1.35   # club avg > WC avg (1.25)
 _HOME_ADV_ATT   = 0.08    # home side attack boost (~0.1 xG advantage)
 _DEFAULT_ELO    = 1500.0  # fallback for unknown clubs
+
+# Static Club Elo table — approximate 2024/25 season ratings.
+# Used as fallback when api.clubelo.com is unreachable (e.g. cloud env).
+# Keys are lowercase; aliases handle common football-data.co.uk name variants.
+_STATIC_ELO: dict[str, float] = {
+    # ── Premier League ──────────────────────────────────────────────────────
+    "manchester city": 2020.0, "man city": 2020.0,
+    "liverpool": 1970.0,
+    "arsenal": 1950.0,
+    "chelsea": 1870.0,
+    "aston villa": 1880.0,
+    "tottenham": 1850.0, "tottenham hotspur": 1850.0, "spurs": 1850.0,
+    "newcastle": 1830.0, "newcastle united": 1830.0,
+    "manchester united": 1830.0, "man united": 1830.0, "man utd": 1830.0,
+    "brighton": 1800.0, "brighton & hove albion": 1800.0,
+    "west ham": 1780.0, "west ham united": 1780.0,
+    "brentford": 1760.0,
+    "fulham": 1760.0,
+    "wolverhampton": 1740.0, "wolves": 1740.0, "wolverhampton wanderers": 1740.0,
+    "crystal palace": 1740.0,
+    "nottingham forest": 1730.0, "nott'm forest": 1730.0, "nottm forest": 1730.0,
+    "bournemouth": 1720.0,
+    "everton": 1720.0,
+    "leicester": 1700.0, "leicester city": 1700.0,
+    "ipswich": 1680.0, "ipswich town": 1680.0,
+    "southampton": 1670.0,
+    # ── La Liga ─────────────────────────────────────────────────────────────
+    "real madrid": 2060.0,
+    "barcelona": 2000.0, "fc barcelona": 2000.0,
+    "atletico madrid": 1950.0, "atlético madrid": 1950.0, "atl. madrid": 1950.0,
+    "athletic club": 1830.0, "athletic bilbao": 1830.0,
+    "real sociedad": 1820.0,
+    "villarreal": 1810.0,
+    "real betis": 1800.0, "betis": 1800.0,
+    "sevilla": 1790.0,
+    "girona": 1780.0,
+    "valencia": 1750.0,
+    "osasuna": 1740.0,
+    "mallorca": 1720.0,
+    "celta vigo": 1730.0, "celta de vigo": 1730.0,
+    "rayo vallecano": 1720.0,
+    "getafe": 1710.0,
+    "alaves": 1690.0, "deportivo alaves": 1690.0,
+    "las palmas": 1690.0,
+    "leganes": 1680.0, "leganés": 1680.0,
+    "valladolid": 1670.0, "real valladolid": 1670.0,
+    "espanyol": 1710.0,
+    # ── Bundesliga ──────────────────────────────────────────────────────────
+    "bayern munich": 2030.0, "fc bayern munchen": 2030.0, "fc bayern münchen": 2030.0,
+    "bayer leverkusen": 1980.0, "leverkusen": 1980.0,
+    "borussia dortmund": 1920.0, "dortmund": 1920.0, "b. dortmund": 1920.0,
+    "rb leipzig": 1900.0,
+    "vfb stuttgart": 1850.0, "stuttgart": 1850.0,
+    "eintracht frankfurt": 1840.0, "ein frankfurt": 1840.0, "frankfurt": 1840.0,
+    "sc freiburg": 1800.0, "freiburg": 1800.0,
+    "vfl wolfsburg": 1800.0, "wolfsburg": 1800.0,
+    "tsg hoffenheim": 1780.0, "hoffenheim": 1780.0,
+    "werder bremen": 1780.0, "sv werder bremen": 1780.0,
+    "borussia monchengladbach": 1760.0, "m'gladbach": 1760.0, "monchengladbach": 1760.0,
+    "union berlin": 1760.0, "1. fc union berlin": 1760.0,
+    "fc augsburg": 1740.0, "augsburg": 1740.0,
+    "1. fsv mainz 05": 1750.0, "mainz": 1750.0, "fsv mainz": 1750.0,
+    "fc heidenheim": 1720.0, "heidenheim": 1720.0,
+    "vfl bochum": 1700.0, "bochum": 1700.0,
+    "holstein kiel": 1680.0, "kiel": 1680.0,
+    "fc st. pauli": 1700.0, "st. pauli": 1700.0, "st pauli": 1700.0,
+    "fc koln": 1750.0, "1. fc köln": 1750.0, "koln": 1750.0, "köln": 1750.0,
+    "hamburger sv": 1760.0, "hamburg": 1760.0, "hsv": 1760.0,
+    # ── Serie A ─────────────────────────────────────────────────────────────
+    "inter milan": 1980.0, "internazionale": 1980.0, "inter": 1980.0,
+    "atalanta": 1930.0, "atalanta bc": 1930.0,
+    "napoli": 1900.0, "ssc napoli": 1900.0,
+    "ac milan": 1900.0, "milan": 1900.0,
+    "juventus": 1900.0,
+    "lazio": 1840.0, "ss lazio": 1840.0,
+    "roma": 1840.0, "as roma": 1840.0,
+    "fiorentina": 1830.0, "acf fiorentina": 1830.0,
+    "bologna": 1820.0, "bologna fc": 1820.0,
+    "torino": 1780.0, "torino fc": 1780.0,
+    "monza": 1730.0, "ac monza": 1730.0,
+    "empoli": 1730.0, "empoli fc": 1730.0,
+    "lecce": 1710.0, "us lecce": 1710.0,
+    "hellas verona": 1710.0, "verona": 1710.0,
+    "genoa": 1720.0, "genoa cfc": 1720.0,
+    "udinese": 1750.0, "udinese calcio": 1750.0,
+    "cagliari": 1720.0, "cagliari calcio": 1720.0,
+    "venezia": 1680.0, "venezia fc": 1680.0,
+    "parma": 1700.0, "parma calcio": 1700.0,
+    "como": 1680.0, "como 1907": 1680.0,
+    "sassuolo": 1700.0, "us sassuolo": 1700.0,
+    "pisa": 1690.0, "ac pisa": 1690.0,
+    "cremonese": 1680.0, "us cremonese": 1680.0,
+    # ── Ligue 1 ─────────────────────────────────────────────────────────────
+    "paris saint-germain": 2040.0, "psg": 2040.0, "paris sg": 2040.0,
+    "lille": 1840.0, "losc lille": 1840.0,
+    "monaco": 1870.0, "as monaco": 1870.0,
+    "marseille": 1830.0, "olympique marseille": 1830.0, "olympique de marseille": 1830.0,
+    "lyon": 1820.0, "olympique lyonnais": 1820.0,
+    "nice": 1800.0, "ogc nice": 1800.0,
+    "lens": 1790.0, "rc lens": 1790.0,
+    "rennes": 1780.0, "stade rennais": 1780.0,
+    "brest": 1780.0, "stade brest": 1780.0,
+    "strasbourg": 1750.0, "rc strasbourg": 1750.0,
+    "reims": 1740.0, "stade de reims": 1740.0,
+    "toulouse": 1730.0, "toulouse fc": 1730.0,
+    "nantes": 1730.0, "fc nantes": 1730.0,
+    "montpellier": 1710.0, "montpellier hsc": 1710.0,
+    "le havre": 1700.0,
+    "saint-etienne": 1720.0, "st etienne": 1720.0,
+    "angers": 1690.0, "angers sco": 1690.0,
+    "auxerre": 1700.0, "aj auxerre": 1700.0,
+    "lorient": 1720.0, "fc lorient": 1720.0,
+    "metz": 1700.0, "fc metz": 1700.0,
+    "paris fc": 1710.0,
+    # ── Eredivisie ──────────────────────────────────────────────────────────
+    "psv": 1900.0, "psv eindhoven": 1900.0,
+    "feyenoord": 1860.0,
+    "ajax": 1830.0, "afc ajax": 1830.0,
+    "az": 1800.0, "az alkmaar": 1800.0,
+    "twente": 1780.0, "fc twente": 1780.0,
+    "fc utrecht": 1760.0, "utrecht": 1760.0,
+    "sparta rotterdam": 1730.0, "sparta": 1730.0,
+    "sc heerenveen": 1730.0, "heerenveen": 1730.0,
+    "nec": 1720.0, "nec nijmegen": 1720.0,
+    "go ahead eagles": 1710.0,
+    "heracles": 1700.0, "heracles almelo": 1700.0,
+    "rkc waalwijk": 1700.0, "rkc": 1700.0,
+    "fc groningen": 1710.0, "groningen": 1710.0,
+    "excelsior": 1690.0, "sbv excelsior": 1690.0,
+    "pec zwolle": 1690.0, "zwolle": 1690.0,
+    "almere city": 1680.0, "almere": 1680.0,
+    "fortuna sittard": 1690.0, "fortuna": 1690.0, "for sittard": 1690.0,
+    "waalwijk": 1700.0,
+    "nac breda": 1680.0, "nac": 1680.0,
+    "willem ii": 1690.0,
+    "telstar": 1660.0,
+    "volendam": 1670.0, "fc volendam": 1670.0,
+    # ── Süper Lig ───────────────────────────────────────────────────────────
+    "galatasaray": 1880.0,
+    "fenerbahce": 1870.0, "fenerbahçe": 1870.0,
+    "besiktas": 1820.0, "beşiktaş": 1820.0,
+    "trabzonspor": 1790.0,
+    "istanbul basaksehir": 1780.0, "basaksehir": 1780.0, "başakşehir": 1780.0,
+    "kasimpasa": 1730.0, "kasımpaşa": 1730.0,
+    "sivasspor": 1720.0,
+    "alanyaspor": 1720.0,
+    "antalyaspor": 1710.0,
+    "kayserispor": 1700.0,
+    "rizespor": 1690.0, "caykur rizespor": 1690.0,
+    "samsunspor": 1700.0,
+    "hatayspor": 1690.0,
+    "konyaspor": 1710.0,
+    "gaziantep": 1690.0, "gaziantep fk": 1690.0,
+    "adana demirspor": 1700.0,
+    "eyupspor": 1700.0, "eyüpspor": 1700.0,
+    "fatih karagumruk": 1700.0, "karagumruk": 1700.0,
+    "pendikspor": 1660.0,
+    "istanbulspor": 1660.0,
+    "ankaragücü": 1690.0, "ankaragucu": 1690.0,
+    "bodrumspor": 1660.0,
+    "goztepe": 1690.0, "göztepe": 1690.0,
+    "sakaryaspor": 1660.0,
+    "ad. demirspor": 1700.0,
+    "buyuksehyr": 1780.0, "buyuksehir": 1780.0,
+    "genclerbirligi": 1660.0, "gençlerbirliği": 1660.0,
+    "kocaelispor": 1660.0,
+    # ── Primeira Liga ───────────────────────────────────────────────────────
+    "benfica": 1900.0, "sl benfica": 1900.0,
+    "porto": 1890.0, "fc porto": 1890.0,
+    "sporting cp": 1900.0, "sporting": 1900.0, "sporting clube de portugal": 1900.0,
+    "sc braga": 1800.0, "braga": 1800.0,
+    "vitoria sc": 1750.0, "vitoria guimaraes": 1750.0, "vitória sc": 1750.0,
+    "estoril": 1700.0, "estoril praia": 1700.0,
+    "gil vicente": 1700.0,
+    "moreirense": 1690.0,
+    "rio ave": 1700.0,
+    "farense": 1680.0, "sc farense": 1680.0,
+    "boavista": 1710.0, "boavista fc": 1710.0,
+    "nacional": 1680.0, "cd nacional": 1680.0,
+    "casa pia": 1690.0, "casa pia ac": 1690.0,
+    "famalicao": 1690.0, "fc famalicão": 1690.0,
+    "estrela amadora": 1680.0,
+    "vizela": 1670.0, "fc vizela": 1670.0,
+    "arouca": 1690.0, "fc arouca": 1690.0,
+    "chaves": 1680.0, "gd chaves": 1680.0,
+    "santa clara": 1690.0, "cd santa clara": 1690.0,
+    "avs": 1670.0,
+    "sp lisbon": 1900.0,
+    "alverca": 1670.0, "fc alverca": 1670.0,
+    "tondela": 1670.0, "cd tondela": 1670.0,
+    # ── La Liga aliases (football-data.co.uk short names) ───────────────────
+    "ath bilbao": 1830.0,
+    "ath madrid": 1950.0,
+    "espanol": 1710.0,
+    "levante": 1700.0, "levante ud": 1700.0,
+    "elche": 1680.0, "elche cf": 1680.0,
+    "oviedo": 1680.0, "real oviedo": 1680.0,
+    # ── Premier League aliases ───────────────────────────────────────────────
+    "burnley": 1700.0,
+    "leeds": 1730.0, "leeds united": 1730.0,
+    "sunderland": 1700.0, "sunderland afc": 1700.0,
+}
 
 
 def _club_features(team_name: str, elo: float, *, is_home: bool) -> TeamFeatures:

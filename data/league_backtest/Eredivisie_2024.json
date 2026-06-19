@@ -1,0 +1,107 @@
+{
+  "generated_at": "2026-06-19T19:27:55.699254+00:00",
+  "source": "league_backtest",
+  "league": "Eredivisie",
+  "season": 2024,
+  "n_settled": 306,
+  "n_correct": 174,
+  "overall_accuracy_pct": 56.86,
+  "log_loss": 1.03457,
+  "brier_score": 0.62054,
+  "n_draws_predicted": 0,
+  "n_draws_actual": 77,
+  "draw_rate_predicted": 24.959,
+  "draw_rate_actual": 25.163,
+  "draw_rate_bias": 0.204,
+  "confusion_matrix": {
+    "HOME_WIN": {
+      "HOME_WIN": 126,
+      "DRAW": 56,
+      "AWAY_WIN": 42
+    },
+    "DRAW": {
+      "HOME_WIN": 0,
+      "DRAW": 0,
+      "AWAY_WIN": 0
+    },
+    "AWAY_WIN": {
+      "HOME_WIN": 13,
+      "DRAW": 21,
+      "AWAY_WIN": 48
+    }
+  },
+  "by_confidence_band": {
+    "90-92": {
+      "n": 0,
+      "mean_conf": null,
+      "correct": 0,
+      "accuracy": null
+    },
+    "70-89": {
+      "n": 0,
+      "mean_conf": null,
+      "correct": 0,
+      "accuracy": null
+    },
+    "50-69": {
+      "n": 17,
+      "mean_conf": 51.99,
+      "correct": 14,
+      "accuracy": 82.35
+    },
+    "30-49": {
+      "n": 289,
+      "mean_conf": 36.99,
+      "correct": 160,
+      "accuracy": 55.36
+    }
+  },
+  "ece": 0.19037,
+  "ece_available": true,
+  "reliability_bins": [
+    {
+      "band": "30-40",
+      "n": 215,
+      "mean_conf": 34.64,
+      "accuracy": 51.16
+    },
+    {
+      "band": "40-50",
+      "n": 74,
+      "mean_conf": 43.82,
+      "accuracy": 67.57
+    },
+    {
+      "band": "50-60",
+      "n": 17,
+      "mean_conf": 51.99,
+      "accuracy": 82.35
+    },
+    {
+      "band": "60-70",
+      "n": 0,
+      "mean_conf": null,
+      "accuracy": null
+    },
+    {
+      "band": "70-80",
+      "n": 0,
+      "mean_conf": null,
+      "accuracy": null
+    },
+    {
+      "band": "80-93",
+      "n": 0,
+      "mean_conf": null,
+      "accuracy": null
+    }
+  ],
+  "elo_coverage": {
+    "found": 306,
+    "missing": 0,
+    "total": 306
+  },
+  "flags": [
+    "BRIER_HIGH \u2014 0.6205"
+  ]
+}

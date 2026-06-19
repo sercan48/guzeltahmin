@@ -1,0 +1,107 @@
+{
+  "generated_at": "2026-06-19T19:27:55.652215+00:00",
+  "source": "league_backtest",
+  "league": "SuperLig",
+  "season": 2024,
+  "n_settled": 342,
+  "n_correct": 186,
+  "overall_accuracy_pct": 54.39,
+  "log_loss": 1.03094,
+  "brier_score": 0.61865,
+  "n_draws_predicted": 0,
+  "n_draws_actual": 80,
+  "draw_rate_predicted": 24.965,
+  "draw_rate_actual": 23.392,
+  "draw_rate_bias": -1.573,
+  "confusion_matrix": {
+    "HOME_WIN": {
+      "HOME_WIN": 147,
+      "DRAW": 57,
+      "AWAY_WIN": 57
+    },
+    "DRAW": {
+      "HOME_WIN": 0,
+      "DRAW": 0,
+      "AWAY_WIN": 0
+    },
+    "AWAY_WIN": {
+      "HOME_WIN": 19,
+      "DRAW": 23,
+      "AWAY_WIN": 39
+    }
+  },
+  "by_confidence_band": {
+    "90-92": {
+      "n": 0,
+      "mean_conf": null,
+      "correct": 0,
+      "accuracy": null
+    },
+    "70-89": {
+      "n": 0,
+      "mean_conf": null,
+      "correct": 0,
+      "accuracy": null
+    },
+    "50-69": {
+      "n": 20,
+      "mean_conf": 51.29,
+      "correct": 17,
+      "accuracy": 85.0
+    },
+    "30-49": {
+      "n": 322,
+      "mean_conf": 36.77,
+      "correct": 169,
+      "accuracy": 52.48
+    }
+  },
+  "ece": 0.16768,
+  "ece_available": true,
+  "reliability_bins": [
+    {
+      "band": "30-40",
+      "n": 242,
+      "mean_conf": 34.55,
+      "accuracy": 46.28
+    },
+    {
+      "band": "40-50",
+      "n": 80,
+      "mean_conf": 43.47,
+      "accuracy": 71.25
+    },
+    {
+      "band": "50-60",
+      "n": 20,
+      "mean_conf": 51.29,
+      "accuracy": 85.0
+    },
+    {
+      "band": "60-70",
+      "n": 0,
+      "mean_conf": null,
+      "accuracy": null
+    },
+    {
+      "band": "70-80",
+      "n": 0,
+      "mean_conf": null,
+      "accuracy": null
+    },
+    {
+      "band": "80-93",
+      "n": 0,
+      "mean_conf": null,
+      "accuracy": null
+    }
+  ],
+  "elo_coverage": {
+    "found": 342,
+    "missing": 0,
+    "total": 342
+  },
+  "flags": [
+    "BRIER_HIGH \u2014 0.6187"
+  ]
+}

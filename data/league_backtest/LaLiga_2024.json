@@ -1,0 +1,107 @@
+{
+  "generated_at": "2026-06-19T19:27:55.692741+00:00",
+  "source": "league_backtest",
+  "league": "LaLiga",
+  "season": 2024,
+  "n_settled": 380,
+  "n_correct": 199,
+  "overall_accuracy_pct": 52.37,
+  "log_loss": 1.02318,
+  "brier_score": 0.6117,
+  "n_draws_predicted": 0,
+  "n_draws_actual": 97,
+  "draw_rate_predicted": 24.768,
+  "draw_rate_actual": 25.526,
+  "draw_rate_bias": 0.758,
+  "confusion_matrix": {
+    "HOME_WIN": {
+      "HOME_WIN": 137,
+      "DRAW": 61,
+      "AWAY_WIN": 52
+    },
+    "DRAW": {
+      "HOME_WIN": 0,
+      "DRAW": 0,
+      "AWAY_WIN": 0
+    },
+    "AWAY_WIN": {
+      "HOME_WIN": 32,
+      "DRAW": 36,
+      "AWAY_WIN": 62
+    }
+  },
+  "by_confidence_band": {
+    "90-92": {
+      "n": 0,
+      "mean_conf": null,
+      "correct": 0,
+      "accuracy": null
+    },
+    "70-89": {
+      "n": 0,
+      "mean_conf": null,
+      "correct": 0,
+      "accuracy": null
+    },
+    "50-69": {
+      "n": 72,
+      "mean_conf": 57.61,
+      "correct": 53,
+      "accuracy": 73.61
+    },
+    "30-49": {
+      "n": 308,
+      "mean_conf": 37.5,
+      "correct": 146,
+      "accuracy": 47.4
+    }
+  },
+  "ece": 0.11054,
+  "ece_available": true,
+  "reliability_bins": [
+    {
+      "band": "30-40",
+      "n": 216,
+      "mean_conf": 34.6,
+      "accuracy": 42.13
+    },
+    {
+      "band": "40-50",
+      "n": 92,
+      "mean_conf": 44.31,
+      "accuracy": 59.78
+    },
+    {
+      "band": "50-60",
+      "n": 48,
+      "mean_conf": 54.9,
+      "accuracy": 68.75
+    },
+    {
+      "band": "60-70",
+      "n": 24,
+      "mean_conf": 63.04,
+      "accuracy": 83.33
+    },
+    {
+      "band": "70-80",
+      "n": 0,
+      "mean_conf": null,
+      "accuracy": null
+    },
+    {
+      "band": "80-93",
+      "n": 0,
+      "mean_conf": null,
+      "accuracy": null
+    }
+  ],
+  "elo_coverage": {
+    "found": 380,
+    "missing": 0,
+    "total": 380
+  },
+  "flags": [
+    "BRIER_HIGH \u2014 0.6117"
+  ]
+}

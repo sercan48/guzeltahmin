@@ -1,0 +1,107 @@
+{
+  "generated_at": "2026-06-19T19:27:55.703212+00:00",
+  "source": "league_backtest",
+  "league": "Ligue1",
+  "season": 2024,
+  "n_settled": 306,
+  "n_correct": 176,
+  "overall_accuracy_pct": 57.52,
+  "log_loss": 1.0111,
+  "brier_score": 0.60552,
+  "n_draws_predicted": 0,
+  "n_draws_actual": 62,
+  "draw_rate_predicted": 24.896,
+  "draw_rate_actual": 20.261,
+  "draw_rate_bias": -4.635,
+  "confusion_matrix": {
+    "HOME_WIN": {
+      "HOME_WIN": 120,
+      "DRAW": 43,
+      "AWAY_WIN": 45
+    },
+    "DRAW": {
+      "HOME_WIN": 0,
+      "DRAW": 0,
+      "AWAY_WIN": 0
+    },
+    "AWAY_WIN": {
+      "HOME_WIN": 23,
+      "DRAW": 19,
+      "AWAY_WIN": 56
+    }
+  },
+  "by_confidence_band": {
+    "90-92": {
+      "n": 0,
+      "mean_conf": null,
+      "correct": 0,
+      "accuracy": null
+    },
+    "70-89": {
+      "n": 0,
+      "mean_conf": null,
+      "correct": 0,
+      "accuracy": null
+    },
+    "50-69": {
+      "n": 30,
+      "mean_conf": 57.1,
+      "correct": 22,
+      "accuracy": 73.33
+    },
+    "30-49": {
+      "n": 276,
+      "mean_conf": 36.98,
+      "correct": 154,
+      "accuracy": 55.8
+    }
+  },
+  "ece": 0.18563,
+  "ece_available": true,
+  "reliability_bins": [
+    {
+      "band": "30-40",
+      "n": 205,
+      "mean_conf": 34.59,
+      "accuracy": 51.22
+    },
+    {
+      "band": "40-50",
+      "n": 71,
+      "mean_conf": 43.88,
+      "accuracy": 69.01
+    },
+    {
+      "band": "50-60",
+      "n": 21,
+      "mean_conf": 54.57,
+      "accuracy": 71.43
+    },
+    {
+      "band": "60-70",
+      "n": 9,
+      "mean_conf": 63.0,
+      "accuracy": 77.78
+    },
+    {
+      "band": "70-80",
+      "n": 0,
+      "mean_conf": null,
+      "accuracy": null
+    },
+    {
+      "band": "80-93",
+      "n": 0,
+      "mean_conf": null,
+      "accuracy": null
+    }
+  ],
+  "elo_coverage": {
+    "found": 306,
+    "missing": 0,
+    "total": 306
+  },
+  "flags": [
+    "BRIER_HIGH \u2014 0.6055"
+  ]
+}

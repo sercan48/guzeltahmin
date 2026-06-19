@@ -1,10 +1,12 @@
 name: Daily WC Bulletin
 
 on:
-  schedule:
-    # 21:00 UTC = gece yarısı Türkiye — yarınki maçların tahminleri
-    # Amerika maçları (01:00-03:00 UTC kickoff) bu sayede kaçmaz
-    - cron: '0 21 * * *'
+  # Birincil tetikleyici: settlement tamamlanınca çalış (07:00 UTC sonrası)
+  # Settlement her gün güvenilir şekilde çalışır → bülten de güvenilir olur.
+  workflow_run:
+    workflows: ["Daily Settlement"]
+    types: [completed]
+
   workflow_dispatch:
     inputs:
       date:
