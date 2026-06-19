@@ -167,6 +167,87 @@ Club Elo kapsamı yetersiz → Q4 2025'e ertelendi.
 
 ---
 
+## Araştırma Bulguları — Modele Yansımaları
+
+Kaynak: `docs/research/football_data_betting_articles_ALL.txt`
+(football-data.co.uk makale serisi — Joseph Buchdahl)
+
+### 1. CLV (Closing Line Value) — En Kritik Bulgu
+
+**Ne diyor:** Bir modelin gerçek becerisi, tahmin doğruluğundan değil,
+tahmin edilen olasılıkların **Pinnacle kapanış oranını yenip yenmediğiyle** ölçülür.
+CLV zamanla kalıcıdır (varyansın %50'sini açıklar); kâr/zarar tamamen geri ortalamasına döner.
+
+**Projeye etkisi:**
+- Shadow fazında sadece doğruluk takip etmek yetmez
+- `data/shadow_settlements.jsonl`'a `closing_odds_pinnacle` alanı eklenecek
+- Her tahmin için `clv = predicted_prob - (1/closing_odds)` hesaplanacak
+- Pozitif CLV ortalaması → gerçek edge kanıtı
+
+### 2. Hot Hand Fallacy — Direkt Uygulanabilir Sistem
+
+**Ne diyor:** Son 6 maçta "sıcak" takımlara (galibiyet serisi) karşı
+"soğuk" takımlar (%105.48 ROI vs %95.83) istatistiksel olarak anlamlı üstünlük sağlar.
+(p-value = 0.00009). Bahisçiler seri gören takıma oranı mantıksız kısaltır.
+
+**Projeye etkisi:**
+- `form_score` hesaplamasına **ters kontraryanlık ağırlığı** eklenecek
+- Yüksek form_score'lu favori → hafif olasılık indirimi
+- Düşük form_score'lu underdog → hafif olasılık artışı
+- Dixon-Coles R&D'sine paralel olarak test edilecek
+
+### 3. İstatistiksel Anlamlılık Eşikleri
+
+**Ne diyor:** 10% yield ile even-money tahminlerde n≥540 gerekir.
+Uzun odds'larda (9/1) n≥540 ve %34 yield lazım.
+n=24 hiçbir istatistiksel anlam taşımaz.
+
+**Projeye etkisi:**
+- Shadow checkpoint'leri: n=30 (gözlem), n=100 (ilk sinyal), n=500 (güven)
+- VIP lansmanı için minimum n=100 (yield %10+ ise) veya n=500 (yield %3-5)
+- Raporlarda "istatistiksel olarak anlamlı değil" notu eklenmeli
+
+### 4. Favori-Uzun İhtimal Sapması (Favourite-Longshot Bias)
+
+**Ne diyor:** Bookmakerlar kısa favorilere düşük marj, uzun ihtimallere yüksek marj uygular.
+Bu rasyonel risk yönetimidir (Kelly kriteri ile açıklanır).
+Pratik etki: longshot'lara oranlar gerçek olasılıktan kısa, favorilere uzun.
+
+**Projeye etkisi:**
+- Tahmin olasılıklarını oranlara çevirirken marjı dağıtırken bu eğriliği dikkate al
+- Güçlü favori tahminlerimiz gerçekte piyasadan daha değerli olabilir
+
+### 5. Staking — Half-Kelly Önerisi
+
+**Ne diyor:** Kelly optimal büyüme sağlar ama edge tahminindeki hata
+bankrolü mahvedebilir. Half-Kelly: kâr olasılığını %66'dan %73'e çıkarır,
+banka yarılanma riskini %10'dan %1'e düşürür.
+
+**Projeye etkisi:**
+- VIP kullanıcılara **Half-Kelly** önerilecek (tam Kelly değil)
+- Edge tahmini = `(predicted_prob × decimal_odds - 1)`
+- Kelly fraction = `edge / (decimal_odds - 1)`
+- Önerilen stake = `bankroll × 0.5 × kelly_fraction`
+
+### 6. Martingale/Progresif Staking — Kesinlikle Önerme
+
+**Ne diyor:** Progresif bahis matematiksel olarak yıkıcıdır.
+1000× başlangıç bankrolü ile 365 bahiste yıkım kaçınılmazdır.
+
+**Projeye etkisi:**
+- Telegram bültenlerinde ve VIP kanalda progresif sistemler hiçbir zaman önerilmeyecek
+
+### 7. Piyasa Verimliliği — Pinnacle Kapanış = Altın Standart
+
+**Ne diyor:** Pinnacle kapanış oranları ile gerçek sonuçlar arasında
+r=0.995 korelasyon var (52,411 maç). Tahminlerimizi Pinnacle kapanışa göre ölçmeliyiz.
+
+**Projeye etkisi:**
+- `ODDS_API_KEY` ile çekilen oranlar arasında Pinnacle öncelikli
+- Bulletin'e "Pinnacle kapanış" kıyaslaması eklenecek
+
+---
+
 ## Akademik Kaynak Havuzu
 
 `docs/research/` klasörüne makale ekleyebilirsin.

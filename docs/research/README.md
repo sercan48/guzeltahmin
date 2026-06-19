@@ -61,4 +61,6 @@ git push origin main
 
 ## Mevcut Dosyalar
 
-*(Henüz makale eklenmedi — yukarıdaki talimatları takip et)*
+| Dosya | Konu | Okundu | Özet |
+|---|---|---|---|
+| `football_data_betting_articles_ALL.txt` | Bahis piyasası analizi, CLV, psikoloji, staking | ✅ | CLV > kâr/zarar; Half-Kelly; Hot Hand contrarian; n≥500 eşiği |
