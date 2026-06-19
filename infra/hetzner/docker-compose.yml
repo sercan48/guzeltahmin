@@ -1,0 +1,107 @@
+version: '3.8'
+
+# =============================================================================
+# Güzel Tahmin Gateway — n8n + Caddy on Hetzner CX21
+#
+# Kurulum:
+#   1. Hetzner CX21 (Ubuntu 24.04) aç, SSH bağlan
+#   2. sudo apt update && sudo apt install -y docker.io docker-compose-v2
+#   3. mkdir ~/guzeltahmin-gateway && cd ~/guzeltahmin-gateway
+#   4. Bu dosyayı kopyala, .env dosyasını doldur
+#   5. docker compose up -d
+#   6. https://n8n.DOMAININ.com adresinden aç
+# =============================================================================
+
+services:
+
+  # ---------------------------------------------------------------------------
+  # n8n — Workflow Automation
+  # ---------------------------------------------------------------------------
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: n8n
+    restart: unless-stopped
+    environment:
+      # Temel ayarlar
+      - N8N_HOST=${N8N_HOST}                           # n8n.domainin.com
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=https
+      - WEBHOOK_URL=https://${N8N_HOST}/
+      - NODE_ENV=production
+
+      # Güvenlik
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=${N8N_ADMIN_USER}
+      - N8N_BASIC_AUTH_PASSWORD=${N8N_ADMIN_PASSWORD}
+      - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY}      # openssl rand -hex 32
+
+      # Veritabanı (n8n kendi verisi için)
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=postgres
+      - DB_POSTGRESDB_PORT=5432
+      - DB_POSTGRESDB_DATABASE=n8n
+      - DB_POSTGRESDB_USER=n8n
+      - DB_POSTGRESDB_PASSWORD=${POSTGRES_PASSWORD}
+
+      # Timezone
+      - GENERIC_TIMEZONE=Europe/Istanbul
+      - TZ=Europe/Istanbul
+
+    volumes:
+      - n8n_data:/home/node/.n8n
+    networks:
+      - gateway
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # ---------------------------------------------------------------------------
+  # PostgreSQL — n8n'in kendi veritabanı (Supabase ≠ bu)
+  # Supabase projene bağlantı n8n credentials üzerinden yapılır.
+  # ---------------------------------------------------------------------------
+  postgres:
+    image: postgres:16-alpine
+    container_name: n8n-postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=n8n
+      - POSTGRES_USER=n8n
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - gateway
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U n8n"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ---------------------------------------------------------------------------
+  # Caddy — Reverse Proxy + Otomatik SSL (Let's Encrypt)
+  # ---------------------------------------------------------------------------
+  caddy:
+    image: caddy:2-alpine
+    container_name: caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - gateway
+    depends_on:
+      - n8n
+
+volumes:
+  n8n_data:
+  postgres_data:
+  caddy_data:
+  caddy_config:
+
+networks:
+  gateway:
+    driver: bridge

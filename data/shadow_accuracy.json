@@ -1,19 +1,19 @@
 {
-  "generated_at": "2026-06-17T11:54:56.621863+00:00",
-  "n_settled": 20,
-  "n_correct": 12,
-  "overall_accuracy_pct": 60.0,
-  "log_loss": 1.02445,
+  "generated_at": "2026-06-18T13:55:02.640514+00:00",
+  "n_settled": 24,
+  "n_correct": 15,
+  "overall_accuracy_pct": 62.5,
+  "log_loss": 1.00584,
   "n_draws_predicted": 0,
-  "n_draws_actual": 8,
-  "draw_rate_predicted": 20.295,
-  "draw_rate_actual": 40.0,
-  "draw_rate_bias": 19.705,
+  "n_draws_actual": 9,
+  "draw_rate_predicted": 20.154,
+  "draw_rate_actual": 37.5,
+  "draw_rate_bias": 17.346,
   "draw_bias_available": true,
   "confusion_matrix": {
     "HOME_WIN": {
-      "HOME_WIN": 10,
-      "DRAW": 6,
+      "HOME_WIN": 12,
+      "DRAW": 7,
       "AWAY_WIN": 0
     },
     "DRAW": {
@@ -24,19 +24,19 @@
     "AWAY_WIN": {
       "HOME_WIN": 0,
       "DRAW": 2,
-      "AWAY_WIN": 2
+      "AWAY_WIN": 3
     }
   },
   "by_tier": {
     "TIER_A": {
-      "n": 5,
-      "correct": 2,
-      "accuracy": 40.0
+      "n": 7,
+      "correct": 3,
+      "accuracy": 42.86
     },
     "TIER_B": {
-      "n": 12,
-      "correct": 7,
-      "accuracy": 58.33
+      "n": 14,
+      "correct": 9,
+      "accuracy": 64.29
     },
     "TIER_C": {
       "n": 3,
@@ -52,9 +52,9 @@
       "accuracy": null
     },
     "70-89": {
-      "n": 4,
-      "mean_conf": 78.38,
-      "correct": 2,
+      "n": 6,
+      "mean_conf": 77.93,
+      "correct": 3,
       "accuracy": 50.0
     },
     "50-69": {
@@ -64,20 +64,20 @@
       "accuracy": 45.45
     },
     "30-49": {
-      "n": 5,
-      "mean_conf": 38.0,
-      "correct": 5,
+      "n": 7,
+      "mean_conf": 40.27,
+      "correct": 7,
       "accuracy": 100.0
     }
   },
   "rolling_7d": {
-    "n": 20,
-    "accuracy": 60.0,
-    "cutoff": "2026-06-10"
+    "n": 24,
+    "accuracy": 62.5,
+    "cutoff": "2026-06-11"
   },
-  "brier_score": 0.61379,
+  "brier_score": 0.60022,
   "brier_available": true,
-  "ece": 0.28845,
+  "ece": 0.30796,
   "ece_available": true,
   "reliability_bins": [
     {
@@ -88,8 +88,8 @@
     },
     {
       "band": "40-50",
-      "n": 2,
-      "mean_conf": 45.5,
+      "n": 4,
+      "mean_conf": 45.72,
       "accuracy": 100.0
     },
     {
@@ -106,19 +106,19 @@
     },
     {
       "band": "70-80",
-      "n": 2,
-      "mean_conf": 74.1,
-      "accuracy": 50.0
+      "n": 3,
+      "mean_conf": 73.53,
+      "accuracy": 66.67
     },
     {
       "band": "80-93",
-      "n": 2,
-      "mean_conf": 82.65,
-      "accuracy": 50.0
+      "n": 3,
+      "mean_conf": 82.33,
+      "accuracy": 33.33
     }
   ],
   "flags": [
-    "DRAW_CALIBRATION_CONFIRMED \u2014 bias=+19.70pp",
-    "ECE_REVIEW_REQUIRED \u2014 ECE=0.2884 > 0.08 threshold"
+    "DRAW_CALIBRATION_CONFIRMED \u2014 bias=+17.35pp",
+    "ECE_REVIEW_REQUIRED \u2014 ECE=0.3080 > 0.08 threshold"
   ]
 }
