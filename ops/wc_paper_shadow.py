@@ -823,7 +823,7 @@ def format_match_block(db, match: dict, pred: dict, odds_map: dict | None = None
         f"1️⃣ %{h_pct} | ❌ %{d_pct} | 2️⃣ %{a_pct}\n"
         f"📊 <i>xG: {xg_h} - {xg_a}</i>"
         f"{odds_line}\n"
-        f"⚽ KG Var %{btts['btts_yes']} · 2.5Ü %{ou['over_2.5']} · "
+        f"⚽ KG Var %{btts['btts_yes']} · 2.5Ü %{ou['over_2.5']} · 2.5A %{ou['under_2.5']} · "
         f"1X %{dc_1x} · X2 %{dc_x2}"
         + (f"\n🎯 <b>SNIPER — Piyasa EV pozitif</b>" if sniper else "")
     )
