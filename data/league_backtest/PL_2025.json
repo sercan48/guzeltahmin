@@ -1,18 +1,18 @@
 {
-  "generated_at": "2026-06-20T04:23:10.279795+00:00",
+  "generated_at": "2026-06-20T04:32:01.907537+00:00",
   "source": "league_backtest",
   "league": "PL",
   "season": 2025,
   "n_settled": 380,
   "n_correct": 179,
   "overall_accuracy_pct": 47.11,
-  "log_loss": 1.04827,
-  "brier_score": 0.63134,
+  "log_loss": 1.04837,
+  "brier_score": 0.63124,
   "n_draws_predicted": 0,
   "n_draws_actual": 104,
-  "draw_rate_predicted": 27.959,
+  "draw_rate_predicted": 27.257,
   "draw_rate_actual": 27.368,
-  "draw_rate_bias": -0.591,
+  "draw_rate_bias": 0.111,
   "confusion_matrix": {
     "HOME_WIN": {
       "HOME_WIN": 119,
@@ -44,44 +44,44 @@
       "accuracy": null
     },
     "50-69": {
-      "n": 63,
-      "mean_conf": 55.59,
-      "correct": 39,
-      "accuracy": 61.9
+      "n": 68,
+      "mean_conf": 55.98,
+      "correct": 42,
+      "accuracy": 61.76
     },
     "30-49": {
-      "n": 317,
-      "mean_conf": 37.57,
-      "correct": 140,
-      "accuracy": 44.16
+      "n": 312,
+      "mean_conf": 37.71,
+      "correct": 137,
+      "accuracy": 43.91
     }
   },
-  "ece": 0.06547,
+  "ece": 0.06129,
   "ece_available": true,
   "reliability_bins": [
     {
       "band": "30-40",
-      "n": 210,
-      "mean_conf": 33.97,
-      "accuracy": 39.05
+      "n": 205,
+      "mean_conf": 34.07,
+      "accuracy": 38.54
     },
     {
       "band": "40-50",
       "n": 107,
-      "mean_conf": 44.64,
+      "mean_conf": 44.67,
       "accuracy": 54.21
     },
     {
       "band": "50-60",
       "n": 51,
-      "mean_conf": 54.11,
-      "accuracy": 58.82
+      "mean_conf": 53.96,
+      "accuracy": 56.86
     },
     {
       "band": "60-70",
-      "n": 12,
-      "mean_conf": 61.88,
-      "accuracy": 75.0
+      "n": 17,
+      "mean_conf": 62.04,
+      "accuracy": 76.47
     },
     {
       "band": "70-80",
@@ -102,6 +102,6 @@
     "total": 380
   },
   "flags": [
-    "BRIER_HIGH \u2014 0.6313"
+    "BRIER_HIGH \u2014 0.6312"
   ]
 }

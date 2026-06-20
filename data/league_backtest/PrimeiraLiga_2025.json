@@ -1,18 +1,18 @@
 {
-  "generated_at": "2026-06-20T04:23:10.764628+00:00",
+  "generated_at": "2026-06-20T04:32:02.399049+00:00",
   "source": "league_backtest",
   "league": "PrimeiraLiga",
   "season": 2025,
   "n_settled": 306,
   "n_correct": 169,
   "overall_accuracy_pct": 55.23,
-  "log_loss": 1.00466,
-  "brier_score": 0.59983,
+  "log_loss": 1.0052,
+  "brier_score": 0.59978,
   "n_draws_predicted": 0,
   "n_draws_actual": 83,
-  "draw_rate_predicted": 27.876,
+  "draw_rate_predicted": 27.174,
   "draw_rate_actual": 27.124,
-  "draw_rate_bias": -0.752,
+  "draw_rate_bias": -0.05,
   "confusion_matrix": {
     "HOME_WIN": {
       "HOME_WIN": 112,
@@ -44,44 +44,44 @@
       "accuracy": null
     },
     "50-69": {
-      "n": 69,
-      "mean_conf": 55.22,
-      "correct": 55,
-      "accuracy": 79.71
+      "n": 73,
+      "mean_conf": 55.74,
+      "correct": 59,
+      "accuracy": 80.82
     },
     "30-49": {
-      "n": 237,
-      "mean_conf": 36.23,
-      "correct": 114,
-      "accuracy": 48.1
+      "n": 233,
+      "mean_conf": 36.27,
+      "correct": 110,
+      "accuracy": 47.21
     }
   },
-  "ece": 0.14718,
+  "ece": 0.14311,
   "ece_available": true,
   "reliability_bins": [
     {
       "band": "30-40",
-      "n": 183,
-      "mean_conf": 33.71,
-      "accuracy": 42.08
+      "n": 182,
+      "mean_conf": 33.92,
+      "accuracy": 41.76
     },
     {
       "band": "40-50",
-      "n": 54,
-      "mean_conf": 44.77,
-      "accuracy": 68.52
+      "n": 51,
+      "mean_conf": 44.67,
+      "accuracy": 66.67
     },
     {
       "band": "50-60",
       "n": 63,
-      "mean_conf": 54.56,
+      "mean_conf": 54.76,
       "accuracy": 79.37
     },
     {
       "band": "60-70",
-      "n": 6,
-      "mean_conf": 62.17,
-      "accuracy": 83.33
+      "n": 10,
+      "mean_conf": 61.88,
+      "accuracy": 90.0
     },
     {
       "band": "70-80",

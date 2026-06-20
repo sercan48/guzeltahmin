@@ -1,18 +1,18 @@
 {
-  "generated_at": "2026-06-20T04:23:10.498957+00:00",
+  "generated_at": "2026-06-20T04:32:02.131139+00:00",
   "source": "league_backtest",
   "league": "SerieA",
   "season": 2025,
   "n_settled": 380,
   "n_correct": 193,
   "overall_accuracy_pct": 50.79,
-  "log_loss": 1.03377,
-  "brier_score": 0.62121,
+  "log_loss": 1.03394,
+  "brier_score": 0.62144,
   "n_draws_predicted": 0,
   "n_draws_actual": 99,
-  "draw_rate_predicted": 27.894,
+  "draw_rate_predicted": 28.361,
   "draw_rate_actual": 26.053,
-  "draw_rate_bias": -1.841,
+  "draw_rate_bias": -2.308,
   "confusion_matrix": {
     "HOME_WIN": {
       "HOME_WIN": 117,
@@ -44,44 +44,44 @@
       "accuracy": null
     },
     "50-69": {
-      "n": 70,
-      "mean_conf": 55.17,
-      "correct": 44,
-      "accuracy": 62.86
+      "n": 64,
+      "mean_conf": 55.05,
+      "correct": 39,
+      "accuracy": 60.94
     },
     "30-49": {
-      "n": 310,
-      "mean_conf": 38.31,
-      "correct": 149,
-      "accuracy": 48.06
+      "n": 316,
+      "mean_conf": 38.27,
+      "correct": 154,
+      "accuracy": 48.73
     }
   },
-  "ece": 0.09374,
+  "ece": 0.09696,
   "ece_available": true,
   "reliability_bins": [
     {
       "band": "30-40",
-      "n": 186,
-      "mean_conf": 34.06,
-      "accuracy": 45.16
+      "n": 190,
+      "mean_conf": 34.02,
+      "accuracy": 45.26
     },
     {
       "band": "40-50",
-      "n": 124,
-      "mean_conf": 44.69,
-      "accuracy": 52.42
+      "n": 126,
+      "mean_conf": 44.68,
+      "accuracy": 53.97
     },
     {
       "band": "50-60",
-      "n": 59,
-      "mean_conf": 53.81,
-      "accuracy": 61.02
+      "n": 55,
+      "mean_conf": 53.86,
+      "accuracy": 58.18
     },
     {
       "band": "60-70",
-      "n": 11,
-      "mean_conf": 62.44,
-      "accuracy": 72.73
+      "n": 9,
+      "mean_conf": 62.31,
+      "accuracy": 77.78
     },
     {
       "band": "70-80",
@@ -102,6 +102,6 @@
     "total": 380
   },
   "flags": [
-    "BRIER_HIGH \u2014 0.6212"
+    "BRIER_HIGH \u2014 0.6214"
   ]
 }

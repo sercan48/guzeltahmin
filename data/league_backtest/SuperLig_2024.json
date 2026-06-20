@@ -1,18 +1,18 @@
 {
-  "generated_at": "2026-06-20T04:23:10.667336+00:00",
+  "generated_at": "2026-06-20T04:32:02.301274+00:00",
   "source": "league_backtest",
   "league": "SuperLig",
   "season": 2024,
   "n_settled": 342,
   "n_correct": 188,
   "overall_accuracy_pct": 54.97,
-  "log_loss": 1.02296,
-  "brier_score": 0.61337,
+  "log_loss": 1.02194,
+  "brier_score": 0.61253,
   "n_draws_predicted": 0,
   "n_draws_actual": 80,
-  "draw_rate_predicted": 28.062,
+  "draw_rate_predicted": 27.359,
   "draw_rate_actual": 23.392,
-  "draw_rate_bias": -4.67,
+  "draw_rate_bias": -3.967,
   "confusion_matrix": {
     "HOME_WIN": {
       "HOME_WIN": 136,
@@ -44,44 +44,44 @@
       "accuracy": null
     },
     "50-69": {
-      "n": 33,
-      "mean_conf": 53.79,
-      "correct": 26,
-      "accuracy": 78.79
+      "n": 39,
+      "mean_conf": 53.89,
+      "correct": 31,
+      "accuracy": 79.49
     },
     "30-49": {
-      "n": 309,
-      "mean_conf": 36.64,
-      "correct": 162,
-      "accuracy": 52.43
+      "n": 303,
+      "mean_conf": 36.67,
+      "correct": 157,
+      "accuracy": 51.82
     }
   },
-  "ece": 0.16672,
+  "ece": 0.16335,
   "ece_available": true,
   "reliability_bins": [
     {
       "band": "30-40",
-      "n": 223,
-      "mean_conf": 33.64,
-      "accuracy": 47.09
+      "n": 222,
+      "mean_conf": 33.86,
+      "accuracy": 46.85
     },
     {
       "band": "40-50",
-      "n": 86,
-      "mean_conf": 44.44,
-      "accuracy": 66.28
+      "n": 81,
+      "mean_conf": 44.39,
+      "accuracy": 65.43
     },
     {
       "band": "50-60",
-      "n": 33,
-      "mean_conf": 53.79,
-      "accuracy": 78.79
+      "n": 36,
+      "mean_conf": 53.38,
+      "accuracy": 77.78
     },
     {
       "band": "60-70",
-      "n": 0,
-      "mean_conf": null,
-      "accuracy": null
+      "n": 3,
+      "mean_conf": 60.1,
+      "accuracy": 100.0
     },
     {
       "band": "70-80",
@@ -102,6 +102,6 @@
     "total": 342
   },
   "flags": [
-    "BRIER_HIGH \u2014 0.6134"
+    "BRIER_HIGH \u2014 0.6125"
   ]
 }

@@ -1,18 +1,18 @@
 {
-  "generated_at": "2026-06-20T04:23:10.625282+00:00",
+  "generated_at": "2026-06-20T04:32:02.258468+00:00",
   "source": "league_backtest",
   "league": "Eredivisie",
   "season": 2025,
   "n_settled": 306,
   "n_correct": 149,
   "overall_accuracy_pct": 48.69,
-  "log_loss": 1.03553,
-  "brier_score": 0.62177,
+  "log_loss": 1.03537,
+  "brier_score": 0.6213,
   "n_draws_predicted": 0,
   "n_draws_actual": 80,
-  "draw_rate_predicted": 28.024,
+  "draw_rate_predicted": 26.853,
   "draw_rate_actual": 26.144,
-  "draw_rate_bias": -1.88,
+  "draw_rate_bias": -0.709,
   "confusion_matrix": {
     "HOME_WIN": {
       "HOME_WIN": 101,
@@ -44,43 +44,43 @@
       "accuracy": null
     },
     "50-69": {
-      "n": 28,
-      "mean_conf": 54.71,
-      "correct": 23,
-      "accuracy": 82.14
+      "n": 33,
+      "mean_conf": 55.22,
+      "correct": 28,
+      "accuracy": 84.85
     },
     "30-49": {
-      "n": 278,
-      "mean_conf": 37.62,
-      "correct": 126,
-      "accuracy": 45.32
+      "n": 273,
+      "mean_conf": 37.9,
+      "correct": 121,
+      "accuracy": 44.32
     }
   },
-  "ece": 0.10097,
+  "ece": 0.09534,
   "ece_available": true,
   "reliability_bins": [
     {
       "band": "30-40",
-      "n": 184,
-      "mean_conf": 34.12,
-      "accuracy": 36.41
+      "n": 176,
+      "mean_conf": 34.3,
+      "accuracy": 36.93
     },
     {
       "band": "40-50",
-      "n": 94,
-      "mean_conf": 44.47,
-      "accuracy": 62.77
+      "n": 97,
+      "mean_conf": 44.45,
+      "accuracy": 57.73
     },
     {
       "band": "50-60",
-      "n": 25,
-      "mean_conf": 53.69,
-      "accuracy": 88.0
+      "n": 30,
+      "mean_conf": 54.29,
+      "accuracy": 90.0
     },
     {
       "band": "60-70",
       "n": 3,
-      "mean_conf": 63.2,
+      "mean_conf": 64.53,
       "accuracy": 33.33
     },
     {
@@ -102,6 +102,6 @@
     "total": 306
   },
   "flags": [
-    "BRIER_HIGH \u2014 0.6218"
+    "BRIER_HIGH \u2014 0.6213"
   ]
 }
