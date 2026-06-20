@@ -5,23 +5,27 @@ ops/api_resilience.py — Retry + Circuit Breaker
   resilient_get()   HTTP GET için yeniden deneme (exponential backoff).
   CircuitBreaker    Tekrarlayan hatalarda API'yi geçici olarak devre dışı bırakır.
 
+Backend seçimi (otomatik):
+  SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY env var varsa → Supabase kv_store
+  Yoksa → data/cb_state.json (yerel geliştirme)
+
+  GitHub Actions ephemeral runner sorunu: her run yeni bir VM açar ve
+  yerel JSON kaybolur. Supabase backend kalıcı durum sağlar.
+
 Kullanım:
     from ops.api_resilience import resilient_get, CircuitBreaker
 
     cb   = CircuitBreaker("odds_api")
     resp = resilient_get(url, params=params, circuit_breaker=cb)
     if resp is None:
-        # circuit açık veya tüm denemeler başarısız
+        # circuit açık veya tüm denemeler başarısız — fallback uygula
         ...
-
-Devam durumu (GH Actions ortamı):
-  data/cb_state.json dosyası settle adımında git'e commit edilir.
-  Bu sayede circuit breaker durumu iş akışları arasında korunur.
 """
 from __future__ import annotations
 
 import json
 import logging
+import os
 import time
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
@@ -36,13 +40,113 @@ logger = logging.getLogger(__name__)
 # Sabitler
 # ---------------------------------------------------------------------------
 
-_CB_STATE_FILE   = Path("data/cb_state.json")
-_FAILURE_THRESH  = 3       # art arda bu kadar hata → devre açılır
-_RECOVERY_SEC    = 3600    # 1 saat sonra HALF_OPEN'a geç
+_LOCAL_STATE_FILE = Path("data/cb_state.json")
+_FAILURE_THRESH   = 3       # art arda bu kadar hata → devre açılır
+_RECOVERY_SEC     = 3600    # 1 saat sonra HALF_OPEN'a geç
 
-# HTTP durum kodları: geçici (yeniden denenebilir) vs kalıcı (deneme)
 _RETRIABLE_STATUSES: frozenset[int] = frozenset({408, 429, 500, 502, 503, 504})
 _PERMANENT_ERRORS:   frozenset[int] = frozenset({401, 403, 404, 422})
+
+# Supabase kv_store anahtarı prefixiyle çakışma önlenir
+_CB_KEY_PREFIX = "cb:"
+
+
+# ---------------------------------------------------------------------------
+# Storage Backend — Supabase veya yerel JSON
+# ---------------------------------------------------------------------------
+
+class _SupabaseBackend:
+    """
+    Circuit breaker durumunu Supabase kv_store tablosuna yazar/okur.
+    Ephemeral GitHub Actions runner'lar arasında kalıcılık sağlar.
+    """
+
+    def __init__(self) -> None:
+        self._url = os.environ["SUPABASE_URL"].rstrip("/")
+        self._key = os.environ["SUPABASE_SERVICE_ROLE_KEY"]
+        self._headers = {
+            "apikey":        self._key,
+            "Authorization": f"Bearer {self._key}",
+            "Content-Type":  "application/json",
+            "Prefer":        "return=representation",
+        }
+
+    def load(self, name: str) -> dict:
+        key = f"{_CB_KEY_PREFIX}{name}"
+        try:
+            resp = requests.get(
+                f"{self._url}/rest/v1/kv_store",
+                headers=self._headers,
+                params={"key": f"eq.{key}", "select": "value"},
+                timeout=5,
+            )
+            if resp.status_code == 200:
+                rows = resp.json()
+                if rows:
+                    return rows[0]["value"]
+        except Exception as exc:
+            logger.warning("[CB:%s] Supabase okuma hatası: %s", name, exc)
+        return _default_cb_state()
+
+    def save(self, name: str, state: dict) -> None:
+        key = f"{_CB_KEY_PREFIX}{name}"
+        payload = {"key": key, "value": state}
+        try:
+            resp = requests.post(
+                f"{self._url}/rest/v1/kv_store",
+                headers={**self._headers, "Prefer": "resolution=merge-duplicates,return=minimal"},
+                json=payload,
+                timeout=5,
+            )
+            if resp.status_code not in (200, 201, 204):
+                logger.warning("[CB:%s] Supabase yazma hatası: HTTP %d %s",
+                               name, resp.status_code, resp.text[:200])
+        except Exception as exc:
+            logger.warning("[CB:%s] Supabase yazma exception: %s", name, exc)
+
+
+class _FileBackend:
+    """Yerel JSON dosyası — geliştirme ortamı için."""
+
+    def load(self, name: str) -> dict:
+        try:
+            if _LOCAL_STATE_FILE.exists():
+                return json.loads(_LOCAL_STATE_FILE.read_text()).get(name, _default_cb_state())
+        except Exception:
+            pass
+        return _default_cb_state()
+
+    def save(self, name: str, state: dict) -> None:
+        try:
+            _LOCAL_STATE_FILE.parent.mkdir(exist_ok=True)
+            all_states: dict = {}
+            if _LOCAL_STATE_FILE.exists():
+                try:
+                    all_states = json.loads(_LOCAL_STATE_FILE.read_text())
+                except Exception:
+                    pass
+            all_states[name] = state
+            _LOCAL_STATE_FILE.write_text(json.dumps(all_states, indent=2))
+        except Exception as exc:
+            logger.warning("[CB:%s] Dosya yazma hatası: %s", name, exc)
+
+
+def _make_backend() -> _SupabaseBackend | _FileBackend:
+    """Env var'a göre backend seç. CI'da Supabase, lokalde dosya."""
+    if os.getenv("SUPABASE_URL") and os.getenv("SUPABASE_SERVICE_ROLE_KEY"):
+        logger.debug("[CB] Backend: Supabase kv_store")
+        return _SupabaseBackend()
+    logger.debug("[CB] Backend: yerel JSON (%s)", _LOCAL_STATE_FILE)
+    return _FileBackend()
+
+
+def _default_cb_state() -> dict:
+    return {
+        "state":           "CLOSED",
+        "failure_count":   0,
+        "last_failure_at": None,
+        "open_until":      None,
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -52,8 +156,8 @@ _PERMANENT_ERRORS:   frozenset[int] = frozenset({401, 403, 404, 422})
 @dataclass
 class RetryConfig:
     max_attempts: int = 3
-    backoff_base: float = 5.0        # saniye; 5 → 25 → 125
-    backoff_factor: float = 5.0      # her denemede çarpan
+    backoff_base: float = 5.0
+    backoff_factor: float = 5.0     # 5s → 25s → 125s
     retriable_statuses: Sequence[int] = field(
         default_factory=lambda: list(_RETRIABLE_STATUSES)
     )
@@ -72,11 +176,8 @@ def resilient_get(
     requests.get() yerine kullan. Retry ve circuit breaker desteği var.
 
     Dönüş:
-      requests.Response  — başarılı yanıt (status 200-299)
+      requests.Response  — başarılı yanıt (2xx dahil kalıcı 4xx)
       None               — devre açık veya tüm denemeler başarısız
-
-    Caller 2xx dışı durumları kendi ele alır; bu fonksiyon sadece
-    bağlantı sorunlarını (timeout, 5xx) tekrarlar.
     """
     if retry is None:
         retry = RetryConfig()
@@ -95,14 +196,12 @@ def resilient_get(
         try:
             resp = requests.get(url, params=params, headers=headers, timeout=timeout)
 
-            # Kalıcı hata → tekrar deneme faydasız
             if resp.status_code in _PERMANENT_ERRORS:
                 logger.warning("[Retry] HTTP %d kalıcı hata — deneme durduruluyor.", resp.status_code)
                 if circuit_breaker:
                     circuit_breaker.record_failure()
                 return resp
 
-            # Geçici hata → bekle ve tekrar dene
             if resp.status_code in retry.retriable_statuses:
                 wait = retry.backoff_base * (retry.backoff_factor ** (attempt - 1))
                 logger.warning(
@@ -114,7 +213,6 @@ def resilient_get(
                 last_exc = RuntimeError(f"HTTP {resp.status_code}")
                 continue
 
-            # Başarı
             if circuit_breaker:
                 circuit_breaker.record_success()
             return resp
@@ -130,14 +228,13 @@ def resilient_get(
             last_exc = exc
 
         except Exception as exc:
-            # Beklenmeyen hata → tekrar deneme yok
             logger.error("[Retry] Beklenmeyen hata: %s", exc)
             if circuit_breaker:
                 circuit_breaker.record_failure()
             raise
 
-    # Tüm denemeler tükendi
-    logger.error("[Retry] %d denemede başarıya ulaşılamadı. Son hata: %s", retry.max_attempts, last_exc)
+    logger.error("[Retry] %d denemede başarıya ulaşılamadı. Son hata: %s",
+                 retry.max_attempts, last_exc)
     if circuit_breaker:
         circuit_breaker.record_failure()
     return None
@@ -149,26 +246,28 @@ def resilient_get(
 
 class CircuitBreaker:
     """
-    Dosya tabanlı (data/cb_state.json) durum makinesi.
+    Durum makinesi: CLOSED → OPEN → HALF_OPEN → CLOSED
 
-    Durumlar:
-      CLOSED    → normal, istekler geçer
-      OPEN      → hata eşiği aşıldı, istekler bloke
-      HALF_OPEN → _RECOVERY_SEC sonra test isteği gönderilir
+    Backend otomatik seçilir:
+      - SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY varsa → Supabase kv_store
+        (GitHub Actions ephemeral runner'lar arasında kalıcı)
+      - Yoksa → data/cb_state.json (yerel geliştirme)
 
     Geçişler:
-      CLOSED → OPEN      : art arda _FAILURE_THRESH hata
-      OPEN → HALF_OPEN   : _RECOVERY_SEC geçince
-      HALF_OPEN → CLOSED : test başarılı
-      HALF_OPEN → OPEN   : test başarısız
+      CLOSED    → OPEN       : art arda failure_threshold hata
+      OPEN      → HALF_OPEN  : recovery_sec geçince
+      HALF_OPEN → CLOSED     : test isteği başarılı
+      HALF_OPEN → OPEN       : test isteği başarısız
     """
 
-    def __init__(self, name: str, *, failure_threshold: int = _FAILURE_THRESH,
+    def __init__(self, name: str, *,
+                 failure_threshold: int = _FAILURE_THRESH,
                  recovery_sec: int = _RECOVERY_SEC):
-        self.name             = name
+        self.name              = name
         self.failure_threshold = failure_threshold
-        self.recovery_sec     = recovery_sec
-        self._state           = self._load()
+        self.recovery_sec      = recovery_sec
+        self._backend          = _make_backend()
+        self._state            = self._backend.load(name)
 
     # ── public API ──────────────────────────────────────────────────────────
 
@@ -177,12 +276,11 @@ class CircuitBreaker:
         if s["state"] == "CLOSED":
             return True
         if s["state"] == "OPEN":
-            if self._now() >= s.get("open_until", 0):
+            if time.time() >= (s.get("open_until") or 0):
                 self._transition("HALF_OPEN")
                 return True
             return False
-        if s["state"] == "HALF_OPEN":
-            return True
+        # HALF_OPEN: tek test isteği geçer
         return True
 
     def record_success(self) -> None:
@@ -192,15 +290,15 @@ class CircuitBreaker:
         s["state"]         = "CLOSED"
         s["failure_count"] = 0
         s["open_until"]    = None
-        self._save()
+        self._backend.save(self.name, s)
 
     def record_failure(self) -> None:
         s = self._state
-        s["failure_count"] = s.get("failure_count", 0) + 1
-        s["last_failure_at"] = self._now()
+        s["failure_count"]   = s.get("failure_count", 0) + 1
+        s["last_failure_at"] = time.time()
 
         if s["state"] == "HALF_OPEN" or s["failure_count"] >= self.failure_threshold:
-            open_until = self._now() + self.recovery_sec
+            open_until  = time.time() + self.recovery_sec
             s["state"]      = "OPEN"
             s["open_until"] = open_until
             logger.warning(
@@ -208,7 +306,7 @@ class CircuitBreaker:
                 self.name, s["failure_count"],
                 datetime.fromtimestamp(open_until, tz=timezone.utc).strftime("%H:%M UTC"),
             )
-        self._save()
+        self._backend.save(self.name, s)
 
     def open_until_human(self) -> str:
         ts = self._state.get("open_until")
@@ -221,44 +319,8 @@ class CircuitBreaker:
 
     # ── private ─────────────────────────────────────────────────────────────
 
-    @staticmethod
-    def _now() -> float:
-        return time.time()
-
     def _transition(self, new_state: str) -> None:
         old = self._state["state"]
         self._state["state"] = new_state
         logger.info("[CB:%s] %s → %s", self.name, old, new_state)
-        self._save()
-
-    def _load(self) -> dict:
-        try:
-            if _CB_STATE_FILE.exists():
-                all_states = json.loads(_CB_STATE_FILE.read_text())
-                return all_states.get(self.name, self._default_state())
-        except Exception:
-            pass
-        return self._default_state()
-
-    def _save(self) -> None:
-        try:
-            _CB_STATE_FILE.parent.mkdir(exist_ok=True)
-            all_states: dict = {}
-            if _CB_STATE_FILE.exists():
-                try:
-                    all_states = json.loads(_CB_STATE_FILE.read_text())
-                except Exception:
-                    pass
-            all_states[self.name] = self._state
-            _CB_STATE_FILE.write_text(json.dumps(all_states, indent=2))
-        except Exception as e:
-            logger.warning("[CB:%s] Durum kaydedilemedi: %s", self.name, e)
-
-    @staticmethod
-    def _default_state() -> dict:
-        return {
-            "state":           "CLOSED",
-            "failure_count":   0,
-            "last_failure_at": None,
-            "open_until":      None,
-        }
+        self._backend.save(self.name, self._state)

@@ -46,18 +46,20 @@ jobs:
       # ── Tek deneme (resilience zaten Python katmanında sağlanıyor) ────────
       - name: Bülten gönder (retry)
         env:
-          TELEGRAM_BOT_TOKEN:        ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_PERSONAL_CHANNEL: ${{ secrets.TELEGRAM_PERSONAL_CHANNEL }}
-          FOOTBALL_DATA_ORG_KEY:     ${{ secrets.FOOTBALL_DATA_ORG_KEY }}
-          ODDS_API_KEY:              ${{ secrets.ODDS_API_KEY }}
+          TELEGRAM_BOT_TOKEN:           ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_PERSONAL_CHANNEL:    ${{ secrets.TELEGRAM_PERSONAL_CHANNEL }}
+          FOOTBALL_DATA_ORG_KEY:        ${{ secrets.FOOTBALL_DATA_ORG_KEY }}
+          ODDS_API_KEY:                 ${{ secrets.ODDS_API_KEY }}
+          SUPABASE_URL:                 ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY:    ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
           python -m ops.wc_paper_shadow --deliver --date "${{ github.event.inputs.date }}"
 
-      - name: Durum dosyalarını kaydet
+      - name: Kota takibini kaydet
         if: always()
         run: |
           git config user.email "github-actions@github.com"
           git config user.name "GitHub Actions"
-          git add data/odds_quota.json data/cb_state.json || true
-          git diff --cached --quiet || git commit -m "chore: retry bulletin snapshot [skip ci]"
+          git add data/odds_quota.json || true
+          git diff --cached --quiet || git commit -m "chore: retry bulletin quota snapshot [skip ci]"
           git push || true

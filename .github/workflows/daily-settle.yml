@@ -28,7 +28,9 @@ jobs:
       - name: Sonuçları kaydet
         continue-on-error: true
         env:
-          FOOTBALL_DATA_ORG_KEY: ${{ secrets.FOOTBALL_DATA_ORG_KEY }}
+          FOOTBALL_DATA_ORG_KEY:      ${{ secrets.FOOTBALL_DATA_ORG_KEY }}
+          SUPABASE_URL:               ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY:  ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: python ops/result_settler.py --settle
 
       - name: CLV Tracker güncelle
@@ -42,6 +44,5 @@ jobs:
           git config user.name "GitHub Actions"
           git add data/shadow_settlements.jsonl data/shadow_accuracy.json || true
           git add data/clv_log.jsonl data/clv_summary.json data/shadow_predictions.jsonl || true
-          git add data/cb_state.json || true
           git diff --cached --quiet || git commit -m "chore: daily settlement + CLV update [skip ci]"
           git push || true
