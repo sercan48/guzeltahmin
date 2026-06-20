@@ -1,23 +1,23 @@
 {
-  "generated_at": "2026-06-19T19:28:04.951530+00:00",
+  "generated_at": "2026-06-20T04:32:02.333205+00:00",
   "source": "league_backtest",
   "league": "SuperLig",
   "season": 2025,
   "n_settled": 306,
-  "n_correct": 160,
-  "overall_accuracy_pct": 52.29,
-  "log_loss": 1.0569,
-  "brier_score": 0.63543,
+  "n_correct": 156,
+  "overall_accuracy_pct": 50.98,
+  "log_loss": 1.03802,
+  "brier_score": 0.62313,
   "n_draws_predicted": 0,
   "n_draws_actual": 89,
-  "draw_rate_predicted": 24.952,
+  "draw_rate_predicted": 27.36,
   "draw_rate_actual": 29.085,
-  "draw_rate_bias": 4.133,
+  "draw_rate_bias": 1.725,
   "confusion_matrix": {
     "HOME_WIN": {
-      "HOME_WIN": 112,
-      "DRAW": 75,
-      "AWAY_WIN": 40
+      "HOME_WIN": 105,
+      "DRAW": 67,
+      "AWAY_WIN": 37
     },
     "DRAW": {
       "HOME_WIN": 0,
@@ -25,9 +25,9 @@
       "AWAY_WIN": 0
     },
     "AWAY_WIN": {
-      "HOME_WIN": 17,
-      "DRAW": 14,
-      "AWAY_WIN": 48
+      "HOME_WIN": 24,
+      "DRAW": 22,
+      "AWAY_WIN": 51
     }
   },
   "by_confidence_band": {
@@ -44,44 +44,44 @@
       "accuracy": null
     },
     "50-69": {
-      "n": 20,
-      "mean_conf": 51.56,
-      "correct": 15,
+      "n": 36,
+      "mean_conf": 54.12,
+      "correct": 27,
       "accuracy": 75.0
     },
     "30-49": {
-      "n": 286,
-      "mean_conf": 36.96,
-      "correct": 145,
-      "accuracy": 50.7
+      "n": 270,
+      "mean_conf": 37.13,
+      "correct": 129,
+      "accuracy": 47.78
     }
   },
-  "ece": 0.14373,
+  "ece": 0.11854,
   "ece_available": true,
   "reliability_bins": [
     {
       "band": "30-40",
-      "n": 210,
-      "mean_conf": 34.57,
-      "accuracy": 46.19
+      "n": 192,
+      "mean_conf": 33.98,
+      "accuracy": 43.23
     },
     {
       "band": "40-50",
-      "n": 76,
-      "mean_conf": 43.57,
-      "accuracy": 63.16
+      "n": 78,
+      "mean_conf": 44.86,
+      "accuracy": 58.97
     },
     {
       "band": "50-60",
-      "n": 20,
-      "mean_conf": 51.56,
-      "accuracy": 75.0
+      "n": 35,
+      "mean_conf": 53.9,
+      "accuracy": 74.29
     },
     {
       "band": "60-70",
-      "n": 0,
-      "mean_conf": null,
-      "accuracy": null
+      "n": 1,
+      "mean_conf": 61.6,
+      "accuracy": 100.0
     },
     {
       "band": "70-80",
@@ -102,6 +102,6 @@
     "total": 306
   },
   "flags": [
-    "BRIER_HIGH \u2014 0.6354"
+    "BRIER_HIGH \u2014 0.6231"
   ]
 }

@@ -43,6 +43,13 @@ try:
 except Exception:
     pass
 
+try:
+    import requests as _requests_mod
+    from ops.api_resilience import CircuitBreaker, RetryConfig, resilient_get as _resilient_get
+    _RESILIENCE_AVAILABLE = True
+except ImportError:
+    _RESILIENCE_AVAILABLE = False
+
 
 # ---------------------------------------------------------------------------
 # Label helpers
@@ -84,25 +91,39 @@ def _pick_secondary(pred: dict) -> tuple[str, float, str]:
         "A": float(pred.get("away_win_prob", 0)),
     }
 
-    # 1. Double Chance for strong favorites
+    total_xg = xg_h + xg_a
+    p_under  = sum(
+        (total_xg ** k * math.exp(-total_xg)) / math.factorial(k)
+        for k in range(3)   # P(0) + P(1) + P(2) = P(≤2)
+    )
+    p_over = 1.0 - p_under
+
+    # 1. Dolaylı beraberlik: model DRAW tahmin edince doğrudan X vermek yerine
+    #    xG'ye göre yapısal olarak tutarlı bir alternatif pazara yönlendir.
+    if primary == "DRAW":
+        if total_xg < 2.0:
+            # Düşük xG → Alt 2.5 Gol, beraberlikle yüksek korelasyon (R²≈0.39)
+            return "2.5_ALT", p_under, "OU"
+        else:
+            # Dengeli yüksek tempolu maç → hafif baskın tarafa çifte şans
+            if probs["H"] >= probs["A"]:
+                return "1X", (probs["H"] + probs["D"]) / 100, "DC"
+            else:
+                return "X2", (probs["D"] + probs["A"]) / 100, "DC"
+
+    # 2. Double Chance for strong favorites
     if tier == "TIER_A" and conf >= 55:
         if primary == "HOME_WIN":
             return "1X", (probs["H"] + probs["D"]) / 100, "DC"
         if primary == "AWAY_WIN":
             return "X2", (probs["D"] + probs["A"]) / 100, "DC"
 
-    # 2. BTTS when both teams are genuinely attack-minded
+    # 3. BTTS when both teams are genuinely attack-minded
     p_btts = (1.0 - math.exp(-xg_h)) * (1.0 - math.exp(-xg_a))
     if xg_h >= 0.9 and xg_a >= 0.9 and p_btts >= 0.45:
         return "KG_VAR", p_btts, "BTTS"
 
-    # 3/4. Over/Under based on total xG
-    total_xg = xg_h + xg_a
-    p_under = sum(
-        (total_xg ** k * math.exp(-total_xg)) / math.factorial(k)
-        for k in range(3)   # P(0) + P(1) + P(2) = P(≤2)
-    )
-    p_over = 1.0 - p_under
+    # 4/5. Over/Under based on total xG
     if total_xg >= 2.3:
         return "2.5_ÜST", p_over, "OU"
     return "2.5_ALT", p_under, "OU"
@@ -364,12 +385,15 @@ def fetch_wc_matches_from_api(date_str: str) -> tuple[list[dict], str]:
 # Odds fetch (The Odds API — the-odds-api.com, free tier 500 req/month)
 # ---------------------------------------------------------------------------
 
+_SNIPER_ODDS_MAX = 4.5  # longshot bias tuzağı — bu eşiğin üstü sniper olamaz
+
 def _is_sniper(pred: dict, odds: dict | None) -> bool:
     """
     Sniper pick kriterleri (hepsi sağlanmalı):
     - TIER_A veya TIER_B (Elo farkı ≥ 50)
     - is_no_bet değil
     - final_confidence ≥ 62
+    - Oran varsa: piyasa oranı ≤ 4.5 (longshot bias filtresi)
     - Oran varsa: modelimizin olasılığı piyasa implied'ından yüksek (pozitif EV)
     """
     if pred.get("is_no_bet"):
@@ -383,7 +407,10 @@ def _is_sniper(pred: dict, odds: dict | None) -> bool:
         key_map = {"HOME_WIN": "h", "DRAW": "d", "AWAY_WIN": "a"}
         mkt_key = key_map.get(raw)
         if mkt_key and odds.get(mkt_key):
-            market_prob = 1.0 / odds[mkt_key]
+            mkt_odds = odds[mkt_key]
+            if mkt_odds > _SNIPER_ODDS_MAX:   # longshot trap
+                return False
+            market_prob = 1.0 / mkt_odds
             model_prob  = float(pred.get(
                 {"HOME_WIN": "home_win_prob", "DRAW": "draw_prob", "AWAY_WIN": "away_win_prob"}.get(raw, "home_win_prob"), 0
             )) / 100.0
@@ -508,18 +535,28 @@ def fetch_odds_the_odds_api(date_str: str) -> dict[tuple[str, str], dict]:
     ]
 
     resp = None
+    _cb = CircuitBreaker("odds_api") if _RESILIENCE_AVAILABLE else None
+    _rc = RetryConfig(max_attempts=3, backoff_base=5.0, backoff_factor=5.0) if _RESILIENCE_AVAILABLE else None
     try:
         for sport_key in _SPORT_KEYS:
-            resp = requests.get(
-                f"https://api.the-odds-api.com/v4/sports/{sport_key}/odds/",
-                params={
-                    "apiKey":     odds_key,
-                    "regions":    "eu",
-                    "markets":    "h2h",      # sadece h2h — kredi tasarrufu
-                    "oddsFormat": "decimal",
-                },
-                timeout=10,
-            )
+            url    = f"https://api.the-odds-api.com/v4/sports/{sport_key}/odds/"
+            params = {
+                "apiKey":     odds_key,
+                "regions":    "eu",
+                "markets":    "h2h",
+                "oddsFormat": "decimal",
+            }
+
+            if _RESILIENCE_AVAILABLE:
+                resp = _resilient_get(url, params=params, timeout=10,
+                                      retry=_rc, circuit_breaker=_cb)
+                if resp is None:
+                    # Devre açık ya da tüm denemeler tükendi
+                    return {}
+            else:
+                import requests as _req
+                resp = _req.get(url, params=params, timeout=10)
+
             if resp.status_code == 401:
                 logger.warning("Odds API: geçersiz key (401)")
                 return {}
@@ -786,7 +823,7 @@ def format_match_block(db, match: dict, pred: dict, odds_map: dict | None = None
         f"1️⃣ %{h_pct} | ❌ %{d_pct} | 2️⃣ %{a_pct}\n"
         f"📊 <i>xG: {xg_h} - {xg_a}</i>"
         f"{odds_line}\n"
-        f"⚽ KG Var %{btts['btts_yes']} · 2.5Ü %{ou['over_2.5']} · "
+        f"⚽ KG Var %{btts['btts_yes']} · 2.5Ü %{ou['over_2.5']} · 2.5A %{ou['under_2.5']} · "
         f"1X %{dc_1x} · X2 %{dc_x2}"
         + (f"\n🎯 <b>SNIPER — Piyasa EV pozitif</b>" if sniper else "")
     )

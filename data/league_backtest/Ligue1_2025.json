@@ -1,23 +1,23 @@
 {
-  "generated_at": "2026-06-19T19:28:05.052083+00:00",
+  "generated_at": "2026-06-20T04:32:02.195026+00:00",
   "source": "league_backtest",
   "league": "Ligue1",
   "season": 2025,
   "n_settled": 305,
-  "n_correct": 154,
-  "overall_accuracy_pct": 50.49,
-  "log_loss": 1.03732,
-  "brier_score": 0.62298,
+  "n_correct": 146,
+  "overall_accuracy_pct": 47.87,
+  "log_loss": 1.0281,
+  "brier_score": 0.61698,
   "n_draws_predicted": 0,
   "n_draws_actual": 74,
-  "draw_rate_predicted": 24.887,
+  "draw_rate_predicted": 25.59,
   "draw_rate_actual": 24.262,
-  "draw_rate_bias": -0.625,
+  "draw_rate_bias": -1.328,
   "confusion_matrix": {
     "HOME_WIN": {
-      "HOME_WIN": 108,
-      "DRAW": 53,
-      "AWAY_WIN": 44
+      "HOME_WIN": 98,
+      "DRAW": 48,
+      "AWAY_WIN": 42
     },
     "DRAW": {
       "HOME_WIN": 0,
@@ -25,9 +25,9 @@
       "AWAY_WIN": 0
     },
     "AWAY_WIN": {
-      "HOME_WIN": 33,
-      "DRAW": 21,
-      "AWAY_WIN": 46
+      "HOME_WIN": 43,
+      "DRAW": 26,
+      "AWAY_WIN": 48
     }
   },
   "by_confidence_band": {
@@ -38,56 +38,56 @@
       "accuracy": null
     },
     "70-89": {
-      "n": 0,
-      "mean_conf": null,
-      "correct": 0,
-      "accuracy": null
+      "n": 2,
+      "mean_conf": 71.6,
+      "correct": 2,
+      "accuracy": 100.0
     },
     "50-69": {
-      "n": 31,
-      "mean_conf": 57.08,
-      "correct": 24,
-      "accuracy": 77.42
+      "n": 50,
+      "mean_conf": 57.1,
+      "correct": 33,
+      "accuracy": 66.0
     },
     "30-49": {
-      "n": 274,
-      "mean_conf": 37.16,
-      "correct": 130,
-      "accuracy": 47.45
+      "n": 253,
+      "mean_conf": 37.67,
+      "correct": 111,
+      "accuracy": 43.87
     }
   },
-  "ece": 0.1131,
+  "ece": 0.06795,
   "ece_available": true,
   "reliability_bins": [
     {
       "band": "30-40",
-      "n": 199,
-      "mean_conf": 34.62,
-      "accuracy": 44.22
+      "n": 168,
+      "mean_conf": 34.26,
+      "accuracy": 35.71
     },
     {
       "band": "40-50",
-      "n": 75,
-      "mean_conf": 43.9,
-      "accuracy": 56.0
+      "n": 85,
+      "mean_conf": 44.4,
+      "accuracy": 60.0
     },
     {
       "band": "50-60",
-      "n": 22,
-      "mean_conf": 54.53,
-      "accuracy": 77.27
+      "n": 33,
+      "mean_conf": 53.62,
+      "accuracy": 63.64
     },
     {
       "band": "60-70",
-      "n": 9,
-      "mean_conf": 63.33,
-      "accuracy": 77.78
+      "n": 17,
+      "mean_conf": 63.85,
+      "accuracy": 70.59
     },
     {
       "band": "70-80",
-      "n": 0,
-      "mean_conf": null,
-      "accuracy": null
+      "n": 2,
+      "mean_conf": 71.6,
+      "accuracy": 100.0
     },
     {
       "band": "80-93",
@@ -102,6 +102,6 @@
     "total": 305
   },
   "flags": [
-    "BRIER_HIGH \u2014 0.6230"
+    "BRIER_HIGH \u2014 0.6170"
   ]
 }

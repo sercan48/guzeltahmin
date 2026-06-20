@@ -165,6 +165,88 @@ _CLUB_BASE_GOALS = 1.35   # club avg > WC avg (1.25)
 _HOME_ADV_ATT   = 0.08    # home side attack boost (~0.1 xG advantage)
 _DEFAULT_ELO    = 1500.0  # fallback for unknown clubs
 
+# ---------------------------------------------------------------------------
+# Dixon-Coles correction (domestic leagues only)
+# ---------------------------------------------------------------------------
+# Varsayılan ρ (Dixon & Coles 1997 — İngiliz ligi veri seti).
+# Her lig kendi tarihsel beraberlik yapısına göre ayarlanır; sabit -0.13
+# tüm liglerde ~-3pp draw bias kaymasına neden olduğundan lig-spesifik sözlük kullanılır.
+_DC_RHO = -0.13   # fallback
+
+# Lig bazlı ρ:  negatif → draw olasılığını artırır.
+# Kalibrasyon mantığı:
+#   avg_baseline_draw_bias  >  +2pp  →  |ρ| büyük (-0.15)   daha fazla draw gerekiyor
+#   avg_baseline_draw_bias  ≈   0pp  →  |ρ| orta  (-0.08)
+#   avg_baseline_draw_bias  < -2pp  →  |ρ| küçük (-0.03)   zaten fazla draw var
+_LEAGUE_DC_RHO: dict[str, float] = {
+    "PL":           -0.10,   # avg baseline +1.05pp — orta düzeltme
+    "LaLiga":       -0.08,   # avg baseline +0.25pp — hafif
+    "Bundesliga":   -0.08,   # avg baseline -0.05pp — neredeyse sıfır
+    "SerieA":       -0.15,   # avg baseline +2.40pp — güçlü düzeltme gerekiyor
+    "Ligue1":       -0.03,   # avg baseline -2.60pp — PSG baskısı, az draw → minimal
+    "Eredivisie":   -0.08,   # avg baseline +0.70pp — hafif
+    "SuperLig":     -0.10,   # avg baseline +1.25pp — orta
+    "PrimeiraLiga": -0.10,   # avg baseline +1.55pp — orta
+}
+
+
+def _dc_tau(x: int, y: int, lam: float, mu: float, rho: float) -> float:
+    """Adjustment factor for the four low-scoring scorelines (DC eq. 2)."""
+    if x == 0 and y == 0:
+        return 1.0 - lam * mu * rho
+    if x == 1 and y == 0:
+        return 1.0 + mu * rho
+    if x == 0 and y == 1:
+        return 1.0 + lam * rho
+    if x == 1 and y == 1:
+        return 1.0 - rho
+    return 1.0
+
+
+def _compute_1x2_dc(xg_h: float, xg_a: float, rho: float = _DC_RHO, max_goals: int = 8) -> tuple[float, float, float]:
+    """
+    1X2 probabilities using a Poisson score matrix with Dixon-Coles correction.
+    Renormalises after applying τ so probabilities sum to 1.
+    """
+    matrix: dict[tuple[int, int], float] = {}
+    for i in range(max_goals + 1):
+        for j in range(max_goals + 1):
+            p_ij = (
+                math.exp(-xg_h) * (xg_h ** i) / math.factorial(i) *
+                math.exp(-xg_a) * (xg_a ** j) / math.factorial(j)
+            )
+            matrix[(i, j)] = p_ij * _dc_tau(i, j, xg_h, xg_a, rho)
+
+    total = sum(matrix.values())
+    ph = sum(v for (i, j), v in matrix.items() if i > j) / total
+    pd = sum(v for (i, j), v in matrix.items() if i == j) / total
+    pa = sum(v for (i, j), v in matrix.items() if i < j) / total
+    return round(ph, 4), round(pd, 4), round(pa, 4)
+
+
+# ---------------------------------------------------------------------------
+# Form momentum tracker
+# ---------------------------------------------------------------------------
+_FORM_WINDOW = 5   # son N maç; momentum etkisi fazla uzağa yayılmasın
+
+
+def _get_form_mult(team_key: str, tracker: dict[str, list[dict]]) -> float:
+    """
+    Son _FORM_WINDOW maç sonucuna göre saldırı/savunma çarpanı.
+    Aralık: 0.88 (çok kötü form) → 1.12 (çok iyi form). Yeterli veri yoksa 1.0.
+    """
+    recent = tracker.get(team_key, [])[-_FORM_WINDOW:]
+    if not recent:
+        return 1.0
+    form_score = sum(r["pts"] for r in recent) / (3 * len(recent))  # 0‒1
+    return 0.88 + 0.24 * form_score
+
+
+def _update_form(tracker: dict[str, list[dict]], team_key: str, gf: int, ga: int) -> None:
+    """Maç sonucunu form geçmişine ekle."""
+    pts = 3 if gf > ga else (1 if gf == ga else 0)
+    tracker.setdefault(team_key, []).append({"pts": pts, "gf": gf, "ga": ga})
+
 # Static Club Elo table — approximate 2024/25 season ratings.
 # Used as fallback when api.clubelo.com is unreachable (e.g. cloud env).
 # Keys are lowercase; aliases handle common football-data.co.uk name variants.
@@ -393,18 +475,22 @@ def _club_features(team_name: str, elo: float, *, is_home: bool) -> TeamFeatures
 def predict_club_match(
     home_name: str, home_elo: float,
     away_name: str, away_elo: float,
+    home_form_mult: float = 1.0,
+    away_form_mult: float = 1.0,
+    dc_rho: float = _DC_RHO,
 ) -> dict:
     """
     Poisson 1X2 prediction for a club match using real Club Elo ratings.
+    Applies Dixon-Coles correction (lig-spesifik ρ) + form momentum multipliers.
     Returns the same dict schema as WCOutcomePredictor.predict().
     """
     home_f = _club_features(home_name, home_elo, is_home=True)
     away_f = _club_features(away_name, away_elo, is_home=False)
 
-    xg_h = max(0.20, _CLUB_BASE_GOALS * home_f.attack_strength * away_f.defense_weakness)
-    xg_a = max(0.20, _CLUB_BASE_GOALS * away_f.attack_strength * home_f.defense_weakness)
+    xg_h = max(0.20, _CLUB_BASE_GOALS * home_f.attack_strength * away_f.defense_weakness * home_form_mult)
+    xg_a = max(0.20, _CLUB_BASE_GOALS * away_f.attack_strength * home_f.defense_weakness * away_form_mult)
 
-    ph, pd, pa = compute_1x2_poisson(xg_h, xg_a)
+    ph, pd, pa = _compute_1x2_dc(xg_h, xg_a, rho=dc_rho)
 
     if ph >= pa and ph >= pd:
         prediction = "HOME_WIN"
@@ -676,8 +762,12 @@ def run_backtest(
     fixtures.sort(key=lambda x: x["date"])
     print(f"  Total fixtures : {len(fixtures)}")
 
+    dc_rho       = _LEAGUE_DC_RHO.get(league_key, _DC_RHO)
+    print(f"  DC ρ           : {dc_rho}  ({league_key})")
+
     settlements: list[dict] = []
-    elo_miss = 0
+    elo_miss   = 0
+    form_tracker: dict[str, list[dict]] = {}   # maç bazlı momentum takibi
 
     for fix in fixtures:
         home_elo_val = _get_club_elo(fix["home"], fix["date"])
@@ -688,7 +778,14 @@ def run_backtest(
         home_elo_val = home_elo_val or _DEFAULT_ELO
         away_elo_val = away_elo_val or _DEFAULT_ELO
 
-        pred   = predict_club_match(fix["home"], home_elo_val, fix["away"], away_elo_val)
+        home_key = fix["home"].lower().strip()
+        away_key = fix["away"].lower().strip()
+        home_fm  = _get_form_mult(home_key, form_tracker)
+        away_fm  = _get_form_mult(away_key, form_tracker)
+
+        pred   = predict_club_match(fix["home"], home_elo_val, fix["away"], away_elo_val,
+                                    home_form_mult=home_fm, away_form_mult=away_fm,
+                                    dc_rho=dc_rho)
         actual = _outcome(fix["home_goals"], fix["away_goals"])
         predicted = pred["raw_prediction"]
         correct   = (predicted == actual)
@@ -722,7 +819,14 @@ def run_backtest(
             "elo_found":         elo_found,
             "log_loss_contrib":  log_loss_contrib,
             "brier_contrib":     brier_contrib,
+            "home_form_mult":    round(home_fm, 3),
+            "away_form_mult":    round(away_fm, 3),
+            "dc_rho":            dc_rho,
         })
+
+        # Form tracker'ı bu maçın gerçek sonucuyla güncelle (sıra önemli)
+        _update_form(form_tracker, home_key, fix["home_goals"], fix["away_goals"])
+        _update_form(form_tracker, away_key, fix["away_goals"], fix["home_goals"])
 
     if elo_miss:
         print(f"  Elo misses : {elo_miss}/{len(fixtures)} → default {_DEFAULT_ELO}")

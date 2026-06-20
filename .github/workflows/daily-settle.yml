@@ -28,7 +28,9 @@ jobs:
       - name: Sonuçları kaydet
         continue-on-error: true
         env:
-          FOOTBALL_DATA_ORG_KEY: ${{ secrets.FOOTBALL_DATA_ORG_KEY }}
+          FOOTBALL_DATA_ORG_KEY:      ${{ secrets.FOOTBALL_DATA_ORG_KEY }}
+          SUPABASE_URL:               ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY:  ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: python ops/result_settler.py --settle
 
       - name: CLV Tracker güncelle
