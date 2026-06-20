@@ -43,6 +43,13 @@ try:
 except Exception:
     pass
 
+try:
+    import requests as _requests_mod
+    from ops.api_resilience import CircuitBreaker, RetryConfig, resilient_get as _resilient_get
+    _RESILIENCE_AVAILABLE = True
+except ImportError:
+    _RESILIENCE_AVAILABLE = False
+
 
 # ---------------------------------------------------------------------------
 # Label helpers
@@ -528,18 +535,28 @@ def fetch_odds_the_odds_api(date_str: str) -> dict[tuple[str, str], dict]:
     ]
 
     resp = None
+    _cb = CircuitBreaker("odds_api") if _RESILIENCE_AVAILABLE else None
+    _rc = RetryConfig(max_attempts=3, backoff_base=5.0, backoff_factor=5.0) if _RESILIENCE_AVAILABLE else None
     try:
         for sport_key in _SPORT_KEYS:
-            resp = requests.get(
-                f"https://api.the-odds-api.com/v4/sports/{sport_key}/odds/",
-                params={
-                    "apiKey":     odds_key,
-                    "regions":    "eu",
-                    "markets":    "h2h",      # sadece h2h — kredi tasarrufu
-                    "oddsFormat": "decimal",
-                },
-                timeout=10,
-            )
+            url    = f"https://api.the-odds-api.com/v4/sports/{sport_key}/odds/"
+            params = {
+                "apiKey":     odds_key,
+                "regions":    "eu",
+                "markets":    "h2h",
+                "oddsFormat": "decimal",
+            }
+
+            if _RESILIENCE_AVAILABLE:
+                resp = _resilient_get(url, params=params, timeout=10,
+                                      retry=_rc, circuit_breaker=_cb)
+                if resp is None:
+                    # Devre açık ya da tüm denemeler tükendi
+                    return {}
+            else:
+                import requests as _req
+                resp = _req.get(url, params=params, timeout=10)
+
             if resp.status_code == 401:
                 logger.warning("Odds API: geçersiz key (401)")
                 return {}

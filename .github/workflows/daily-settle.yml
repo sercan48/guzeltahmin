@@ -42,5 +42,6 @@ jobs:
           git config user.name "GitHub Actions"
           git add data/shadow_settlements.jsonl data/shadow_accuracy.json || true
           git add data/clv_log.jsonl data/clv_summary.json data/shadow_predictions.jsonl || true
+          git add data/cb_state.json || true
           git diff --cached --quiet || git commit -m "chore: daily settlement + CLV update [skip ci]"
           git push || true

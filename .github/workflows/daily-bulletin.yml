@@ -2,7 +2,6 @@ name: Daily WC Bulletin
 
 on:
   # Birincil tetikleyici: settlement tamamlanınca çalış (07:00 UTC sonrası)
-  # Settlement her gün güvenilir şekilde çalışır → bülten de güvenilir olur.
   workflow_run:
     workflows: ["Daily Settlement"]
     types: [completed]
@@ -17,7 +16,7 @@ on:
 jobs:
   bulletin:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 15   # retry süresi için artırıldı (5 → 15)
 
     steps:
       - name: Checkout
@@ -33,25 +32,73 @@ jobs:
       - name: Bağımlılıkları yükle
         run: pip install -r requirements-bulletin.txt
 
-      - name: Bülten gönder
+      # ── Tarih hesapla (sonraki adımlarda paylaşılır) ─────────────────────
+      - name: Tarih belirle
+        id: date
+        run: |
+          DATE="${{ github.event.inputs.date }}"
+          if [ -z "$DATE" ]; then
+            DATE=$(date -u -d "+1 day" +%Y-%m-%d)
+          fi
+          echo "value=$DATE" >> "$GITHUB_OUTPUT"
+          echo "Bülten tarihi: $DATE"
+
+      # ── Deneme 1 ─────────────────────────────────────────────────────────
+      - name: Bülten gönder (1. deneme)
+        id: attempt1
+        continue-on-error: true
+        env:
+          TELEGRAM_BOT_TOKEN:        ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_PERSONAL_CHANNEL: ${{ secrets.TELEGRAM_PERSONAL_CHANNEL }}
+          FOOTBALL_DATA_ORG_KEY:     ${{ secrets.FOOTBALL_DATA_ORG_KEY }}
+          ODDS_API_KEY:              ${{ secrets.ODDS_API_KEY }}
+        run: python -m ops.wc_paper_shadow --deliver --date "${{ steps.date.outputs.value }}"
+
+      # ── Deneme 2 (2 dakika bekle — geçici 5xx/timeout için yeterli) ──────
+      - name: Bülten gönder (2. deneme — 2dk sonra)
+        id: attempt2
+        if: steps.attempt1.outcome == 'failure'
+        continue-on-error: true
         env:
           TELEGRAM_BOT_TOKEN:        ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_PERSONAL_CHANNEL: ${{ secrets.TELEGRAM_PERSONAL_CHANNEL }}
           FOOTBALL_DATA_ORG_KEY:     ${{ secrets.FOOTBALL_DATA_ORG_KEY }}
           ODDS_API_KEY:              ${{ secrets.ODDS_API_KEY }}
         run: |
-          DATE="${{ github.event.inputs.date }}"
-          if [ -z "$DATE" ]; then
-            DATE=$(date -u -d "+1 day" +%Y-%m-%d)
-          fi
-          echo "Bülten tarihi: $DATE"
-          python -m ops.wc_paper_shadow --deliver --date "$DATE"
+          echo "1. deneme başarısız — 120s bekleniyor..."
+          sleep 120
+          python -m ops.wc_paper_shadow --deliver --date "${{ steps.date.outputs.value }}"
 
-      - name: Kota takibini kaydet
+      # ── Her iki deneme de başarısız → retry workflow'u tetikle ───────────
+      - name: Retry workflow'u planla (1 saat sonra)
+        if: steps.attempt1.outcome == 'failure' && steps.attempt2.outcome == 'failure'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          DATE="${{ steps.date.outputs.value }}"
+          REPO="${{ github.repository }}"
+          echo "Her iki deneme başarısız. 1 saat sonra retry-bulletin tetiklenecek..."
+          # GitHub API: workflow_dispatch ile retry-bulletin.yml çalıştır
+          curl -s -X POST \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/$REPO/actions/workflows/retry-bulletin.yml/dispatches" \
+            -d "{\"ref\":\"main\",\"inputs\":{\"date\":\"$DATE\",\"delay_minutes\":\"60\"}}"
+          echo "Retry isteği gönderildi."
+
+      # ── Her iki deneme de başarısız → iş başarısız olarak işaretle ───────
+      - name: Hata kontrolü
+        if: steps.attempt1.outcome == 'failure' && steps.attempt2.outcome == 'failure'
+        run: |
+          echo "HATA: Bülten 2 denemede gönderilemedi. retry-bulletin.yml 1 saat sonra çalışacak."
+          exit 1
+
+      # ── Durum dosyalarını kaydet (her zaman çalışır) ─────────────────────
+      - name: Durum dosyalarını kaydet
         if: always()
         run: |
           git config user.email "github-actions@github.com"
           git config user.name "GitHub Actions"
-          git add data/odds_quota.json || true
-          git diff --cached --quiet || git commit -m "chore: odds quota snapshot [skip ci]"
+          git add data/odds_quota.json data/cb_state.json || true
+          git diff --cached --quiet || git commit -m "chore: quota + circuit breaker snapshot [skip ci]"
           git push || true
