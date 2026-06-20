@@ -75,8 +75,7 @@ except Exception:
 # Sabitler
 # ---------------------------------------------------------------------------
 
-_BANKROLL_DEFAULT  = 1_000.0    # ₺ / para birimi
-_HALF_KELLY_MULT   = 0.5        # Half-Kelly güvenlik çarpanı
+_BANKROLL_DEFAULT  = 1_000.0    # iç sıralama için tutulur — ekranda gösterilmez
 _SNIPER_CONF_MIN   = 62.0       # sniper minimum güven
 _SNIPER_ODDS_MAX   = 4.50       # longshot filtresi (Buchdahl bias analizi)
 _TIER_A_ELO_GAP    = 150        # Elo farkı ≥ 150 → TIER_A
@@ -151,6 +150,17 @@ def _edge_pct(prob: float, decimal_odds: float) -> float:
     if decimal_odds <= 0:
         return 0.0
     return round((prob * decimal_odds - 1.0) * 100, 1)
+
+
+def _value_score(kelly_fraction: Optional[float]) -> Optional[float]:
+    """
+    Kelly fraksiyonunu 0–10 arası kamuya açık 'Değer Skoru'na dönüştürür.
+    Formül: min(round(K × 100, 1), 10.0)
+    Finansal yönlendirme içermez; sıralama + fırsat yoğunluğu göstergesidir.
+    """
+    if kelly_fraction is None or kelly_fraction <= 0:
+        return None
+    return min(round(kelly_fraction * 100, 1), 10.0)
 
 
 # ---------------------------------------------------------------------------
@@ -250,7 +260,6 @@ def _enrich_kelly(pred: dict, bankroll: float) -> dict:
 
     if decimal_odds and decimal_odds > 1.0 and prob_dec > 0:
         kf    = _kelly_fraction(prob_dec, decimal_odds)
-        half  = round(kf * _HALF_KELLY_MULT * bankroll, 1)
         ev    = _edge_pct(prob_dec, decimal_odds)
         is_sn = (
             not p.get("is_no_bet", False)
@@ -260,9 +269,8 @@ def _enrich_kelly(pred: dict, bankroll: float) -> dict:
             and ev > 0
         )
     else:
-        kf   = None
-        half = None
-        ev   = None
+        kf    = None
+        ev    = None
         is_sn = False
 
     if "is_sniper" not in p:
@@ -270,9 +278,9 @@ def _enrich_kelly(pred: dict, bankroll: float) -> dict:
     if "tier" not in p:
         p["tier"] = _tier_from_elo_gap(float(p.get("elo_gap", 0)))
 
-    p["_kelly_fraction"]  = kf
-    p["_kelly_stake_half"] = half
-    p["_edge_pct"]        = ev
+    p["_kelly_fraction"] = kf
+    p["_value_score"]    = _value_score(kf)   # 0–10 görsel skor; TL/fraksiyon gösterilmez
+    p["_edge_pct"]       = ev
     return p
 
 
@@ -280,14 +288,14 @@ def _enrich_kelly(pred: dict, bankroll: float) -> dict:
 # Görsel yardımcılar
 # ---------------------------------------------------------------------------
 
-def _kelly_bar(fraction: Optional[float], width: int = 10) -> str:
+def _value_score_bar(score: Optional[float], width: int = 10) -> str:
     """
-    Küçük ASCII stake bar'ı.
-    fraction: 0.0–1.0 (Kelly fraksiyonu, half-kelly öncesi)
+    0–10 değer skoru için ASCII görsel çubuk.
+    10 puan = tüm bloklar dolu.
     """
-    if fraction is None or fraction <= 0:
-        return "—"
-    filled = max(1, min(width, round(fraction * width / 0.20)))  # %20 = dolu bar
+    if score is None or score <= 0:
+        return "░" * width
+    filled = max(1, min(width, round(score)))
     return "█" * filled + "░" * (width - filled)
 
 
@@ -340,7 +348,7 @@ def format_match_card(pred: dict, bankroll: float = _BANKROLL_DEFAULT) -> str:
       ── Olasılık üçlüsü (1/X/2)
       ── Model girdileri (Elo · xG · Form · DC-ρ)
       ── Piyasa oranları (varsa)
-      ── Kelly + EV
+      ── Model Fırsat Endeksi (Değer Skoru · EV · Güven)
       ── İkincil pazar
       ── Türev tahminler (KG/OU/DC)
       ── CLV (kapanış oranı gelince)
@@ -365,12 +373,11 @@ def format_match_card(pred: dict, bankroll: float = _BANKROLL_DEFAULT) -> str:
     fm_a    = float(p.get("away_form_mult", 1.0))
     dc_rho  = float(p.get("dc_rho", -0.10))
 
-    is_sniper = p.get("is_sniper", False)
-    is_no_bet = p.get("is_no_bet", False)
-    kf        = p.get("_kelly_fraction")
-    half_k    = p.get("_kelly_stake_half")
-    ev        = p.get("_edge_pct")
-    clv       = p.get("clv")
+    is_sniper   = p.get("is_sniper", False)
+    is_no_bet   = p.get("is_no_bet", False)
+    value_score = p.get("_value_score")     # 0–10 görsel skor (Kelly tabanlı, TL yok)
+    ev          = p.get("_edge_pct")
+    clv         = p.get("clv")
 
     h_pct = round(probs.get("H", 0), 1)
     d_pct = round(probs.get("D", 0), 1)
@@ -386,9 +393,8 @@ def format_match_card(pred: dict, bankroll: float = _BANKROLL_DEFAULT) -> str:
     )
     sec_pct = round(sec_prob_frac * 100, 1)
 
-    tier_em   = _tier_emoji(tier)
-    conf_bar  = _confidence_bar(conf)
-    kelly_bar = _kelly_bar(kf)
+    tier_em  = _tier_emoji(tier)
+    conf_bar = _confidence_bar(conf)
 
     # ── Başlık satırı ───────────────────────────────────────────────────────
     sniper_tag = "  ⭐ <b>SNIPER</b>" if is_sniper else ""
@@ -447,18 +453,28 @@ def format_match_card(pred: dict, bankroll: float = _BANKROLL_DEFAULT) -> str:
     else:
         odds_line = "\n\n💰 <i>Piyasa oranı henüz alınamadı.</i>"
 
-    # ── Kelly + EV ───────────────────────────────────────────────────────────
-    if kf is not None and kf > 0:
-        kelly_block = (
-            f"\n\n📐 <b>KELLY HESABI</b>\n"
-            f"   Half-Kelly: <b>{half_k:.1f}₺</b>  "
-            f"(bankroll {bankroll:.0f}₺ üzerinden)\n"
-            f"   Fraksiyon: {kf*100:.2f}%   EV: "
-            + (f"<b>+{ev:.1f}%</b> ✅" if ev and ev > 0 else f"{ev:.1f}%" if ev is not None else "—")
-            + f"\n   Stake bar: {kelly_bar}"
+    # ── Model Fırsat Endeksi ─────────────────────────────────────────────────
+    if value_score is not None and ev is not None and ev > 0:
+        vs_bar = _value_score_bar(value_score)
+        ev_str = f"<b>+%{ev:.1f}</b> ✅"
+        mfe_block = (
+            f"\n\n💎 <b>MODEL FIRSAT ENDEKSİ</b>\n"
+            f"   Değer Skoru:  <b>{value_score:.1f} / 10</b>  {vs_bar}\n"
+            f"   Beklenen Değer (EV):  {ev_str}\n"
+            f"   Model Güveni:  {conf_bar}  <i>({conf:.1f}%)</i>"
+        )
+    elif ev is not None and ev <= 0:
+        mfe_block = (
+            f"\n\n💎 <b>MODEL FIRSAT ENDEKSİ</b>\n"
+            f"   Değer Skoru:  —  <i>(piyasa EV negatif)</i>\n"
+            f"   Model Güveni:  {conf_bar}  <i>({conf:.1f}%)</i>"
         )
     else:
-        kelly_block = "\n\n📐 <i>Kelly: Piyasa oranı bekleniyor.</i>"
+        mfe_block = (
+            f"\n\n💎 <b>MODEL FIRSAT ENDEKSİ</b>\n"
+            f"   Değer Skoru:  —  <i>(piyasa oranı bekleniyor)</i>\n"
+            f"   Model Güveni:  {conf_bar}  <i>({conf:.1f}%)</i>"
+        )
 
     # ── İkincil pazar ────────────────────────────────────────────────────────
     sec_type_tags = {"OU": "⚖️", "DC": "🛡️", "BTTS": "🎯"}
@@ -483,7 +499,7 @@ def format_match_card(pred: dict, bankroll: float = _BANKROLL_DEFAULT) -> str:
         + prob_block
         + model_block
         + odds_line
-        + kelly_block
+        + mfe_block
         + sec_block
         + deriv_block
         + clv_block
@@ -509,20 +525,17 @@ def _format_header(data: dict) -> str:
     preds = data.get("predictions", [])
     enriched = [_enrich_kelly(p, bankroll) for p in preds]
 
-    sniper_list  = [p for p in enriched if p.get("is_sniper")]
-    no_bet_list  = [p for p in enriched if p.get("is_no_bet")]
-    tier_dist    = {"TIER_A": 0, "TIER_B": 0, "TIER_C": 0}
-    pred_dist    = {"HOME_WIN": 0, "DRAW": 0, "AWAY_WIN": 0}
-    total_stake  = 0.0
-    confs        = []
+    sniper_list = [p for p in enriched if p.get("is_sniper")]
+    no_bet_list = [p for p in enriched if p.get("is_no_bet")]
+    tier_dist   = {"TIER_A": 0, "TIER_B": 0, "TIER_C": 0}
+    pred_dist   = {"HOME_WIN": 0, "DRAW": 0, "AWAY_WIN": 0}
+    confs       = []
 
     for p in enriched:
         t = p.get("tier", "TIER_C")
         tier_dist[t] = tier_dist.get(t, 0) + 1
         o = p.get("predicted_outcome", "")
         pred_dist[o] = pred_dist.get(o, 0) + 1
-        if p.get("_kelly_stake_half"):
-            total_stake += p["_kelly_stake_half"]
         if p.get("confidence"):
             confs.append(float(p["confidence"]))
 
@@ -542,7 +555,7 @@ def _format_header(data: dict) -> str:
 
     # ── Sniper özet ─────────────────────────────────────────────────────────
     if sniper_list:
-        lines.append(f"\n🎯 <b>SNIPER SEÇİMLER  ({len(sniper_list)} maç)</b>")
+        lines.append(f"\n🎯 <b>ELİT LİSTE  ({len(sniper_list)} maç)</b>")
         for p in sniper_list:
             home  = p.get("home_team", "?")
             away  = p.get("away_team", "?")
@@ -552,28 +565,27 @@ def _format_header(data: dict) -> str:
             ok    = {"HOME_WIN": "h", "DRAW": "d", "AWAY_WIN": "a"}.get(p.get("predicted_outcome", ""), "h")
             mkt   = f"@{odds[ok]}" if odds.get(ok) else ""
             ev    = p.get("_edge_pct")
-            ev_s  = f"  EV +{ev:.1f}%" if ev and ev > 0 else ""
-            half  = p.get("_kelly_stake_half")
-            stake_s = f"  [{half:.0f}₺]" if half else ""
+            vs    = p.get("_value_score")
+            ev_s  = f"  EV +%{ev:.1f}" if ev and ev > 0 else ""
+            vs_s  = f"  💎{vs:.1f}" if vs else ""
             lines.append(
                 f"  ⭐ <b>{home} – {away}</b>  ›  <b>{short}</b>  {mkt}"
-                f"  <i>({conf:.0f}%{ev_s}{stake_s})</i>"
+                f"  <i>({conf:.0f}%{ev_s}{vs_s})</i>"
             )
-        lines.append("<i>Piyasaya göre EV pozitif — kickoff öncesi oynayın.</i>")
+        lines.append("<i>Model fırsat endeksi pozitif — ayrıntı için maç kartına bak.</i>")
     else:
-        lines.append("\n<i>Bugün sniper kriterleri karşılayan maç yok.</i>")
+        lines.append("\n<i>Bugün elit liste kriterleri karşılayan maç yok.</i>")
 
     # ── Genel bakış ─────────────────────────────────────────────────────────
     lines.append(
         f"\n📋 <b>GENEL BAKIŞ</b>\n"
         f"Maç: <b>{len(enriched)}</b>   "
-        f"Sniper: <b>{len(sniper_list)}</b>   "
+        f"Elit: <b>{len(sniper_list)}</b>   "
         f"Oynanmaz: <b>{len(no_bet_list)}</b>\n"
         f"Tier  🔴A: {tier_dist['TIER_A']}  🟡B: {tier_dist['TIER_B']}  ⚪C: {tier_dist['TIER_C']}\n"
         f"Dağılım  1: {pred_dist['HOME_WIN']}  X: {pred_dist['DRAW']}  2: {pred_dist['AWAY_WIN']}  "
         f"(Beraberlik %{draw_pct})\n"
         f"Ort. Güven: <b>{avg_conf}%</b>"
-        + (f"   Toplam Kelly Stake: <b>{total_stake:.0f}₺</b>" if total_stake > 0 else "")
     )
 
     lines.append("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
@@ -604,9 +616,6 @@ def _format_session_footer(data: dict) -> str:
 
     return (
         "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
-        f"📌 <b>Önerilen Stake:</b> Half-Kelly  "
-        f"(bankroll'un ½ Kelly fraksiyonu)\n"
-        f"⛔ Progresif / Martingale sistemleri önerilmez.\n\n"
         f"{significance_note}\n\n"
         f"🔑 Session: <code>{sid}</code>\n"
         f"📅 {date_str}\n"
