@@ -112,7 +112,9 @@ def _pick_secondary(pred: dict) -> tuple[str, float, str]:
                 return "X2", (probs["D"] + probs["A"]) / 100, "DC"
 
     # 2. Double Chance for strong favorites
-    if tier == "TIER_A" and conf >= 55:
+    # Threshold 45 (was 55): shadow model's 0.85 discount compresses conf;
+    # TIER_A with elo_diff=150 yields conf≈46.8, so 55 was unreachable.
+    if tier == "TIER_A" and conf >= 45:
         if primary == "HOME_WIN":
             return "1X", (probs["H"] + probs["D"]) / 100, "DC"
         if primary == "AWAY_WIN":
@@ -123,8 +125,11 @@ def _pick_secondary(pred: dict) -> tuple[str, float, str]:
     if xg_h >= 0.9 and xg_a >= 0.9 and p_btts >= 0.45:
         return "KG_VAR", p_btts, "BTTS"
 
-    # 4/5. Over/Under based on total xG
-    if total_xg >= 2.3:
+    # 4/5. Over/Under — pick whichever the model considers more likely.
+    # At xG=2.30 Poisson gives P(Under)=59.6% > P(Over)=40.4%, so a raw
+    # xG≥2.3 threshold would pick the wrong side. Using probabilities directly
+    # is always correct; the crossover naturally lands near xG≈2.65.
+    if p_over > p_under:
         return "2.5_ÜST", p_over, "OU"
     return "2.5_ALT", p_under, "OU"
 
@@ -764,6 +769,12 @@ def format_match_block(db, match: dict, pred: dict, odds_map: dict | None = None
     odds    = _lookup_odds(home, away, odds_map or {})
 
     sniper = _is_sniper(pred, odds)
+
+    draw_prob   = float(pred.get("draw_prob", 0))
+    draw_risk   = draw_prob > 18.0 and not pred.get("is_no_bet", False)
+    if draw_risk:
+        sniper = False  # Seçenek B: beraberlik riski olan tahminler sniper'dan çıkar
+
     sniper_prefix = "⭐ " if sniper else ""
 
     if pred.get("raw_prediction") == "NO_DATA":
@@ -775,6 +786,8 @@ def format_match_block(db, match: dict, pred: dict, odds_map: dict | None = None
 
     if pred.get("is_no_bet"):
         status = f"⛔ OYNANMAZ ({pred.get('market_note') or 'No-Bet'})"
+    elif draw_risk:
+        status = f"✅ İZLENİYOR  ⚠️ <b>Beraberlik Riski (%{draw_prob:.0f})</b>"
     else:
         status = "✅ İZLENİYOR"
     if odds:
