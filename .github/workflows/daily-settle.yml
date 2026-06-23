@@ -33,6 +33,12 @@ jobs:
           SUPABASE_SERVICE_ROLE_KEY:  ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: python ops/result_settler.py --settle
 
+      - name: API-Football yedek settlement (backfill)
+        continue-on-error: true
+        env:
+          API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
+        run: python -m ops.result_backfiller --settle
+
       - name: CLV Tracker güncelle
         continue-on-error: true
         run: python ops/clv_tracker.py --update
