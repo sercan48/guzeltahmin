@@ -37,6 +37,14 @@ jobs:
         continue-on-error: true
         run: python ops/clv_tracker.py --update
 
+      - name: Maç sonuçlarını Telegram'a bildir
+        continue-on-error: true
+        env:
+          TELEGRAM_BOT_TOKEN:        ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID:          ${{ secrets.TELEGRAM_CHAT_ID }}
+          TELEGRAM_PERSONAL_CHANNEL: ${{ secrets.TELEGRAM_PERSONAL_CHANNEL }}
+        run: python -m ops.settlement_notifier --deliver
+
       - name: Settlement verisini commit et
         if: always()
         run: |
