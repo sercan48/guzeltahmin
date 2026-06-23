@@ -63,29 +63,39 @@ def _pick_label(prediction: str) -> str:
     }.get(prediction, prediction)
 
 
-def _pick_secondary(pred: dict) -> tuple[str, float, str]:
+def _ev(prob_frac: float, decimal_odds: float | None) -> float | None:
+    """Beklenen değer yüzdesi. Oran yoksa None."""
+    if not decimal_odds or decimal_odds <= 1.0:
+        return None
+    return prob_frac * decimal_odds - 1.0
+
+
+def _pick_secondary(pred: dict, odds: dict | None = None) -> tuple[str, float, str]:
     """
-    Choose the highest-quality secondary market that is orthogonal to the
-    primary 1X2 prediction.
+    Birincil 1X2 tahminiyle ortogonal en iyi ikincil pazarı seç.
 
     Returns (label, probability_0_to_1, market_type)
 
-    Logic (priority order):
-      1. TIER_A + confidence >= 55 → Double Chance (covers primary direction
-         + draw; odds ~1.35, structural edge against draw blindspot)
-      2. Both xG >= 0.9 AND P(BTTS) >= 0.45 → KG_VAR (both teams attack-
-         minded; independent of who wins; odds ~1.80)
-      3. Total xG >= 2.3 → 2.5 Üst (high-scoring game expected)
-      4. Default → 2.5 Alt (defensive/low-xG game)
+    EV Modu (odds varsa):
+      Tüm aday pazarların EV'i hesaplanır; en yüksek pozitif EV kazanır.
+      1X için çok düşük oranlar (-EV) Alt 2.5 gibi seçeneklerin önünü açar.
+      Hiçbir aday pozitif EV üretmiyorsa kural moduna düşer.
+
+    Kural Modu (odds yoksa, öncelik sırası):
+      1. DRAW tahmini → xG<2.0: Alt | xG≥2.0: Çifte Şans
+      2. TIER_A + conf≥45 → Çifte Şans (1X / X2)
+      3. xg_h≥0.9 ve xg_a≥0.9 ve P(BTTS)≥0.45 → KG Var
+      4. p_over > p_under → 2.5 Üst
+      5. Varsayılan → 2.5 Alt
     """
     import math
 
     xg_h = float(pred.get("expected_goals_a", 0))
     xg_a = float(pred.get("expected_goals_b", 0))
-    tier  = pred.get("tier", "TIER_C")
-    conf  = float(pred.get("final_confidence", 0))
+    tier    = pred.get("tier", "TIER_C")
+    conf    = float(pred.get("final_confidence", 0))
     primary = pred.get("raw_prediction", "")
-    probs = {
+    probs   = {
         "H": float(pred.get("home_win_prob", 0)),
         "D": float(pred.get("draw_prob", 0)),
         "A": float(pred.get("away_win_prob", 0)),
@@ -94,37 +104,65 @@ def _pick_secondary(pred: dict) -> tuple[str, float, str]:
     total_xg = xg_h + xg_a
     p_under  = sum(
         (total_xg ** k * math.exp(-total_xg)) / math.factorial(k)
-        for k in range(3)   # P(0) + P(1) + P(2) = P(≤2)
+        for k in range(3)
     )
     p_over = 1.0 - p_under
+    p_btts = (1.0 - math.exp(-xg_h)) * (1.0 - math.exp(-xg_a))
+    p_1x   = (probs["H"] + probs["D"]) / 100.0
+    p_x2   = (probs["D"] + probs["A"]) / 100.0
 
-    # 1. Dolaylı beraberlik: model DRAW tahmin edince doğrudan X vermek yerine
-    #    xG'ye göre yapısal olarak tutarlı bir alternatif pazara yönlendir.
+    # ── EV Modu ──────────────────────────────────────────────────────────────
+    # Oran varsa tüm aday pazarlar EV ile sıralanır.
+    # Bu mod 1X/KG_VAR gibi düşük oranlı seçeneklerin negatif EV'ini görür;
+    # örn. TIER_A maçta 1X odds≈1.05 → EV≈-14%, Alt odds≈1.70 → EV≈+1.3%.
+    if odds:
+        # primary 1X2 ile aynı pazar tipine girmeyecek adaylar
+        skip_key = {"HOME_WIN": "h", "DRAW": "d", "AWAY_WIN": "a"}.get(primary)
+        candidates: list[tuple[float, str, float, str]] = []  # (ev, label, prob, mtype)
+
+        def _add(label, prob, mtype, odds_val):
+            ev = _ev(prob, odds_val)
+            if ev is not None:
+                candidates.append((ev, label, prob, mtype))
+
+        if primary != "DRAW":
+            dc_key = "1X" if primary == "HOME_WIN" else "X2"
+            dc_prob = p_1x if primary == "HOME_WIN" else p_x2
+            # DC odds: genellikle bookmaker'da "double chance" olarak yok;
+            # 1X2 oranlarından türet: P(1X) / (1/h + 1/d) yaklaşımı yerine
+            # doğrudan under/btts/ou oranlarını kullan
+            _add("2.5_ALT",  p_under, "OU",   odds.get("under_2_5"))
+            _add("2.5_ÜST",  p_over,  "OU",   odds.get("over_2_5"))
+            _add("KG_VAR",   p_btts,  "BTTS", odds.get("btts_yes"))
+            _add("KG_YOK",   1-p_btts,"BTTS", odds.get("btts_no"))
+        else:
+            # DRAW tahmini: DC hem birincili hem de ikincili kapsar → OU kullan
+            _add("2.5_ALT",  p_under, "OU",   odds.get("under_2_5"))
+            _add("2.5_ÜST",  p_over,  "OU",   odds.get("over_2_5"))
+
+        if candidates:
+            candidates.sort(key=lambda x: x[0], reverse=True)
+            best_ev, best_label, best_prob, best_mtype = candidates[0]
+            if best_ev > 0:
+                return best_label, best_prob, best_mtype
+        # Tüm adaylar negatif EV veya oran eksik → kural moduna düş
+
+    # ── Kural Modu ───────────────────────────────────────────────────────────
     if primary == "DRAW":
         if total_xg < 2.0:
-            # Düşük xG → Alt 2.5 Gol, beraberlikle yüksek korelasyon (R²≈0.39)
             return "2.5_ALT", p_under, "OU"
-        else:
-            # Dengeli yüksek tempolu maç → hafif baskın tarafa çifte şans
-            if probs["H"] >= probs["A"]:
-                return "1X", (probs["H"] + probs["D"]) / 100, "DC"
-            else:
-                return "X2", (probs["D"] + probs["A"]) / 100, "DC"
+        return ("1X", p_1x, "DC") if probs["H"] >= probs["A"] else ("X2", p_x2, "DC")
 
-    # 2. Double Chance for strong favorites
-    if tier == "TIER_A" and conf >= 55:
+    if tier == "TIER_A" and conf >= 45:
         if primary == "HOME_WIN":
-            return "1X", (probs["H"] + probs["D"]) / 100, "DC"
+            return "1X", p_1x, "DC"
         if primary == "AWAY_WIN":
-            return "X2", (probs["D"] + probs["A"]) / 100, "DC"
+            return "X2", p_x2, "DC"
 
-    # 3. BTTS when both teams are genuinely attack-minded
-    p_btts = (1.0 - math.exp(-xg_h)) * (1.0 - math.exp(-xg_a))
     if xg_h >= 0.9 and xg_a >= 0.9 and p_btts >= 0.45:
         return "KG_VAR", p_btts, "BTTS"
 
-    # 4/5. Over/Under based on total xG
-    if total_xg >= 2.3:
+    if p_over > p_under:
         return "2.5_ÜST", p_over, "OU"
     return "2.5_ALT", p_under, "OU"
 
@@ -158,6 +196,20 @@ def _assign_tier(pred: dict) -> str:
     if diff >= 50:
         return "TIER_B"
     return "TIER_C"
+
+
+def _confidence_bar(conf: float) -> str:
+    """5 bloklu güven çubuğu."""
+    filled = max(0, min(5, round(conf / 20)))
+    return "▓" * filled + "░" * (5 - filled)
+
+
+def _value_score_bar(score, width: int = 10) -> str:
+    """0–10 değer skoru için ASCII görsel çubuk."""
+    if score is None or score <= 0:
+        return "░" * width
+    filled = max(1, min(width, round(score)))
+    return "█" * filled + "░" * (width - filled)
 
 
 # ---------------------------------------------------------------------------
@@ -763,8 +815,11 @@ def format_match_block(db, match: dict, pred: dict, odds_map: dict | None = None
     tier    = pred.get("tier", "—")
     odds    = _lookup_odds(home, away, odds_map or {})
 
-    sniper = _is_sniper(pred, odds)
-    sniper_prefix = "⭐ " if sniper else ""
+    sniper    = _is_sniper(pred, odds)
+    draw_prob = float(pred.get("draw_prob", 0))
+    draw_risk = draw_prob > 18.0 and not pred.get("is_no_bet", False)
+    if draw_risk:
+        sniper = False  # Seçenek B: beraberlik riski olan tahminler sniper'dan çıkar
 
     if pred.get("raw_prediction") == "NO_DATA":
         return (
@@ -773,59 +828,142 @@ def format_match_block(db, match: dict, pred: dict, odds_map: dict | None = None
             f"<i>Bu maç için tahmin üretilemedi.</i>"
         )
 
-    if pred.get("is_no_bet"):
-        status = f"⛔ OYNANMAZ ({pred.get('market_note') or 'No-Bet'})"
-    else:
-        status = "✅ İZLENİYOR"
-    if odds:
-        odds_line = f"\n💰 <b>Oran (ort.):</b> 1: {odds['h']} | X: {odds['d']} | 2: {odds['a']}"
-        if odds.get("over_2_5"):
-            odds_line += f"  |  2.5Ü: {odds['over_2_5']}"
-        if odds.get("btts_yes"):
-            odds_line += f"  |  KG+: {odds['btts_yes']}"
-    else:
-        odds_line = ""
-
-    # --- derivative markets (read-only, display only) -----------------------
-    from src.model.wc_intelligence_engine import btts_predict, over_under_predict
-
-    xg_h = float(pred.get("expected_goals_a", 0))
-    xg_a = float(pred.get("expected_goals_b", 0))
-    btts  = btts_predict(xg_h, xg_a)
-    ou    = over_under_predict(xg_h, xg_a, line=2.5)
+    outcome   = pred.get("raw_prediction", "DRAW")
+    conf      = float(pred.get("final_confidence", 0))
+    xg_h      = float(pred.get("expected_goals_a", 0))
+    xg_a      = float(pred.get("expected_goals_b", 0))
+    elo_h     = float(pred.get("elo_home", 0))
+    elo_a     = float(pred.get("elo_away", 0))
+    elo_gap   = abs(elo_h - elo_a)
+    is_no_bet = bool(pred.get("is_no_bet", False))
 
     h_pct = round(float(pred.get("home_win_prob", 0)), 1)
-    d_pct = round(float(pred.get("draw_prob", 0)), 1)
+    d_pct = round(draw_prob, 1)
     a_pct = round(float(pred.get("away_win_prob", 0)), 1)
     dc_1x = round(h_pct + d_pct, 1)
     dc_x2 = round(d_pct + a_pct, 1)
-    dc_12 = round(h_pct + a_pct, 1)
 
-    # --- primary / secondary selection ------------------------------------
-    sec_label, sec_prob, sec_type = _pick_secondary(pred)
-    _sec_display = {
-        "1X":      f"Çifte Şans 1X  %{dc_1x}",
-        "X2":      f"Çifte Şans X2  %{dc_x2}",
-        "12":      f"Çifte Şans 12  %{dc_12}",
-        "KG_VAR":  f"KG Var  %{btts['btts_yes']}",
-        "2.5_ÜST": f"2.5 Üst  %{ou['over_2.5']}",
-        "2.5_ALT": f"2.5 Alt  %{ou['under_2.5']}",
-    }
-    sec_str = _sec_display.get(sec_label, sec_label)
+    from src.model.wc_intelligence_engine import btts_predict, over_under_predict
+    btts = btts_predict(xg_h, xg_a)
+    ou   = over_under_predict(xg_h, xg_a, line=2.5)
+
+    # Kelly / EV / Değer Skoru
+    mkt_odds_val = (odds or {}).get(
+        {"HOME_WIN": "h", "DRAW": "d", "AWAY_WIN": "a"}.get(outcome, "h")
+    )
+    model_prob = {"HOME_WIN": h_pct / 100, "DRAW": d_pct / 100, "AWAY_WIN": a_pct / 100}.get(outcome, 0.0)
+    if mkt_odds_val and mkt_odds_val > 1.0 and model_prob > 0:
+        b      = mkt_odds_val - 1.0
+        kf     = max(0.0, (b * model_prob - (1.0 - model_prob)) / b)
+        ev_pct = round((model_prob * mkt_odds_val - 1.0) * 100, 1)
+        vs     = min(round(kf * 100, 1), 10.0) if kf > 0 else None
+    else:
+        ev_pct = None
+        vs     = None
+
+    tier_em  = {"TIER_A": "🔴", "TIER_B": "🟡", "TIER_C": "⚪"}.get(tier, "⚪")
+    conf_bar = _confidence_bar(conf)
+
+    # ── Başlık ──────────────────────────────────────────────────────────────────
+    sniper_tag = "  ⭐ <b>SNIPER</b>" if sniper else ""
+    no_bet_tag = "  ⛔ <b>OYNANMAZ</b>" if is_no_bet else ""
+    risk_tag   = "  ⚠️ <b>BER.RİSKİ</b>" if draw_risk else ""
+    status_tag = sniper_tag + no_bet_tag + risk_tag
+
+    header = (
+        f"┌─────────────────────────────────┐\n"
+        f"│ {tier_em} {tier}{status_tag}\n"
+        f"│ ⚽ <b>{home}</b>  vs  <b>{away}</b>\n"
+        f"│ 🕒 {kickoff}\n"
+        f"└─────────────────────────────────┘"
+    )
+
+    # ── Ana tahmin ───────────────────────────────────────────────────────────────
+    mkt_tag    = f"  @{mkt_odds_val}" if mkt_odds_val else ""
+    pred_block = (
+        f"\n🎯 <b>ANA TAHMİN:</b>  {_pick_label(outcome)}{mkt_tag}\n"
+        f"   Güven: <b>{conf:.1f}%</b>  {conf_bar}"
+    )
+
+    # ── Olasılık üçlüsü ──────────────────────────────────────────────────────────
+    prob_block = f"\n\n1️⃣ %{h_pct}   ❌ %{d_pct}   2️⃣ %{a_pct}"
+
+    # ── Model girdileri ──────────────────────────────────────────────────────────
+    model_block = (
+        f"\n\n🔵 <b>Elo:</b> {elo_h:.0f} vs {elo_a:.0f}  <i>(fark: {elo_gap:.0f})</i>\n"
+        f"⚡ <b>xG:</b> {xg_h:.2f} – {xg_a:.2f}"
+    )
+
+    # ── Piyasa oranları ──────────────────────────────────────────────────────────
+    if odds and odds.get("h") and odds.get("d") and odds.get("a"):
+        odds_line = (
+            f"\n\n💰 <b>PIYASA ORANLARI</b>\n"
+            f"   1: <b>{odds['h']}</b>   X: <b>{odds['d']}</b>   2: <b>{odds['a']}</b>"
+        )
+        if odds.get("over_2_5"):
+            odds_line += f"   |   2.5Ü: {odds['over_2_5']}"
+        if odds.get("under_2_5"):
+            odds_line += f"  ·  2.5A: {odds['under_2_5']}"
+        if odds.get("btts_yes"):
+            odds_line += f"\n   KG+: {odds['btts_yes']}"
+        if odds.get("btts_no"):
+            odds_line += f"  ·  KG−: {odds['btts_no']}"
+    else:
+        odds_line = "\n\n💰 <i>Piyasa oranı henüz alınamadı.</i>"
+
+    # ── Model Fırsat Endeksi ─────────────────────────────────────────────────────
+    if vs is not None and ev_pct is not None and ev_pct > 0:
+        vs_bar    = _value_score_bar(vs)
+        mfe_block = (
+            f"\n\n💎 <b>MODEL FIRSAT ENDEKSİ</b>\n"
+            f"   Değer Skoru:  <b>{vs:.1f} / 10</b>  {vs_bar}\n"
+            f"   Beklenen Değer (EV):  <b>+%{ev_pct:.1f}</b> ✅\n"
+            f"   Model Güveni:  {conf_bar}  <i>({conf:.1f}%)</i>"
+        )
+    elif ev_pct is not None and ev_pct <= 0:
+        mfe_block = (
+            f"\n\n💎 <b>MODEL FIRSAT ENDEKSİ</b>\n"
+            f"   Değer Skoru:  —  <i>(piyasa EV negatif)</i>\n"
+            f"   Model Güveni:  {conf_bar}  <i>({conf:.1f}%)</i>"
+        )
+    else:
+        mfe_block = (
+            f"\n\n💎 <b>MODEL FIRSAT ENDEKSİ</b>\n"
+            f"   Değer Skoru:  —  <i>(piyasa oranı bekleniyor)</i>\n"
+            f"   Model Güveni:  {conf_bar}  <i>({conf:.1f}%)</i>"
+        )
+
+    # ── İkincil seçim ────────────────────────────────────────────────────────────
+    sec_label, sec_prob, sec_type = _pick_secondary(pred, odds=odds)
+    sec_pct  = round(sec_prob * 100, 1)
+    sec_em   = {"OU": "⚖️", "DC": "🛡️", "BTTS": "🎯"}.get(sec_type, "")
+    sec_disp = {
+        "2.5_ÜST": "2.5 Üst", "2.5_ALT": "2.5 Alt",
+        "KG_VAR": "KG Var",   "KG_YOK": "KG Yok",
+        "1X": "1X", "X2": "X2", "12": "12",
+    }.get(sec_label, sec_label)
+    sec_block = f"\n\n🥈 <b>İKİNCİL PAZAR:</b>  {sec_em} {sec_disp}  %{sec_pct}"
+
+    # ── Türev tahminler ──────────────────────────────────────────────────────────
+    deriv_block = (
+        f"\n\n📊 <b>TÜREV TAHMİNLER</b>\n"
+        f"   KG Var: %{btts['btts_yes']}  ·  2.5 Üst: %{ou['over_2.5']}  ·  2.5 Alt: %{ou['under_2.5']}\n"
+        f"   1X: %{dc_1x}  ·  X2: %{dc_x2}"
+    )
+
+    # ── CLV ─────────────────────────────────────────────────────────────────────
+    clv_block = "\n\n📌 <b>CLV:</b> — <i>(kapanış oranı bekleniyor)</i>"
 
     return (
-        f"{sniper_prefix}🏟️ <b>{home}</b> vs <b>{away}</b>  —  🕒 {kickoff}  [{tier}]\n"
-        f"🛡️ <b>Statü:</b> {status}\n"
-        f"🥇 <b>Ana Seçim:</b> {_pick_label(pred.get('raw_prediction', 'DRAW'))}  "
-        f"<i>(%{round(float(pred.get('final_confidence', 0)), 1)} güven)</i>\n"
-        f"🥈 <b>İkincil Seçim:</b> {sec_str}\n"
-        f"─────────────────────\n"
-        f"1️⃣ %{h_pct} | ❌ %{d_pct} | 2️⃣ %{a_pct}\n"
-        f"📊 <i>xG: {xg_h} - {xg_a}</i>"
-        f"{odds_line}\n"
-        f"⚽ KG Var %{btts['btts_yes']} · 2.5Ü %{ou['over_2.5']} · 2.5A %{ou['under_2.5']} · "
-        f"1X %{dc_1x} · X2 %{dc_x2}"
-        + (f"\n🎯 <b>SNIPER — Piyasa EV pozitif</b>" if sniper else "")
+        header
+        + pred_block
+        + prob_block
+        + model_block
+        + odds_line
+        + mfe_block
+        + sec_block
+        + deriv_block
+        + clv_block
     )
 
 
