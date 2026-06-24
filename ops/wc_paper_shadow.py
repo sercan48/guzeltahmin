@@ -791,7 +791,57 @@ def _team_name_safe(match: dict) -> str:
 # Formatting
 # ---------------------------------------------------------------------------
 
-def _lookup_odds(home: str, away: str, odds_map: dict) -> dict | None:
+def _merge_odds_into_predictions(
+    date_str: str,
+    home: str,
+    away: str,
+    odds: dict,
+    is_sniper: bool,
+) -> None:
+    """
+    shadow_predictions.jsonl'daki eşleşen kaydı market_odds_h/d/a ile günceller.
+    Kayıt bulunamazsa sessizce geçer — delivery asla kırılmamalı.
+    """
+    if not _PREDICTIONS_LOG.exists():
+        return
+    home_n = home.lower().strip()
+    away_n = away.lower().strip()
+    updated = False
+    lines_out: list[str] = []
+
+    try:
+        with open(_PREDICTIONS_LOG, encoding="utf-8") as fh:
+            for raw_line in fh:
+                raw_line = raw_line.rstrip("\n")
+                if not raw_line.strip():
+                    continue
+                try:
+                    r = json.loads(raw_line)
+                except Exception:
+                    lines_out.append(raw_line)
+                    continue
+
+                r_home = (r.get("home_team") or r.get("home", "")).lower().strip()
+                r_away = (r.get("away_team") or r.get("away", "")).lower().strip()
+                r_date = r.get("match_date") or r.get("date", "")
+
+                if r_date == date_str and r_home == home_n and r_away == away_n:
+                    r["market_odds_h"]    = odds.get("h")
+                    r["market_odds_d"]    = odds.get("d")
+                    r["market_odds_a"]    = odds.get("a")
+                    r["is_sniper"]        = is_sniper
+                    r["odds_fetched_at"]  = datetime.now(timezone.utc).isoformat()
+                    updated = True
+
+                lines_out.append(json.dumps(r, ensure_ascii=False))
+
+        if updated:
+            _PREDICTIONS_LOG.write_text("\n".join(lines_out) + "\n", encoding="utf-8")
+    except Exception as exc:
+        logger.warning("Prediction odds güncellenemedi (%s vs %s): %s", home, away, exc)
+
+
+
     """Find odds for a match using normalized team-name matching."""
     if not odds_map:
         return None
@@ -1069,32 +1119,9 @@ def run_shadow_session(
         })
         blocks.append(format_match_block(db, m, pred, odds_map))
 
-        # --- CLV log: tahmin anındaki oranları kaydet -----------------------
-        if pred["raw_prediction"] not in ("NO_DATA",):
-            log_entry = {
-                "match_date":    date_str,
-                "session_id":    session_id,
-                "home":          home,
-                "away":          away,
-                "kickoff":       m.get("time", "—"),
-                "prediction":    pred["raw_prediction"],
-                "predicted_prob_home": round(pred["home_win_prob"] / 100, 4),
-                "predicted_prob_draw": round(pred["draw_prob"] / 100, 4),
-                "predicted_prob_away": round(pred["away_win_prob"] / 100, 4),
-                "confidence":    pred["final_confidence"],
-                "tier":          pred.get("tier", "—"),
-                "is_sniper":     sniper,
-                "market_odds_h": odds["h"] if odds else None,
-                "market_odds_d": odds["d"] if odds else None,
-                "market_odds_a": odds["a"] if odds else None,
-                "logged_at":     datetime.now(timezone.utc).isoformat(),
-            }
-            try:
-                _PREDICTIONS_LOG.parent.mkdir(parents=True, exist_ok=True)
-                with open(_PREDICTIONS_LOG, "a", encoding="utf-8") as fh:
-                    fh.write(json.dumps(log_entry, ensure_ascii=False) + "\n")
-            except Exception as e:
-                logger.warning("Predictions log yazılamadı: %s", e)
+        # --- CLV: piyasa oranlarını mevcut prediction kaydına ekle ----------
+        if pred["raw_prediction"] not in ("NO_DATA",) and odds:
+            _merge_odds_into_predictions(date_str, home, away, odds, sniper)
 
         if sniper and pred["raw_prediction"] not in ("NO_DATA",):
             raw = pred["raw_prediction"]
