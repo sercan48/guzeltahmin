@@ -23,7 +23,7 @@ import json
 import logging
 import math
 import os
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
@@ -161,24 +161,29 @@ def _match_card(s: dict) -> str:
 # Grup mesajı (birden fazla maç)
 # ---------------------------------------------------------------------------
 
+_SEP = "─" * 24
+
+
 def _build_message(settlements: list[dict], date_str: str) -> str:
     """Tek tarihli maç grubunu Telegram mesajına dönüştür."""
     lines = [f"📋 <b>MAÇSONUÇLARI — {date_str}</b>\n"]
 
     ana_ok  = sum(1 for s in settlements if s.get("correct"))
     sec_results = []
-    for s in settlements:
+    for i, s in enumerate(settlements):
         lines.append(_match_card(s))
         sec_label, _ = _recompute_secondary(s)
         sec_ok = _secondary_correct(
             sec_label, s.get("actual_score", {}), s.get("actual_outcome", "")
         )
         sec_results.append(sec_ok)
+        if i < len(settlements) - 1:
+            lines.append(_SEP)
 
     sec_ok_count = sum(sec_results)
     n = len(settlements)
     lines.append(
-        f"\n📊 <b>Özet:</b> {ana_ok}/{n} ana ✅   ·   {sec_ok_count}/{n} ikincil ✅"
+        f"\n{_SEP}\n📊 <b>Özet:</b> {ana_ok}/{n} ana ✅   ·   {sec_ok_count}/{n} ikincil ✅"
     )
     return "\n".join(lines)
 
@@ -249,6 +254,24 @@ def run_notifier(deliver: bool = False, all_history: bool = False) -> None:
         logger.info("Bildirilecek yeni sonuç yok")
         return
 
+    # --deliver modunda sadece dün ve bugünün maçları gönderilir.
+    # Daha eski bekleyenler sessizce işaretlenir (backfill sonrası spam önlemi).
+    newly_notified: set[str] = set()
+    if deliver and not all_history:
+        yesterday = (datetime.now(timezone.utc).date() - timedelta(days=1)).isoformat()
+        old = [s for s in new_settlements if s.get("match_date", "") < yesterday]
+        new_settlements = [s for s in new_settlements if s.get("match_date", "") >= yesterday]
+        for s in old:
+            newly_notified.add(s["settlement_id"])
+        if old:
+            logger.info("%d eski sonuç sessizce işaretlendi (gönderilmedi)", len(old))
+
+    if not new_settlements:
+        logger.info("Bildirilecek yeni sonuç yok (tarih filtresi sonrası)")
+        if not all_history:
+            _save_notified(notified | newly_notified)
+        return
+
     logger.info("%d yeni sonuç bulundu", len(new_settlements))
 
     # Tarihe göre grupla ve gönder
@@ -262,8 +285,6 @@ def run_notifier(deliver: bool = False, all_history: bool = False) -> None:
         os.getenv("TELEGRAM_CHAT_ID", "").strip()
         or os.getenv("TELEGRAM_PERSONAL_CHANNEL", "").strip()
     )
-
-    newly_notified: set[str] = set()
 
     for date_str, group in sorted(by_date.items()):
         msg = _build_message(group, date_str)
