@@ -13,29 +13,47 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
         run: |
           python3 << 'PYEOF'
-          import os, requests, json
+          import os, requests, json, time
 
           token = os.environ["TELEGRAM_BOT_TOKEN"]
+          base  = f"https://api.telegram.org/bot{token}"
 
-          # Son güncellemeleri çek — bota mesaj atan herkesin chat ID'si gelir
-          r = requests.get(
-              f"https://api.telegram.org/bot{token}/getUpdates",
-              timeout=10,
-          )
+          # Mevcut webhook bilgisini kaydet
+          wh = requests.get(f"{base}/getWebhookInfo", timeout=10).json()
+          webhook_url = wh.get("result", {}).get("url", "")
+          print(f"=== Mevcut webhook: {webhook_url or '(yok)'} ===")
+
+          # Webhook varsa geçici olarak kaldır
+          if webhook_url:
+              requests.post(f"{base}/deleteWebhook", json={"drop_pending_updates": False}, timeout=10)
+              print("Webhook geçici olarak silindi.")
+              time.sleep(1)
+
+          # getUpdates ile chat ID'leri listele
+          r = requests.get(f"{base}/getUpdates", params={"limit": 100, "timeout": 5}, timeout=15)
           data = r.json()
           print("=== getUpdates sonucu ===")
           results = data.get("result", [])
           if not results:
-              print("Henüz mesaj yok. Bota 'merhaba' yaz ve tekrar çalıştır.")
+              print("Henüz mesaj yok. Bota '/start' veya 'merhaba' yaz ve tekrar çalıştır.")
           else:
               seen = set()
               for upd in results:
                   msg = upd.get("message") or upd.get("channel_post") or {}
                   chat = msg.get("chat", {})
-                  cid  = chat.get("id")
+                  cid   = chat.get("id")
                   ctype = chat.get("type", "?")
                   title = chat.get("title") or chat.get("username") or chat.get("first_name", "?")
                   if cid and cid not in seen:
                       seen.add(cid)
                       print(f"  chat_id={cid}  type={ctype}  name={title}")
+
+          # Webhook'u geri yükle
+          if webhook_url:
+              restore = requests.post(
+                  f"{base}/setWebhook",
+                  json={"url": webhook_url},
+                  timeout=10,
+              )
+              print(f"Webhook geri yüklendi: {restore.json().get('ok')}")
           PYEOF
