@@ -1,0 +1,43 @@
+name: Test TG Notify
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Test mesajı gönder
+        env:
+          TELEGRAM_BOT_TOKEN:        ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_PERSONAL_CHANNEL: ${{ secrets.TELEGRAM_PERSONAL_CHANNEL }}
+        run: |
+          python3 -c "
+import os, requests, datetime
+
+token   = os.environ['TELEGRAM_BOT_TOKEN']
+chat_id = os.environ['TELEGRAM_PERSONAL_CHANNEL']
+
+text = (
+    '🤖 <b>SYSTEM TEST</b>\n'
+    'GüzelTahmin kasa bildirimi çalışıyor ✅\n'
+    f'🕐 {datetime.datetime.utcnow().strftime(\"%Y-%m-%d %H:%M UTC\")}\n'
+    '\n'
+    '📋 Aktif modüller:\n'
+    '  ✅ admin_bankroll — kasa yönetimi\n'
+    '  ✅ admin_kelly    — Half-Kelly EV\n'
+    '  ✅ admin_coupon   — kupon analizi\n'
+    '  ✅ admin_arb      — arbitraj detektörü\n'
+    '  ✅ admin_report   — P\&L raporu'
+)
+
+r = requests.post(
+    f'https://api.telegram.org/bot{token}/sendMessage',
+    json={'chat_id': chat_id, 'text': text, 'parse_mode': 'HTML'},
+    timeout=10,
+)
+print('HTTP', r.status_code, r.json().get('ok'))
+assert r.status_code == 200 and r.json().get('ok'), 'Gönderilemedi!'
+print('✅ Test mesajı iletildi.')
+"
