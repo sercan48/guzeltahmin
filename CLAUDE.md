@@ -101,8 +101,9 @@ data/
   cache/club_elo/           # Club Elo ay bazlı önbellek
 
 .github/workflows/
-  daily-bulletin.yml        # 21:00 UTC — WC bülten (Telegram) + odds merge
-  daily-settle.yml          # 07:00 UTC — settler → backfiller → CLV → notifier → commit
+  daily-bulletin.yml        # settle'a zincirli (workflow_run) — WC bülten + odds merge
+  daily-settle.yml          # 07:00 UTC cron (GH gecikmesiyle ~10:00) — settler → backfiller → CLV → notifier → commit
+  daily-league.yml          # 10:00 UTC — lig bülteni (yaz arası boşta, Ağustos'ta aktif)
 
 docs/research/              # Makale & akademik kaynak havuzu (aşağıya bak)
 ```
@@ -162,7 +163,7 @@ python ops/league_backtest.py --all --season 2024
 | Servis | Env Var | Durum |
 |---|---|---|
 | The Odds API | `ODDS_API_KEY` | Aktif (WC bülteni için) |
-| API-Football | `API_FOOTBALL_KEY` | Yok (lig canlı fixture için gerekli) |
+| API-Football | `API_FOOTBALL_KEY` | ✅ GitHub secret'ta kayıtlı (lig canlı fixture + backfiller için; lokal ortamda yok) |
 | Telegram Bot | `TELEGRAM_BOT_TOKEN` | Aktif |
 | Telegram Chat | `TELEGRAM_CHAT_ID` | Aktif |
 
