@@ -1,0 +1,70 @@
+name: Admin — Bahis Ekle
+
+on:
+  workflow_dispatch:
+    inputs:
+      match:
+        description: "Maç adı (örn: ARG vs BRA)"
+        required: true
+      date:
+        description: "Tarih YYYY-MM-DD"
+        required: true
+      pick:
+        description: "Seçim: HOME_WIN | DRAW | AWAY_WIN"
+        required: true
+        default: "HOME_WIN"
+      odds:
+        description: "Decimal oran (örn: 1.85)"
+        required: true
+      stake:
+        description: "Yatırım TL"
+        required: true
+      prob:
+        description: "Model olasılığı 0-1 (isteğe bağlı, Kelly hesabı için)"
+        required: false
+        default: ""
+      tier:
+        description: "Tier: TIER_A | TIER_B | TIER_C"
+        required: false
+        default: ""
+      note:
+        description: "Not (isteğe bağlı)"
+        required: false
+        default: ""
+
+jobs:
+  add-bet:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: claude/cool-ramanujan-bbckt5
+
+      - name: Bahis ekle
+        env:
+          SUPABASE_URL:              ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          TELEGRAM_BOT_TOKEN:        ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_ADMIN_CHAT_ID:    ${{ secrets.TELEGRAM_ADMIN_CHAT_ID }}
+        run: |
+          pip install requests -q
+          PROB_ARG=""
+          if [ -n "${{ github.event.inputs.prob }}" ]; then
+            PROB_ARG="--prob ${{ github.event.inputs.prob }}"
+          fi
+          TIER_ARG=""
+          if [ -n "${{ github.event.inputs.tier }}" ]; then
+            TIER_ARG="--tier ${{ github.event.inputs.tier }}"
+          fi
+          NOTE_ARG=""
+          if [ -n "${{ github.event.inputs.note }}" ]; then
+            NOTE_ARG="--note '${{ github.event.inputs.note }}'"
+          fi
+          python -m ops.admin_bankroll --add-bet \
+            --match "${{ github.event.inputs.match }}" \
+            --date "${{ github.event.inputs.date }}" \
+            --pick "${{ github.event.inputs.pick }}" \
+            --odds "${{ github.event.inputs.odds }}" \
+            --stake "${{ github.event.inputs.stake }}" \
+            $PROB_ARG $TIER_ARG $NOTE_ARG

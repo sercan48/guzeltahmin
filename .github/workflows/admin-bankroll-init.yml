@@ -1,0 +1,28 @@
+name: Admin — Kasa Başlat
+
+on:
+  workflow_dispatch:
+    inputs:
+      amount:
+        description: "Başlangıç tutarı (TL)"
+        required: true
+        default: "100"
+
+jobs:
+  init:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: claude/cool-ramanujan-bbckt5
+
+      - name: Kasa başlat
+        env:
+          SUPABASE_URL:              ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          TELEGRAM_BOT_TOKEN:        ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_ADMIN_CHAT_ID:    ${{ secrets.TELEGRAM_ADMIN_CHAT_ID }}
+        run: |
+          pip install requests -q
+          python -m ops.admin_bankroll --init ${{ github.event.inputs.amount }}
