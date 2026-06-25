@@ -173,6 +173,9 @@ def _tg_init(state: dict) -> None:
     )
 
 
+_MIN_LEGAL_STAKE_TL = 50.0  # 7258 sayılı Kanun — yasal minimum kupon bedeli
+
+
 def _tg_add_bet(bet: dict, state: dict) -> None:
     pick_tr  = _PICK_TR.get(bet["pick"], bet["pick"])
     tier     = bet.get("tier", "")
@@ -182,7 +185,20 @@ def _tg_add_bet(bet: dict, state: dict) -> None:
     verdict  = bet.get("verdict", "")
     v_em     = "✅" if verdict == "BET" else "⚠️" if verdict == "MARGINAL" else "❌"
 
-    _tg(
+    # Yasal uyarı satırı
+    legal_lines = []
+    if float(bet["stake"]) < _MIN_LEGAL_STAKE_TL:
+        legal_lines.append(
+            f"⛔ <b>YASAL UYARI</b>: Stake {float(bet['stake']):.2f} TL &lt; "
+            f"{_MIN_LEGAL_STAKE_TL:.0f} TL min. kupon bedeli (7258 sk.)"
+        )
+    if bet.get("stake_rec") and float(bet["stake_rec"]) < _MIN_LEGAL_STAKE_TL:
+        min_bankroll = round(_MIN_LEGAL_STAKE_TL / bet["stake_pct"]) if bet.get("stake_pct") else "?"
+        legal_lines.append(
+            f"⛔ HK tavsiyesi de &lt;50 TL — kasa en az {min_bankroll} TL olmalı"
+        )
+
+    body = (
         f"🎯 <b>YENİ BAHİS</b> {tier_em} {tier}\n"
         f"📅 {bet['match_date']}  ·  {bet['match']}\n"
         f"Seçim: <b>{pick_tr}</b>  @{bet['odds']}\n"
@@ -190,6 +206,9 @@ def _tg_add_bet(bet: dict, state: dict) -> None:
         f"Edge: {edge_s}  ·  HK tavsiye: {rec_s}  {v_em}\n"
         f"Kasa: {state['current']:.2f} TL  [{bet['bet_id']}]"
     )
+    if legal_lines:
+        body += "\n" + "\n".join(legal_lines)
+    _tg(body)
 
 
 def _tg_settle(bet: dict, pnl: float, state: dict) -> None:
@@ -307,12 +326,13 @@ def add_bet(
     state  = _load_state()
     bet_id = _bet_id(match, date, pick)
 
-    edge = stake_rec = verdict = None
+    edge = stake_rec = verdict = kelly_stake_pct = None
     if prob is not None:
-        kr        = calc_kelly(prob, odds, state["current"], state["unit_size"])
-        edge      = kr.edge
-        stake_rec = kr.stake_tl
-        verdict   = kr.verdict
+        kr             = calc_kelly(prob, odds, state["current"], state["unit_size"])
+        edge           = kr.edge
+        stake_rec      = kr.stake_tl
+        verdict        = kr.verdict
+        kelly_stake_pct = kr.stake_pct  # half_kelly fraction (for min-bankroll warning)
 
     now = datetime.now(timezone.utc).isoformat()
     bet = {
@@ -333,6 +353,7 @@ def add_bet(
         "edge":       edge,
         "stake_rec":  stake_rec,
         "verdict":    verdict,
+        "stake_pct":  kelly_stake_pct,
     }
 
     # kasa güncellemesi — stake reserve değil, sadece float tracking

@@ -32,6 +32,8 @@ KELLY_MULTIPLIER = 0.5
 # Favourite-Longshot Bias eşiği
 FLB_THRESHOLD = 4.0
 FLB_DISCOUNT = 0.03   # uzun oranda model_prob'dan %3 indirim (sadece uyarı)
+# Türkiye yasal minimum kupon bedeli (İddaa/Misli/Bilyoner/Oley — 7258 sk.)
+MIN_LEGAL_STAKE_TL = 50.0
 
 
 @dataclass
@@ -48,6 +50,7 @@ class KellyResult:
     risk_of_ruin:  float | None
     verdict:       str          # "BET" | "NO_BET" | "MARGINAL"
     flb_warning:   bool
+    legal_warning: bool         # True when stake_tl < MIN_LEGAL_STAKE_TL (Türkiye yasal min.)
 
     def summary(self) -> str:
         lines = [
@@ -62,6 +65,10 @@ class KellyResult:
             lines.append(f"  Risk of Ruin  : {self.risk_of_ruin*100:.4f}%")
         if self.flb_warning:
             lines.append(f"  ⚠ FLB uyarısı : Oran >{FLB_THRESHOLD:.0f} — uzun ihtimal, overbet riski")
+        if self.legal_warning:
+            min_bankroll = round(MIN_LEGAL_STAKE_TL / self.stake_pct) if self.stake_pct > 0 else 0
+            lines.append(f"  ⛔ YASAL UYARI : Stake {self.stake_tl:.2f} TL < {MIN_LEGAL_STAKE_TL:.0f} TL min. kupon bedeli (7258 sk.)")
+            lines.append(f"  ⛔              50 TL stake için kasa ≥ {min_bankroll:,.0f} TL gerekli")
         lines.append(f"  Karar         : {'✅ BET' if self.verdict == 'BET' else '⚠ MARJINAL' if self.verdict == 'MARGINAL' else '❌ NO BET'}")
         return "\n".join(lines)
 
@@ -117,6 +124,8 @@ def calc_kelly(
     else:
         verdict = "NO_BET"
 
+    legal_warning = 0 < stake_tl < MIN_LEGAL_STAKE_TL
+
     return KellyResult(
         model_prob=model_prob,
         decimal_odds=decimal_odds,
@@ -130,6 +139,7 @@ def calc_kelly(
         risk_of_ruin=round(ror, 8) if ror is not None else None,
         verdict=verdict,
         flb_warning=flb_warning,
+        legal_warning=legal_warning,
     )
 
 
