@@ -10,6 +10,7 @@ data/processed/
 data/transfermarkt/
 data/fixture_cache/
 data/cb_state.json
+data/admin/
 *.db
 *.csv
 !data/backtest/*.csv
