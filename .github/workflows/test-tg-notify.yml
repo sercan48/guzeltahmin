@@ -13,31 +13,37 @@ jobs:
           TELEGRAM_BOT_TOKEN:        ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_PERSONAL_CHANNEL: ${{ secrets.TELEGRAM_PERSONAL_CHANNEL }}
         run: |
-          python3 -c "
-import os, requests, datetime
+          python3 << 'PYEOF'
+          import os, requests
+          from datetime import datetime, timezone
 
-token   = os.environ['TELEGRAM_BOT_TOKEN']
-chat_id = os.environ['TELEGRAM_PERSONAL_CHANNEL']
+          token   = os.environ["TELEGRAM_BOT_TOKEN"]
+          chat_id = os.environ["TELEGRAM_PERSONAL_CHANNEL"]
+          ts      = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
 
-text = (
-    '🤖 <b>SYSTEM TEST</b>\n'
-    'GüzelTahmin kasa bildirimi çalışıyor ✅\n'
-    f'🕐 {datetime.datetime.utcnow().strftime(\"%Y-%m-%d %H:%M UTC\")}\n'
-    '\n'
-    '📋 Aktif modüller:\n'
-    '  ✅ admin_bankroll — kasa yönetimi\n'
-    '  ✅ admin_kelly    — Half-Kelly EV\n'
-    '  ✅ admin_coupon   — kupon analizi\n'
-    '  ✅ admin_arb      — arbitraj detektörü\n'
-    '  ✅ admin_report   — P\&L raporu'
-)
+          lines = [
+              "System TEST",
+              "GüzelTahmin kasa bildirimi aktif",
+              ts,
+              "",
+              "Aktif modüller:",
+              "  admin_bankroll - kasa yönetimi",
+              "  admin_kelly    - Half-Kelly EV",
+              "  admin_coupon   - kupon analizi",
+              "  admin_arb      - arbitraj detektörü",
+              "  admin_report   - P&L raporu",
+          ]
+          text = "\n".join(lines)
 
-r = requests.post(
-    f'https://api.telegram.org/bot{token}/sendMessage',
-    json={'chat_id': chat_id, 'text': text, 'parse_mode': 'HTML'},
-    timeout=10,
-)
-print('HTTP', r.status_code, r.json().get('ok'))
-assert r.status_code == 200 and r.json().get('ok'), 'Gönderilemedi!'
-print('✅ Test mesajı iletildi.')
-"
+          r = requests.post(
+              f"https://api.telegram.org/bot{token}/sendMessage",
+              json={"chat_id": chat_id, "text": text},
+              timeout=10,
+          )
+          data = r.json()
+          print("HTTP", r.status_code, data.get("ok"))
+          if not (r.status_code == 200 and data.get("ok")):
+              print("HATA:", data)
+              raise SystemExit(1)
+          print("Test mesaji iletildi.")
+          PYEOF
