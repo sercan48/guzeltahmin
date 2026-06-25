@@ -59,8 +59,8 @@ _TIER_EM = {"TIER_A": "🔴", "TIER_B": "🟡", "TIER_C": "⚪"}
 # ---------------------------------------------------------------------------
 
 def _sb() -> tuple[str, dict]:
-    url = os.environ["SUPABASE_URL"].rstrip("/")
-    key = os.environ["SUPABASE_SERVICE_ROLE_KEY"]
+    url = os.environ["SUPABASE_URL"].strip().rstrip("/")
+    key = os.environ["SUPABASE_SERVICE_ROLE_KEY"].strip()
     hdrs = {
         "apikey":        key,
         "Authorization": f"Bearer {key}",
