@@ -2,6 +2,7 @@
 ops/admin_bankroll.py — Admin Kasa Yöneticisi (admin only)
 
 Kasa durumunu yönetir, bahis loglar, settlement işler.
+Her kritik işlemde TELEGRAM_PERSONAL_CHANNEL'a bildirim gönderir.
 
 Veri:
   data/admin/bankroll_state.json  — anlık kasa
@@ -10,6 +11,7 @@ Veri:
 Kullanım:
   python -m ops.admin_bankroll --init 10000              # kasayı kur
   python -m ops.admin_bankroll --status                  # anlık durum
+  python -m ops.admin_bankroll --status --tg             # durum → Telegram
   python -m ops.admin_bankroll --set-unit-pct 1.5        # birim %1.5
   python -m ops.admin_bankroll --deposit 2000            # para ekle
   python -m ops.admin_bankroll --withdraw 500            # para çek
@@ -28,17 +30,130 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-import uuid
+import logging
+import os
 from datetime import datetime, timezone
 from pathlib import Path
 
 from ops.admin_kelly import calc_kelly
+
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except Exception:
+    pass
+
+logger = logging.getLogger(__name__)
 
 _ADMIN_DIR   = Path("data/admin")
 _STATE_F     = _ADMIN_DIR / "bankroll_state.json"
 _BETS_F      = _ADMIN_DIR / "bets.jsonl"
 
 _DEFAULT_UNIT_PCT = 1.0   # bankroll'un %1'i
+
+_PICK_TR = {
+    "HOME_WIN": "Ev Sahibi",
+    "DRAW":     "Beraberlik",
+    "AWAY_WIN": "Deplasman",
+}
+_TIER_EM = {"TIER_A": "🔴", "TIER_B": "🟡", "TIER_C": "⚪"}
+
+
+# ---------------------------------------------------------------------------
+# Telegram bildirimi
+# ---------------------------------------------------------------------------
+
+def _tg(text: str) -> None:
+    """TELEGRAM_PERSONAL_CHANNEL'a mesaj gönderir. Hata olursa sessizce geçer."""
+    token   = os.getenv("TELEGRAM_BOT_TOKEN", "").strip()
+    chat_id = os.getenv("TELEGRAM_PERSONAL_CHANNEL", "").strip()
+    if not token or not chat_id:
+        return
+    try:
+        import requests
+        requests.post(
+            f"https://api.telegram.org/bot{token}/sendMessage",
+            json={"chat_id": chat_id, "text": text, "parse_mode": "HTML"},
+            timeout=10,
+        )
+    except Exception as exc:
+        logger.debug("TG bildirimi gönderilemedi: %s", exc)
+
+
+def _tg_add_bet(bet: dict, state: dict) -> None:
+    pick_tr = _PICK_TR.get(bet["pick"], bet["pick"])
+    tier    = bet.get("tier", "")
+    tier_em = _TIER_EM.get(tier, "⚪")
+    k       = bet.get("kelly") or {}
+    edge    = f"{k['edge']*100:+.2f}%" if k.get("edge") is not None else "—"
+    rec     = f"{k['stake_tl_recommended']:.2f} TL" if k.get("stake_tl_recommended") else "—"
+    verdict = k.get("verdict", "")
+    verdict_em = "✅" if verdict == "BET" else "⚠️" if verdict == "MARGINAL" else "❌"
+
+    text = (
+        f"🎯 <b>YENİ BAHİS</b> {tier_em} {tier}\n"
+        f"📅 {bet['date']}  ·  {bet['match']}\n"
+        f"Seçim: <b>{pick_tr}</b>  @{bet['odds']}\n"
+        f"Stake: <b>{bet['stake']:.2f} TL</b>\n"
+        f"Edge: {edge}  ·  HK tavsiye: {rec}  {verdict_em}\n"
+        f"Kasa: {state['current']:.2f} TL  [{bet['bet_id']}]"
+    )
+    _tg(text)
+
+
+def _tg_settle(bet: dict, state: dict) -> None:
+    em      = "✅" if bet["status"] == "WON" else "❌"
+    pick_tr = _PICK_TR.get(bet["pick"], bet["pick"])
+    res_tr  = _PICK_TR.get(bet["result"], bet["result"])
+    pnl     = bet["pnl"] or 0
+    pnl_em  = "📈" if pnl > 0 else "📉"
+    roi_tot = (state.get("total_pnl", 0) / state["initial"] * 100
+               if state.get("initial") else 0)
+
+    text = (
+        f"{em} <b>SONUÇ</b> — {bet['match']}\n"
+        f"Seçim: {pick_tr}  →  Sonuç: <b>{res_tr}</b>\n"
+        f"{pnl_em} P&L: <b>{pnl:+.2f} TL</b>  (@{bet['odds']})\n"
+        f"Kasa: {state['current']:.2f} TL  ·  ROI: {roi_tot:+.2f}%"
+    )
+    _tg(text)
+
+
+def _tg_status(state: dict, bets: list[dict]) -> None:
+    cur    = state["current"]
+    ini    = state["initial"]
+    pnl    = state.get("total_pnl", 0)
+    roi    = pnl / ini * 100 if ini > 0 else 0.0
+    n_open = state.get("n_open", 0)
+    n_bets = state.get("n_bets", 0)
+    open_b = [b for b in bets if b["status"] == "OPEN"]
+    open_stake = sum(b["stake"] for b in open_b)
+    pnl_em = "📈" if pnl >= 0 else "📉"
+
+    lines = [
+        f"💼 <b>KASA DURUMU</b>",
+        f"Güncel: <b>{cur:.2f} TL</b>  ·  Başlangıç: {ini:.2f} TL",
+        f"{pnl_em} Net P&L: <b>{pnl:+.2f} TL</b>  ({roi:+.2f}%)",
+        f"Birim: {state['unit_size']:.2f} TL  (%{state['unit_pct']})",
+        f"Max DD: {state.get('max_drawdown', 0):.2f}%",
+        f"Toplam bahis: {n_bets}  ·  Açık: {n_open} ({open_stake:.2f} TL kilitli)",
+    ]
+    if open_b:
+        lines.append("─" * 22)
+        for b in open_b:
+            pick_tr = _PICK_TR.get(b["pick"], b["pick"])
+            lines.append(f"  ⏳ {b['match']} | {pick_tr} @{b['odds']} | {b['stake']:.2f} TL")
+
+    _tg("\n".join(lines))
+
+
+def _tg_deposit_withdraw(action: str, amount: float, state: dict) -> None:
+    em = "💰" if action == "deposit" else "💸"
+    label = "YATIRIM" if action == "deposit" else "ÇEKİM"
+    _tg(
+        f"{em} <b>{label}</b>: {amount:+.2f} TL\n"
+        f"Güncel kasa: <b>{state['current']:.2f} TL</b>"
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -120,17 +235,19 @@ def _update_drawdown(state: dict) -> None:
         state["max_drawdown"] = max(state.get("max_drawdown", 0.0), round(dd, 2))
 
 
-def deposit(amount: float) -> dict:
+def deposit(amount: float, notify: bool = True) -> dict:
     state = _load_state()
     state["current"] += round(amount, 2)
     state["initial"] += round(amount, 2)   # net yatırım bazı
     state["unit_size"] = round(state["current"] * state["unit_pct"] / 100, 2)
     state["updated_at"] = datetime.now(timezone.utc).isoformat()
     _save_state(state)
+    if notify:
+        _tg_deposit_withdraw("deposit", amount, state)
     return state
 
 
-def withdraw(amount: float) -> dict:
+def withdraw(amount: float, notify: bool = True) -> dict:
     state = _load_state()
     if amount > state["current"]:
         raise ValueError(f"Yetersiz bakiye: {state['current']:.2f} TL")
@@ -139,6 +256,8 @@ def withdraw(amount: float) -> dict:
     _update_drawdown(state)
     state["updated_at"] = datetime.now(timezone.utc).isoformat()
     _save_state(state)
+    if notify:
+        _tg_deposit_withdraw("withdraw", amount, state)
     return state
 
 
@@ -211,6 +330,7 @@ def add_bet(
 
     _append_bet(bet)
     _save_state(state)
+    _tg_add_bet(bet, state)
     return bet
 
 
@@ -251,6 +371,7 @@ def settle_bet(bet_id: str, result: str) -> dict:
 
     _rewrite_bets(bets)
     _save_state(state)
+    _tg_settle(target, state)
     return target
 
 
@@ -300,6 +421,7 @@ def main() -> int:
     ap = argparse.ArgumentParser(description="Admin kasa yöneticisi")
     ap.add_argument("--init",         type=float, metavar="TL",   help="Kasayı başlat")
     ap.add_argument("--status",       action="store_true",          help="Kasa durumu")
+    ap.add_argument("--tg",           action="store_true",          help="Sonucu Telegram'a da gönder")
     ap.add_argument("--deposit",      type=float, metavar="TL",   help="Para ekle")
     ap.add_argument("--withdraw",     type=float, metavar="TL",   help="Para çek")
     ap.add_argument("--set-unit-pct", type=float, metavar="PCT",  help="Birim % ayarla")
@@ -325,6 +447,11 @@ def main() -> int:
 
     elif args.status:
         print_status()
+        if args.tg:
+            state = _load_state()
+            bets  = _load_bets()
+            _tg_status(state, bets)
+            print("📲 Durum Telegram'a gönderildi.")
 
     elif args.deposit is not None:
         s = deposit(args.deposit)
