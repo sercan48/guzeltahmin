@@ -8,6 +8,7 @@ data/raw/
 data/fifa/
 data/processed/
 data/transfermarkt/
+data/admin/
 *.db
 *.csv
 !data/backtest/*.csv
