@@ -8,52 +8,35 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 2
     steps:
-      - name: Kisisel chat ID bul ve mesaj at
+      - name: Admin kasa bildirim testi — kisisel sohbet
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_ADMIN_CHAT_ID: ${{ secrets.TELEGRAM_ADMIN_CHAT_ID }}
         run: |
           python3 << 'PYEOF'
-          import os, requests, json, time
+          import os, requests
 
-          token = os.environ["TELEGRAM_BOT_TOKEN"]
-          base  = f"https://api.telegram.org/bot{token}"
+          token   = os.environ["TELEGRAM_BOT_TOKEN"]
+          chat_id = os.environ.get("TELEGRAM_ADMIN_CHAT_ID", "").strip()
 
-          # Mevcut webhook bilgisini kaydet
-          wh = requests.get(f"{base}/getWebhookInfo", timeout=10).json()
-          webhook_url = wh.get("result", {}).get("url", "")
-          print(f"=== Mevcut webhook: {webhook_url or '(yok)'} ===")
+          if not chat_id:
+              print("HATA: TELEGRAM_ADMIN_CHAT_ID secret ayarlanmamis!")
+              exit(1)
 
-          # Webhook varsa geçici olarak kaldır
-          if webhook_url:
-              requests.post(f"{base}/deleteWebhook", json={"drop_pending_updates": False}, timeout=10)
-              print("Webhook geçici olarak silindi.")
-              time.sleep(1)
-
-          # getUpdates ile chat ID'leri listele
-          r = requests.get(f"{base}/getUpdates", params={"limit": 100, "timeout": 5}, timeout=15)
-          data = r.json()
-          print("=== getUpdates sonucu ===")
-          results = data.get("result", [])
-          if not results:
-              print("Henüz mesaj yok. Bota '/start' veya 'merhaba' yaz ve tekrar çalıştır.")
+          text = (
+              "✅ <b>Admin Kasa Bildirimi — Test</b>\n\n"
+              "Bu mesaj kişisel sohbetinize başarıyla ulaştı.\n"
+              "Kasa yönetim sistemi hazır."
+          )
+          r = requests.post(
+              f"https://api.telegram.org/bot{token}/sendMessage",
+              json={"chat_id": chat_id, "text": text, "parse_mode": "HTML"},
+              timeout=10,
+          )
+          resp = r.json()
+          if resp.get("ok"):
+              print(f"Mesaj gönderildi — message_id={resp['result']['message_id']}")
           else:
-              seen = set()
-              for upd in results:
-                  msg = upd.get("message") or upd.get("channel_post") or {}
-                  chat = msg.get("chat", {})
-                  cid   = chat.get("id")
-                  ctype = chat.get("type", "?")
-                  title = chat.get("title") or chat.get("username") or chat.get("first_name", "?")
-                  if cid and cid not in seen:
-                      seen.add(cid)
-                      print(f"  chat_id={cid}  type={ctype}  name={title}")
-
-          # Webhook'u geri yükle
-          if webhook_url:
-              restore = requests.post(
-                  f"{base}/setWebhook",
-                  json={"url": webhook_url},
-                  timeout=10,
-              )
-              print(f"Webhook geri yüklendi: {restore.json().get('ok')}")
+              print(f"HATA: {resp}")
+              exit(1)
           PYEOF

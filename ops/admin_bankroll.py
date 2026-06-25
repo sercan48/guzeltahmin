@@ -2,7 +2,7 @@
 ops/admin_bankroll.py — Admin Kasa Yöneticisi (admin only)
 
 Kasa durumunu yönetir, bahis loglar, settlement işler.
-Her kritik işlemde TELEGRAM_PERSONAL_CHANNEL'a bildirim gönderir.
+Her kritik işlemde TELEGRAM_ADMIN_CHAT_ID'ye (kişisel sohbet) bildirim gönderir.
 
 Veri:
   data/admin/bankroll_state.json  — anlık kasa
@@ -64,9 +64,9 @@ _TIER_EM = {"TIER_A": "🔴", "TIER_B": "🟡", "TIER_C": "⚪"}
 # ---------------------------------------------------------------------------
 
 def _tg(text: str) -> None:
-    """TELEGRAM_PERSONAL_CHANNEL'a mesaj gönderir. Hata olursa sessizce geçer."""
+    """TELEGRAM_ADMIN_CHAT_ID'ye (kişisel sohbet) mesaj gönderir. Hata olursa sessizce geçer."""
     token   = os.getenv("TELEGRAM_BOT_TOKEN", "").strip()
-    chat_id = os.getenv("TELEGRAM_PERSONAL_CHANNEL", "").strip()
+    chat_id = os.getenv("TELEGRAM_ADMIN_CHAT_ID", "").strip()
     if not token or not chat_id:
         return
     try:
