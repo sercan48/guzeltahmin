@@ -1,0 +1,23 @@
+name: Admin — Kasa Durumu
+
+on:
+  workflow_dispatch:
+
+jobs:
+  status:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: claude/cool-ramanujan-bbckt5
+
+      - name: Kasa durumunu TG'ye gönder
+        env:
+          SUPABASE_URL:              ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          TELEGRAM_BOT_TOKEN:        ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_ADMIN_CHAT_ID:    ${{ secrets.TELEGRAM_ADMIN_CHAT_ID }}
+        run: |
+          pip install requests -q
+          python -m ops.admin_bankroll --status --tg

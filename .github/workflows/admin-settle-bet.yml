@@ -1,0 +1,33 @@
+name: Admin — Bahis Settle
+
+on:
+  workflow_dispatch:
+    inputs:
+      bet_id:
+        description: "Bahis ID (örn: B1A2B3C4D5)"
+        required: true
+      result:
+        description: "Maç sonucu: HOME_WIN | DRAW | AWAY_WIN"
+        required: true
+        default: "HOME_WIN"
+
+jobs:
+  settle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: claude/cool-ramanujan-bbckt5
+
+      - name: Bahis settle et
+        env:
+          SUPABASE_URL:              ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          TELEGRAM_BOT_TOKEN:        ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_ADMIN_CHAT_ID:    ${{ secrets.TELEGRAM_ADMIN_CHAT_ID }}
+        run: |
+          pip install requests -q
+          python -m ops.admin_bankroll \
+            --settle "${{ github.event.inputs.bet_id }}" \
+            --result "${{ github.event.inputs.result }}"
