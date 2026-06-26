@@ -1185,23 +1185,69 @@ def build_bulletin(
 # Telegram delivery
 # ---------------------------------------------------------------------------
 
+# Telegram, mesaj başına 4096 karakter sınırı uygular. Yoğun maç günlerinde
+# (grup aşaması 6-8 maç) bülten bu sınırı aşıp 'message is too long' hatasıyla
+# komple düşüyordu → o günün tüm tahminleri kaybediliyordu. Bültenleri satır
+# sınırlarında parçalara böleriz: HTML etiketleri satır içinde dengeli olduğu
+# için bölme etiketleri bozmaz. Güvenli marj için 4096 yerine 3900 kullanılır.
+_TELEGRAM_LIMIT = 3900
+
+
+def _split_for_telegram(text: str, limit: int = _TELEGRAM_LIMIT) -> list[str]:
+    """Split text into Telegram-safe chunks on newline boundaries.
+
+    Her satır kendi içinde dengeli HTML etiketleri taşıdığından satır
+    sınırında bölmek parse_mode=HTML'i bozmaz. Tek bir satır sınırı aşarsa
+    (nadir) sert bölme uygulanır.
+    """
+    if len(text) <= limit:
+        return [text]
+    chunks: list[str] = []
+    cur = ""
+    for line in text.split("\n"):
+        if len(line) > limit:
+            if cur:
+                chunks.append(cur)
+                cur = ""
+            for i in range(0, len(line), limit):
+                chunks.append(line[i:i + limit])
+            continue
+        candidate = line if not cur else cur + "\n" + line
+        if len(candidate) > limit:
+            chunks.append(cur)
+            cur = line
+        else:
+            cur = candidate
+    if cur:
+        chunks.append(cur)
+    return chunks
+
+
 def send_telegram(token: str, chat_id: str, text: str) -> dict:
+    import time
+
     import requests
 
-    resp = requests.post(
-        f"https://api.telegram.org/bot{token}/sendMessage",
-        json={
-            "chat_id":                chat_id,
-            "text":                   text,
-            "parse_mode":             "HTML",
-            "disable_web_page_preview": True,
-        },
-        timeout=30,
-    )
-    data = resp.json()
-    if not data.get("ok"):
-        raise RuntimeError(f"Telegram API error: {data}")
-    return data
+    chunks = _split_for_telegram(text)
+    last: dict = {}
+    for idx, chunk in enumerate(chunks):
+        resp = requests.post(
+            f"https://api.telegram.org/bot{token}/sendMessage",
+            json={
+                "chat_id":                chat_id,
+                "text":                   chunk,
+                "parse_mode":             "HTML",
+                "disable_web_page_preview": True,
+            },
+            timeout=30,
+        )
+        data = resp.json()
+        if not data.get("ok"):
+            raise RuntimeError(f"Telegram API error: {data}")
+        last = data
+        if idx < len(chunks) - 1:
+            time.sleep(0.5)  # sıra korunsun + rate-limit'e takılmasın
+    return last
 
 
 # ---------------------------------------------------------------------------
