@@ -1,0 +1,35 @@
+name: Polymarket Snapshot (Observer)
+
+on:
+  workflow_dispatch:
+    inputs:
+      date:
+        description: "Date YYYY-MM-DD (leave empty for today UTC)"
+        required: false
+        default: ""
+      mode:
+        description: "Mode: pre_match | closing | settle | report"
+        required: true
+        default: "pre_match"
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: claude/cool-ramanujan-bbckt5
+
+      - name: Install dependencies
+        run: pip install requests rapidfuzz python-dotenv -q
+
+      - name: Run Polymarket Observer
+        run: |
+          DATE_ARG=""
+          if [ -n "${{ github.event.inputs.date }}" ]; then
+            DATE_ARG="--date ${{ github.event.inputs.date }}"
+          fi
+          python -m ops.polymarket_snapshot \
+            --mode "${{ github.event.inputs.mode }}" \
+            $DATE_ARG
