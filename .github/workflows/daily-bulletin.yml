@@ -21,6 +21,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: claude/cool-ramanujan-bbckt5
 
       - name: Python kurulum
         uses: actions/setup-python@v5
