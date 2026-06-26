@@ -79,36 +79,76 @@ def compute_clv_records() -> list[dict]:
     settlements = _load_jsonl(SETTLEMENTS_F)
     predictions = _load_jsonl(PREDICTIONS_F)
 
-    # Build prediction lookup: match_key → prediction entry
-    pred_map: dict[str, dict] = {}
+    # Build prediction lookup — natural_key önce, sonra takım adı
+    pred_by_nk:  dict[str, dict] = {}
+    pred_by_key: dict[str, dict] = {}
     for p in predictions:
-        key = _match_key(p.get("home", ""), p.get("away", ""))
-        pred_map[key] = p  # son yazılan kazanır (aynı maçın tekrar tahmini)
+        nk = p.get("natural_key")
+        if nk:
+            pred_by_nk[nk] = p
+        home = p.get("home_team") or p.get("home", "")
+        away = p.get("away_team") or p.get("away", "")
+        if home and away:
+            pred_by_key[_match_key(home, away)] = p
 
     records = []
     for s in settlements:
-        home   = s.get("home", "")
-        away   = s.get("away", "")
-        actual = s.get("actual", "")
+        home   = s.get("home_team", "")
+        away   = s.get("away_team", "")
+        actual = s.get("actual_outcome", "")
         if not actual or not home:
             continue
 
-        key  = _match_key(home, away)
-        pred = pred_map.get(key)
+        # Prediction kaydını bul
+        nk   = s.get("natural_key")
+        pred = pred_by_nk.get(nk) if nk else None
+        if not pred:
+            pred = pred_by_key.get(_match_key(home, away))
         if not pred:
             continue
 
-        raw       = pred.get("prediction", "")
-        mkt_key   = {"HOME_WIN": "market_odds_h", "DRAW": "market_odds_d", "AWAY_WIN": "market_odds_a"}.get(raw)
-        prob_key  = {"HOME_WIN": "predicted_prob_home", "DRAW": "predicted_prob_draw", "AWAY_WIN": "predicted_prob_away"}.get(raw)
-        mkt_odds  = pred.get(mkt_key) if mkt_key else None
-        pred_prob = pred.get(prob_key) if prob_key else None
+        # Ana tahmin
+        raw = pred.get("predicted_outcome") or pred.get("prediction", "")
+        if not raw:
+            continue
 
-        clv_val = _clv(pred_prob, mkt_odds) if pred_prob is not None else None
+        # Olasılık — önce probabilities dict, sonra bireysel alanlar
+        probs = pred.get("probabilities", {})
+        prob_letter = {"HOME_WIN": "H", "DRAW": "D", "AWAY_WIN": "A"}.get(raw)
+        if probs and prob_letter:
+            pred_prob_pct = probs.get(prob_letter)
+        else:
+            prob_field = {
+                "HOME_WIN": "predicted_prob_home",
+                "DRAW":     "predicted_prob_draw",
+                "AWAY_WIN": "predicted_prob_away",
+            }.get(raw)
+            raw_val = pred.get(prob_field) if prob_field else None
+            # Fraction (0-1) veya pct (0-100) olabilir
+            if raw_val is not None:
+                pred_prob_pct = raw_val * 100 if raw_val <= 1.0 else raw_val
+            else:
+                pred_prob_pct = None
+
+        pred_prob_frac = pred_prob_pct / 100.0 if pred_prob_pct is not None else None
+
+        # Piyasa oranları — bulletin tarafından prediction kaydına eklenir
+        mkt_field = {"HOME_WIN": "market_odds_h", "DRAW": "market_odds_d", "AWAY_WIN": "market_odds_a"}.get(raw)
+        mkt_odds  = pred.get(mkt_field) if mkt_field else None
+
+        clv_val = _clv(pred_prob_frac, mkt_odds) if pred_prob_frac is not None else None
         correct = (raw == actual)
 
+        # is_sniper: explicit field, yoksa signal proxy
+        is_sniper = pred.get("is_sniper")
+        if is_sniper is None:
+            is_sniper = (
+                pred.get("signal") == "HIGH_EDGE"
+                and pred.get("tier") in ("TIER_A", "TIER_B")
+            )
+
         records.append({
-            "date":           s.get("date"),
+            "date":           s.get("match_date"),
             "home":           home,
             "away":           away,
             "prediction":     raw,
@@ -116,8 +156,8 @@ def compute_clv_records() -> list[dict]:
             "correct":        correct,
             "confidence":     pred.get("confidence"),
             "tier":           pred.get("tier"),
-            "is_sniper":      pred.get("is_sniper", False),
-            "predicted_prob": pred_prob,
+            "is_sniper":      bool(is_sniper),
+            "predicted_prob": pred_prob_frac,
             "market_odds":    mkt_odds,
             "market_implied": round(1.0 / mkt_odds, 4) if mkt_odds else None,
             "clv":            clv_val,
@@ -130,7 +170,7 @@ def compute_clv_records() -> list[dict]:
 def build_summary(records: list[dict]) -> dict:
     n = len(records)
     if not n:
-        return {"n": 0, "note": "Henüz CLV kaydı yok"}
+        return {"n": 0, "note": "Henüz CLV kaydı yok — settlement/prediction eşleşmesi bulunamadı"}
 
     with_clv    = [r for r in records if r["clv"] is not None]
     positive    = [r for r in with_clv if r["clv_positive"]]
@@ -152,11 +192,12 @@ def build_summary(records: list[dict]) -> dict:
         "sniper_accuracy":   round(len(sniper_ok) / len(snipers) * 100, 1) if snipers else None,
         "interpretation": (
             "CLV pozitif ortalama → model piyasadan önde" if avg_clv and avg_clv > 0
-            else "CLV negatif → model piyasaya göre geri"
+            else "CLV negatif → model piyasaya göre geri" if avg_clv is not None and avg_clv <= 0
+            else "CLV hesaplanamadı — piyasa oranı eksik"
         ),
         "stat_note": (
-            f"n={n} istatistiksel anlam taşımıyor (n≥500 gerekli kâr/zarar için). "
-            f"CLV n={len(with_clv)} pick ile ön sinyal verir."
+            f"n={n} kayıt ({len(with_clv)} oran mevcut). "
+            f"İstatistiksel anlam için n≥500 gerekli."
         ),
     }
 
@@ -178,7 +219,8 @@ def main() -> int:
     print(f"{'='*55}")
     print(f"  Toplam kayıt      : {summary.get('n', 0)}")
     print(f"  Oranı olan pick   : {summary.get('n_with_odds', 0)}")
-    print(f"  Ortalama CLV      : {summary.get('avg_clv', '—')}")
+    avg = summary.get('avg_clv')
+    print(f"  Ortalama CLV      : {f'{avg:+.4f}' if avg is not None else '—'}")
     print(f"  % Pozitif CLV     : {summary.get('pct_clv_positive', '—')}%")
     print(f"  Doğruluk          : {summary.get('accuracy_all', '—')}%")
     print(f"  Sniper pick       : {summary.get('n_sniper', 0)}")

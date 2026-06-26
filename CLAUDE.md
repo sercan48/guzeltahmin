@@ -34,17 +34,25 @@ calibration_mode = 'identity'   # değiştirme
 
 | Metrik | Değer |
 |---|---|
-| n_settled | 24 |
-| Accuracy | 62.5% |
-| Brier | 0.600 |
-| ECE | 0.308 |
-| Draw bias | +17.35pp |
+| n_settled | 48 |
+| Accuracy | 66.67% |
+| Brier | 0.523 |
+| ECE | 0.145 |
+| Draw bias | +9.5pp |
+
+**Tier breakdown:**
+- TIER_A: 12/20 = 60.0%
+- TIER_B: 17/23 = 73.9%
+- TIER_C: 3/5 = 60.0%
 
 **Aktif flagler:**
-- `DRAW_CALIBRATION_CONFIRMED` — bias=+17.35pp (WC fazında beklenen)
-- `ECE_REVIEW_REQUIRED` — ECE=0.308 > 0.08 eşiği
+- `DRAW_BLIND_SPOT` — Model 48 maçta 0 beraberlik tahmin etti; 14/48 gerçek beraberlik (29%). Yanlış tahminlerin %87.5'i kaçırılan beraberlik. WC grubunda beklenen ama lig için Dixon-Coles R&D planlandı.
+- `CLV_ACCUMULATING` — Tarihsel 48 maçın kapanış oranları kayıp (retroaktif erişim yok). Haziran 25+ maçlarından CLV birikiyor.
 
-**n=30 checkpoint** yaklaşıyor (2 maç daha lazım).
+**Tamamlanan checkpoint'ler:**
+- ✅ n=30 (Haziran 2025 — passed, accuracy 66.67%)
+
+**Sonraki checkpoint:** n=100 (~Temmuz ortası, WC grup + knockout tamamlanınca)
 
 ---
 
@@ -71,7 +79,10 @@ Lig modeli WC'ye göre ~5-8pp daha düşük accuracy → beklenen (Club Elo < Na
 ops/
   shadow_predictor.py       # WC paper-trading tahmincisi (geçici, kaldırılacak)
   result_settler.py         # Settlement pipeline (KORUNAN)
-  wc_paper_shadow.py        # WC bülten üretici
+  result_backfiller.py      # API-Football v3 yedek settler (fallback)
+  wc_paper_shadow.py        # WC bülten üretici + odds merge
+  settlement_notifier.py    # Telegram maç sonuç bildirimcisi (tarih filtreli)
+  clv_tracker.py            # CLV hesaplama + clv_log.jsonl / clv_summary.json
   league_backtest.py        # 8 lig × 2 sezon backtest scripti
 
 src/model/
@@ -79,18 +90,41 @@ src/model/
   summer_league_modifier.py # Yaz ligleri modifier (ertelenmiş)
 
 data/
-  shadow_settlements.jsonl  # WC shadow settlement logu
+  shadow_settlements.jsonl  # WC shadow settlement logu (n=48)
+  shadow_predictions.jsonl  # Tahmin logu (market_odds_h/d/a alanı var — bulletin doldurur)
   shadow_accuracy.json      # Güncel doğruluk raporu
+  notified_settlements.json # Telegram'a gönderilen settlement ID'leri
+  clv_log.jsonl             # Maç bazlı CLV kayıtları (tarihsel odds = null)
+  clv_summary.json          # CLV özet metrikler
   league_backtest/          # 16 backtest JSON çıktısı
   backtest/                 # Ham CSV'ler (8 lig × 2 sezon = 16 dosya)
   cache/club_elo/           # Club Elo ay bazlı önbellek
 
 .github/workflows/
-  daily-bulletin.yml        # 21:00 UTC — WC bülten (Telegram)
-  daily-settle.yml          # 07:00 UTC — settlement + raporlama
+  daily-bulletin.yml        # settle'a zincirli (workflow_run) — WC bülten + odds merge
+  daily-settle.yml          # 07:00 UTC cron (GH gecikmesiyle ~10:00) — settler → backfiller → CLV → notifier → commit
+  daily-league.yml          # 10:00 UTC — lig bülteni (yaz arası boşta, Ağustos'ta aktif)
 
 docs/research/              # Makale & akademik kaynak havuzu (aşağıya bak)
 ```
+
+### Settlement Pipeline Sırası (daily-settle.yml)
+
+```
+result_settler.py --settle          # football-data.org
+result_backfiller.py --settle       # API-Football v3 (yedek)
+clv_tracker.py --update             # clv_log.jsonl + clv_summary.json
+settlement_notifier.py --deliver    # Telegram (sadece dün ≥ tarihli maçlar)
+git commit + push                   # data/ dizini
+```
+
+### CLV Altyapısı Durumu
+
+- `shadow_predictions.jsonl` → `home_team` / `away_team` / `predicted_outcome` / `probabilities: {H,D,A}` formatı
+- Bulletin odds'u `market_odds_h/d/a` olarak **mevcut kayda** yazar (yeni kayıt eklemez)
+- Tarihsel 48 maç: closing odds kayıp → `clv = null`
+- Haziran 25+ maçlar: CLV birikiyor
+- Sniper proxy: `signal == "HIGH_EDGE"` AND `tier in (TIER_A, TIER_B)`
 
 ---
 
@@ -129,7 +163,7 @@ python ops/league_backtest.py --all --season 2024
 | Servis | Env Var | Durum |
 |---|---|---|
 | The Odds API | `ODDS_API_KEY` | Aktif (WC bülteni için) |
-| API-Football | `API_FOOTBALL_KEY` | Yok (lig canlı fixture için gerekli) |
+| API-Football | `API_FOOTBALL_KEY` | ✅ GitHub secret'ta kayıtlı (lig canlı fixture + backfiller için; lokal ortamda yok) |
 | Telegram Bot | `TELEGRAM_BOT_TOKEN` | Aktif |
 | Telegram Chat | `TELEGRAM_CHAT_ID` | Aktif |
 
@@ -159,11 +193,21 @@ Club Elo kapsamı yetersiz → Q4 2025'e ertelendi.
 |---|---|---|
 | Backtest altyapısı | Haziran | ✅ Tamamlandı |
 | Backtest koşusu (8 lig × 2 sezon) | Haziran | ✅ Tamamlandı |
-| Dixon-Coles draw düzeltmesi R&D | Temmuz | Planlandı |
+| Settlement pipeline (backfiller + notifier) | Haziran | ✅ Tamamlandı |
+| CLV altyapısı (tracker + odds merge) | Haziran | ✅ Tamamlandı |
+| n=30 checkpoint | Haziran | ✅ Geçildi (66.67%) |
+| Dixon-Coles draw düzeltmesi R&D (lig için) | Temmuz | Planlandı |
 | API kararı (API-Football vs football-data.org) | Temmuz | Bekliyor |
+| n=100 checkpoint | Temmuz-ortası | Bekliyor |
 | Lig fixture pipeline | Ağustos | Planlandı |
 | Lig shadow başlangıcı | Ağustos | Planlandı |
 | Canlı yayın (VIP Telegram) | Eylül | Planlandı |
+
+### Dixon-Coles Kararı (Temmuz)
+
+- **WC için**: YAPILMAYACAK — ρ parametresi için yeterli maç yok (n=48, minimum ~200-300 gerekli)
+- **Lig için**: `league_intelligence_engine.py` (yeni dosya, Temmuz başı) — `data/backtest/` 5.091 maç ρ fit için yeterli
+- WC modeline dokunulmayacak; Dixon-Coles tamamen ayrı lig motoru olacak
 
 ---
 

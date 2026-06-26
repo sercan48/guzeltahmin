@@ -6,6 +6,9 @@ on:
     - cron: '0 7 * * *'
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   settle:
     runs-on: ubuntu-latest
@@ -33,9 +36,23 @@ jobs:
           SUPABASE_SERVICE_ROLE_KEY:  ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: python ops/result_settler.py --settle
 
+      - name: API-Football yedek settlement (backfill)
+        continue-on-error: true
+        env:
+          API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
+        run: python -m ops.result_backfiller --settle
+
       - name: CLV Tracker güncelle
         continue-on-error: true
         run: python ops/clv_tracker.py --update
+
+      - name: Maç sonuçlarını Telegram'a bildir
+        continue-on-error: true
+        env:
+          TELEGRAM_BOT_TOKEN:        ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID:          ${{ secrets.TELEGRAM_CHAT_ID }}
+          TELEGRAM_PERSONAL_CHANNEL: ${{ secrets.TELEGRAM_PERSONAL_CHANNEL }}
+        run: python -m ops.settlement_notifier --deliver
 
       - name: Settlement verisini commit et
         if: always()
