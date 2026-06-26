@@ -72,9 +72,20 @@ class ArbResult:
             lines.append(f"\n  Bütçe         : {self.budget:.2f} TL")
             for leg, stake in zip(self.legs, self.stakes):
                 book = f" @ {leg.book}" if leg.book else ""
-                lines.append(f"  → {leg.label:<6}       : {stake:.2f} TL{book}  (@{leg.odds})")
+                legal_flag = " ⛔<50TL" if stake < 50.0 else ""
+                lines.append(f"  → {leg.label:<6}       : {stake:.2f} TL{book}  (@{leg.odds}){legal_flag}")
             lines.append(f"\n  Garantili getiri : {self.guaranteed_ret:.2f} TL")
             lines.append(f"  Garantili kâr    : +{self.guaranteed_pnl:.2f} TL  (+{self.arb_margin:.4f}%)")
+            # Yasal minimum uyarısı (7258 sayılı Kanun — min. 50 TL/kupon)
+            if min(self.stakes) < 50.0:
+                # Min bütçe: tüm leg'lerin ≥50 TL olması için
+                min_legal_budget = 50.0 * max(leg.odds for leg in self.legs) * self.implied_sum
+                lines.append(
+                    f"\n  ⛔ YASAL UYARI : Bir veya daha fazla leg < 50 TL (7258 sk. min. kupon bedeli)"
+                )
+                lines.append(
+                    f"  ⛔              Tüm leg'ler ≥50 TL için bütçe ≥ {min_legal_budget:.0f} TL gerekli"
+                )
         elif self.budget and not self.arb_exists:
             lines.append(f"\n  (Arbitraj olmadığı için stake dağılımı hesaplanamaz)")
 

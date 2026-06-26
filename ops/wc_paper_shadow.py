@@ -841,7 +841,7 @@ def _merge_odds_into_predictions(
         logger.warning("Prediction odds güncellenemedi (%s vs %s): %s", home, away, exc)
 
 
-
+def _lookup_odds(home: str, away: str, odds_map: dict) -> dict | None:
     """Find odds for a match using normalized team-name matching."""
     if not odds_map:
         return None
