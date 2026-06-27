@@ -70,6 +70,38 @@ def _ev(prob_frac: float, decimal_odds: float | None) -> float | None:
     return prob_frac * decimal_odds - 1.0
 
 
+def _min_ev_threshold(decimal_odds: float) -> float:
+    """
+    Dinamik EV eşiği — düşük oranlarda daha yüksek edge gerekir.
+    Kelly mantığı: odds=1.10 için EV=+1.2% → Kelly'nin neredeyse sıfır tavsiyesi;
+    aynı Kelly fraksiyonu için odds=1.10'da ~%10+ edge gerekir.
+    """
+    if decimal_odds < 1.30:
+        return 0.15
+    if decimal_odds < 1.50:
+        return 0.10
+    if decimal_odds < 1.80:
+        return 0.06
+    if decimal_odds < 2.50:
+        return 0.03
+    return 0.02
+
+
+def _yield_score(ev: float, decimal_odds: float) -> float:
+    """
+    Getiri ağırlıklı sıralama: ham EV'e göre değil Kelly × EV'e göre sırala.
+    score ∝ ev² / (odds - 1)  — düşük oranlı küçük EV'leri doğal olarak bastırır.
+    """
+    denom = decimal_odds - 1.0
+    if denom <= 0:
+        return -999.0
+    return (ev ** 2) / denom
+
+
+# DC (çifte şans) seçimi için minimum oran — bu altında "güvenli liman" kabul edilmez
+_DC_MIN_ODDS = 1.40
+
+
 def _pick_secondary(pred: dict, odds: dict | None = None) -> tuple[str, float, str]:
     """
     Birincil 1X2 tahminiyle ortogonal en iyi ikincil pazarı seç.
@@ -77,16 +109,18 @@ def _pick_secondary(pred: dict, odds: dict | None = None) -> tuple[str, float, s
     Returns (label, probability_0_to_1, market_type)
 
     EV Modu (odds varsa):
-      Tüm aday pazarların EV'i hesaplanır; en yüksek pozitif EV kazanır.
-      1X için çok düşük oranlar (-EV) Alt 2.5 gibi seçeneklerin önünü açar.
-      Hiçbir aday pozitif EV üretmiyorsa kural moduna düşer.
+      Dinamik EV eşiği: her orana göre farklı minimum edge gerekir.
+        odds<1.30 → %15, odds<1.50 → %10, odds<1.80 → %6, odds<2.50 → %3, üstü → %2
+      Getiri skoru (ev²/(odds-1)) ile sıralama — düşük oranlı küçük EV'ler bastırılır.
+      Hiçbir aday eşiği geçemezse kural moduna düşer.
+      DC (1X/X2), odds ≥ 1.40 olsa bile ancak başka seçenek yoksa devreye girer.
 
     Kural Modu (odds yoksa, öncelik sırası):
-      1. DRAW tahmini → xG<2.0: Alt | xG≥2.0: Çifte Şans
-      2. TIER_A + conf≥45 → Çifte Şans (1X / X2)
-      3. xg_h≥0.9 ve xg_a≥0.9 ve P(BTTS)≥0.45 → KG Var
-      4. p_over > p_under → 2.5 Üst
-      5. Varsayılan → 2.5 Alt
+      1. DRAW tahmini → xG<2.0: Alt | xG≥2.0: BTTS yoksa Alt
+      2. xg_h≥0.9 ve xg_a≥0.9 ve P(BTTS)≥0.45 → KG Var
+      3. p_over > p_under → 2.5 Üst
+      4. 2.5 Alt
+      5. Son çare: TIER_A + conf≥45 → Çifte Şans (1X / X2) — etiketle belirt
     """
     import math
 
@@ -112,58 +146,56 @@ def _pick_secondary(pred: dict, odds: dict | None = None) -> tuple[str, float, s
     p_x2   = (probs["D"] + probs["A"]) / 100.0
 
     # ── EV Modu ──────────────────────────────────────────────────────────────
-    # Oran varsa tüm aday pazarlar EV ile sıralanır.
-    # Bu mod 1X/KG_VAR gibi düşük oranlı seçeneklerin negatif EV'ini görür;
-    # örn. TIER_A maçta 1X odds≈1.05 → EV≈-14%, Alt odds≈1.70 → EV≈+1.3%.
     if odds:
-        # primary 1X2 ile aynı pazar tipine girmeyecek adaylar
-        skip_key = {"HOME_WIN": "h", "DRAW": "d", "AWAY_WIN": "a"}.get(primary)
-        candidates: list[tuple[float, str, float, str]] = []  # (ev, label, prob, mtype)
+        candidates: list[tuple[float, float, str, float, str]] = []
+        # (yield_score, ev, label, prob, mtype)
 
         def _add(label, prob, mtype, odds_val):
             ev = _ev(prob, odds_val)
-            if ev is not None:
-                candidates.append((ev, label, prob, mtype))
+            if ev is None or odds_val is None:
+                return
+            min_threshold = _min_ev_threshold(odds_val)
+            if ev >= min_threshold:
+                ys = _yield_score(ev, odds_val)
+                candidates.append((ys, ev, label, prob, mtype))
 
         if primary != "DRAW":
-            dc_key = "1X" if primary == "HOME_WIN" else "X2"
-            dc_prob = p_1x if primary == "HOME_WIN" else p_x2
-            # DC odds: genellikle bookmaker'da "double chance" olarak yok;
-            # 1X2 oranlarından türet: P(1X) / (1/h + 1/d) yaklaşımı yerine
-            # doğrudan under/btts/ou oranlarını kullan
-            _add("2.5_ALT",  p_under, "OU",   odds.get("under_2_5"))
-            _add("2.5_ÜST",  p_over,  "OU",   odds.get("over_2_5"))
-            _add("KG_VAR",   p_btts,  "BTTS", odds.get("btts_yes"))
-            _add("KG_YOK",   1-p_btts,"BTTS", odds.get("btts_no"))
+            _add("2.5_ALT",  p_under,   "OU",   odds.get("under_2_5"))
+            _add("2.5_ÜST",  p_over,    "OU",   odds.get("over_2_5"))
+            _add("KG_VAR",   p_btts,    "BTTS", odds.get("btts_yes"))
+            _add("KG_YOK",   1-p_btts,  "BTTS", odds.get("btts_no"))
         else:
-            # DRAW tahmini: DC hem birincili hem de ikincili kapsar → OU kullan
             _add("2.5_ALT",  p_under, "OU",   odds.get("under_2_5"))
             _add("2.5_ÜST",  p_over,  "OU",   odds.get("over_2_5"))
 
         if candidates:
             candidates.sort(key=lambda x: x[0], reverse=True)
-            best_ev, best_label, best_prob, best_mtype = candidates[0]
-            if best_ev > 0:
-                return best_label, best_prob, best_mtype
-        # Tüm adaylar negatif EV veya oran eksik → kural moduna düş
+            _, _, best_label, best_prob, best_mtype = candidates[0]
+            return best_label, best_prob, best_mtype
+        # Tüm adaylar eşiği geçemedi → kural moduna düş
 
     # ── Kural Modu ───────────────────────────────────────────────────────────
     if primary == "DRAW":
         if total_xg < 2.0:
             return "2.5_ALT", p_under, "OU"
-        return ("1X", p_1x, "DC") if probs["H"] >= probs["A"] else ("X2", p_x2, "DC")
-
-    if tier == "TIER_A" and conf >= 45:
-        if primary == "HOME_WIN":
-            return "1X", p_1x, "DC"
-        if primary == "AWAY_WIN":
-            return "X2", p_x2, "DC"
+        # Yüksek xG beraberliğinde BTTS iyi alternatif
+        if p_btts >= 0.45:
+            return "KG_VAR", p_btts, "BTTS"
+        return "2.5_ALT", p_under, "OU"
 
     if xg_h >= 0.9 and xg_a >= 0.9 and p_btts >= 0.45:
         return "KG_VAR", p_btts, "BTTS"
 
     if p_over > p_under:
         return "2.5_ÜST", p_over, "OU"
+
+    # DC son çare — ancak TIER_A + yüksek güven varsa
+    if tier == "TIER_A" and conf >= 45:
+        if primary == "HOME_WIN":
+            return "1X ⚠️", p_1x, "DC"
+        if primary == "AWAY_WIN":
+            return "X2 ⚠️", p_x2, "DC"
+
     return "2.5_ALT", p_under, "OU"
 
 
