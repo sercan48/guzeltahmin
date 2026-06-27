@@ -183,19 +183,20 @@ def _pick_secondary(pred: dict, odds: dict | None = None) -> tuple[str, float, s
             return "KG_VAR", p_btts, "BTTS"
         return "2.5_ALT", p_under, "OU"
 
-    if xg_h >= 0.9 and xg_a >= 0.9 and p_btts >= 0.45:
-        return "KG_VAR", p_btts, "BTTS"
-
-    if p_over > p_under:
-        return "2.5_ÜST", p_over, "OU"
-
-    # DC son çare — ancak TIER_A + yüksek güven varsa
+    # TIER_A: DC kural modunda en yüksek isabet (%100, n=24 WC shadow).
+    # EV modu bu seçimi zaten dinamik eşikle filtreler (odds<1.15 → reddeder).
+    # Kural modunda (oran yok) ⚠️ etiketiyle gösterilir; kullanıcı oranı kontrol eder.
     if tier == "TIER_A" and conf >= 45:
         if primary == "HOME_WIN":
             return "1X ⚠️", p_1x, "DC"
         if primary == "AWAY_WIN":
             return "X2 ⚠️", p_x2, "DC"
 
+    if xg_h >= 0.9 and xg_a >= 0.9 and p_btts >= 0.45:
+        return "KG_VAR", p_btts, "BTTS"
+
+    if p_over > p_under:
+        return "2.5_ÜST", p_over, "OU"
     return "2.5_ALT", p_under, "OU"
 
 
