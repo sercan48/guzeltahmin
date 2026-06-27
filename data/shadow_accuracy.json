@@ -1,19 +1,19 @@
 {
-  "generated_at": "2026-06-26T10:24:23.784841+00:00",
-  "n_settled": 60,
-  "n_correct": 39,
-  "overall_accuracy_pct": 65.0,
-  "log_loss": 0.90345,
+  "generated_at": "2026-06-27T09:29:42.389591+00:00",
+  "n_settled": 66,
+  "n_correct": 43,
+  "overall_accuracy_pct": 65.15,
+  "log_loss": 0.89018,
   "n_draws_predicted": 0,
-  "n_draws_actual": 16,
-  "draw_rate_predicted": 19.867,
-  "draw_rate_actual": 26.667,
-  "draw_rate_bias": 6.8,
+  "n_draws_actual": 18,
+  "draw_rate_predicted": 19.92,
+  "draw_rate_actual": 27.273,
+  "draw_rate_bias": 7.353,
   "draw_bias_available": true,
   "confusion_matrix": {
     "HOME_WIN": {
-      "HOME_WIN": 27,
-      "DRAW": 13,
+      "HOME_WIN": 28,
+      "DRAW": 14,
       "AWAY_WIN": 1
     },
     "DRAW": {
@@ -23,25 +23,25 @@
     },
     "AWAY_WIN": {
       "HOME_WIN": 4,
-      "DRAW": 3,
-      "AWAY_WIN": 12
+      "DRAW": 4,
+      "AWAY_WIN": 15
     }
   },
   "by_tier": {
     "TIER_A": {
-      "n": 24,
-      "correct": 16,
-      "accuracy": 66.67
+      "n": 27,
+      "correct": 19,
+      "accuracy": 70.37
     },
     "TIER_B": {
-      "n": 29,
-      "correct": 19,
-      "accuracy": 65.52
+      "n": 31,
+      "correct": 20,
+      "accuracy": 64.52
     },
     "TIER_C": {
-      "n": 7,
+      "n": 8,
       "correct": 4,
-      "accuracy": 57.14
+      "accuracy": 50.0
     }
   },
   "by_confidence_band": {
@@ -52,73 +52,73 @@
       "accuracy": null
     },
     "70-89": {
-      "n": 19,
-      "mean_conf": 76.84,
-      "correct": 14,
-      "accuracy": 73.68
+      "n": 21,
+      "mean_conf": 76.96,
+      "correct": 16,
+      "accuracy": 76.19
     },
     "50-69": {
-      "n": 26,
-      "mean_conf": 59.34,
-      "correct": 14,
-      "accuracy": 53.85
+      "n": 28,
+      "mean_conf": 59.45,
+      "correct": 16,
+      "accuracy": 57.14
     },
     "30-49": {
-      "n": 15,
-      "mean_conf": 40.07,
+      "n": 17,
+      "mean_conf": 39.54,
       "correct": 11,
-      "accuracy": 73.33
+      "accuracy": 64.71
     }
   },
   "rolling_7d": {
-    "n": 36,
+    "n": 42,
     "accuracy": 66.67,
-    "cutoff": "2026-06-19"
+    "cutoff": "2026-06-20"
   },
-  "brier_score": 0.52694,
+  "brier_score": 0.51668,
   "brier_available": true,
-  "ece": 0.1353,
+  "ece": 0.10109,
   "ece_available": true,
   "reliability_bins": [
     {
       "band": "30-40",
-      "n": 7,
-      "mean_conf": 34.04,
-      "accuracy": 57.14
+      "n": 8,
+      "mean_conf": 33.54,
+      "accuracy": 50.0
     },
     {
       "band": "40-50",
-      "n": 8,
-      "mean_conf": 45.35,
-      "accuracy": 87.5
+      "n": 9,
+      "mean_conf": 44.88,
+      "accuracy": 77.78
     },
     {
       "band": "50-60",
-      "n": 13,
-      "mean_conf": 54.08,
-      "accuracy": 46.15
+      "n": 14,
+      "mean_conf": 54.14,
+      "accuracy": 50.0
     },
     {
       "band": "60-70",
-      "n": 13,
-      "mean_conf": 64.61,
-      "accuracy": 61.54
+      "n": 14,
+      "mean_conf": 64.77,
+      "accuracy": 64.29
     },
     {
       "band": "70-80",
-      "n": 14,
-      "mean_conf": 74.64,
-      "accuracy": 78.57
+      "n": 15,
+      "mean_conf": 74.71,
+      "accuracy": 80.0
     },
     {
       "band": "80-93",
-      "n": 5,
-      "mean_conf": 83.0,
-      "accuracy": 60.0
+      "n": 6,
+      "mean_conf": 82.57,
+      "accuracy": 66.67
     }
   ],
   "flags": [
-    "DRAW_CALIBRATION_CONFIRMED \u2014 bias=+6.80pp",
-    "ECE_REVIEW_REQUIRED \u2014 ECE=0.1353 > 0.08 threshold"
+    "DRAW_CALIBRATION_CONFIRMED \u2014 bias=+7.35pp",
+    "ECE_REVIEW_REQUIRED \u2014 ECE=0.1011 > 0.08 threshold"
   ]
 }
