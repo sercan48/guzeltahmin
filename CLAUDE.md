@@ -34,20 +34,23 @@ calibration_mode = 'identity'   # değiştirme
 
 | Metrik | Değer |
 |---|---|
-| n_settled | 48 |
-| Accuracy | 66.67% |
+| n_settled | 60 |
+| Accuracy | 65.0% (39/60) |
 | Brier | 0.523 |
 | ECE | 0.145 |
 | Draw bias | +9.5pp |
 
-**Tier breakdown:**
-- TIER_A: 12/20 = 60.0%
-- TIER_B: 17/23 = 73.9%
-- TIER_C: 3/5 = 60.0%
+**Tier breakdown (n=60):**
+- TIER_A: 16/24 = 66.7%
+- TIER_B: 19/29 = 65.5%
+- TIER_C: 4/7 = 57.1%
 
 **Aktif flagler:**
-- `DRAW_BLIND_SPOT` — Model 48 maçta 0 beraberlik tahmin etti; 14/48 gerçek beraberlik (29%). Yanlış tahminlerin %87.5'i kaçırılan beraberlik. WC grubunda beklenen ama lig için Dixon-Coles R&D planlandı.
-- `CLV_ACCUMULATING` — Tarihsel 48 maçın kapanış oranları kayıp (retroaktif erişim yok). Haziran 25+ maçlarından CLV birikiyor.
+- `DRAW_BLIND_SPOT` — Model 60 maçta 0 beraberlik tahmin etti; 16/60 gerçek beraberlik (26.7%). **Yanlışların %76'sı (16/21) kaçırılan beraberlik, bunların %81'i düşük skorlu (0-0 / 1-1).** Kök neden: Poisson bağımsızlık varsayımı düşük skorlu beraberlikleri sistematik az tahmin eder → Dixon-Coles ρ düzeltmesi standart çözüm (lig motoru için planlı; WC'de ρ fit'i için n yetersiz).
+- `FAVOURITE_TRAP` — **Hata analizi (n=60) alt bulgusu:** En kötü hatalar BÜYÜK FAVORİ maçları. Elo farkı ≥180 olan 20 maçın %35'i berabere bitti (örn. Spain-Cape Verde %84 güven, Δ305 → 0-0; Portugal-Congo DR Δ270 → 1-1). Poisson bu maçlara DÜŞÜK beraberlik olasılığı verdiği için generic `draw_prob>18` eşiği tuzakları kaçırıyordu. **Çözüm (uygulandı, sadece teslimat katmanı):** `format_match_block`'a `fav_trap = elo_gap≥180` tetikleyicisi + "⚠️ FAVORİ TUZAĞI" uyarı bloğu eklendi; bu maçlar SNIPER'dan da çıkarılır. Olasılık/güven/modele DOKUNMAZ.
+- `CLV_ACCUMULATING` — Tarihsel maçların kapanış oranları kayıp (retroaktif erişim yok). Haziran 25+ maçlarından CLV birikiyor.
+
+**Önemli kalibrasyon notu:** En yüksek güven bandı (%80+) sadece %60 tuttu (3/5) — aşırı güven sinyali, ama n çok küçük. "Ana tahminler" (TIER_A) yüksek güvene rağmen TIER_B'den daha doğru DEĞİL; çünkü TIER_A'nın çoğu büyük-favori-beraberlik tuzağı.
 
 **Tamamlanan checkpoint'ler:**
 - ✅ n=30 (Haziran 2025 — passed, accuracy 66.67%)
@@ -80,7 +83,7 @@ ops/
   shadow_predictor.py       # WC paper-trading tahmincisi (geçici, kaldırılacak)
   result_settler.py         # Settlement pipeline (KORUNAN)
   result_backfiller.py      # API-Football v3 yedek settler (fallback)
-  wc_paper_shadow.py        # WC bülten üretici + odds merge
+  wc_paper_shadow.py        # WC bülten üretici + odds merge + FAVORİ TUZAĞI uyarısı + Telegram 4096 parçalama
   settlement_notifier.py    # Telegram maç sonuç bildirimcisi (tarih filtreli)
   clv_tracker.py            # CLV hesaplama + clv_log.jsonl / clv_summary.json
   league_backtest.py        # 8 lig × 2 sezon backtest scripti
@@ -107,6 +110,15 @@ data/
 
 docs/research/              # Makale & akademik kaynak havuzu (aşağıya bak)
 ```
+
+### Bülten Teslimat Güvenilirliği (26 Haziran düzeltmeleri)
+
+İki kritik bug otomatik WC bültenini günlerce çökertiyordu (25-26 Haz maçları gelmedi):
+
+1. **`_lookup_odds` regresyonu** — `main`'de `def _lookup_odds` imza satırı bir commit'te silinmiş, gövdesi önceki fonksiyona yapışmıştı; çağrılar `NameError` veriyordu (`py_compile` geçtiği için fark edilmedi). Otomatik workflow'lar DAİMA `main`'den çalıştığı için her gün çöküyordu. → imza geri eklendi.
+2. **Telegram 4096 sınırı** — yoğun günlerde (6-8 maç) bülten sınırı aşıp `message is too long` (400) ile komple düşüyordu. → `send_telegram` artık satır sınırlarında ≤3900 karakterlik parçalara bölüp sırayla gönderir.
+
+**Yapısal:** `daily-bulletin.yml` artık settle'a zincirli DEĞİL — bağımsız `schedule` cron (`0 6 * * *`). Settle gecikir/atlanırsa bülten düşmez. `ref` pin'i kaldırıldı (footgun). NOT: scheduled/workflow_run runs GitHub kuralı gereği daima default branch (`main`) YAML+kodunu kullanır → düzeltmeler `main`'e merge edilmeli (PR ile).
 
 ### Settlement Pipeline Sırası (daily-settle.yml)
 

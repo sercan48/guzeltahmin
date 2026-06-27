@@ -867,7 +867,16 @@ def format_match_block(db, match: dict, pred: dict, odds_map: dict | None = None
 
     sniper    = _is_sniper(pred, odds)
     draw_prob = float(pred.get("draw_prob", 0))
-    draw_risk = draw_prob > 18.0 and not pred.get("is_no_bet", False)
+    # Shadow bulgusu (n=60): hataların %76'sı kaçırılan beraberlik; bunların
+    # %81'i düşük skorlu (0-0/1-1). En kötüsü BÜYÜK FAVORİ maçları: Elo farkı
+    # ≥180 olan 20 maçın %35'i berabere bitti. Poisson bu maçlara DÜŞÜK
+    # beraberlik olasılığı verdiği için (örn. Spain-Cape Verde D=%15.4 → 0-0)
+    # generic draw_prob>18 eşiği tuzakları kaçırıyordu. İkinci tetikleyici =
+    # favori tuzağı. NOT: bu yalnızca teslimat katmanı bayrağı — olasılık,
+    # güven ve modele DOKUNMAZ.
+    _elo_gap_block = abs(float(pred.get("elo_home", 0)) - float(pred.get("elo_away", 0)))
+    fav_trap  = _elo_gap_block >= 180.0 and not pred.get("is_no_bet", False)
+    draw_risk = (draw_prob > 18.0 or fav_trap) and not pred.get("is_no_bet", False)
     if draw_risk:
         sniper = False  # Seçenek B: beraberlik riski olan tahminler sniper'dan çıkar
 
@@ -1001,6 +1010,16 @@ def format_match_block(db, match: dict, pred: dict, odds_map: dict | None = None
         f"   1X: %{dc_1x}  ·  X2: %{dc_x2}"
     )
 
+    # ── Favori tuzağı uyarısı (teslimat katmanı — modeli değiştirmez) ────────────
+    fav_trap_block = (
+        f"\n\n⚠️ <b>FAVORİ TUZAĞI</b>\n"
+        f"   <i>Elo farkı yüksek ({elo_gap:.0f}). Shadow takibinde büyük favori "
+        f"maçlarının ~%35'i berabere bitti; zayıf takım savunmaya yığılıyor. "
+        f"Model beraberliği yapısal olarak az tahmin eder — ana tahmini "
+        f"temkinli değerlendir.</i>"
+        if fav_trap else ""
+    )
+
     # ── CLV ─────────────────────────────────────────────────────────────────────
     clv_block = "\n\n📌 <b>CLV:</b> — <i>(kapanış oranı bekleniyor)</i>"
 
@@ -1013,6 +1032,7 @@ def format_match_block(db, match: dict, pred: dict, odds_map: dict | None = None
         + mfe_block
         + sec_block
         + deriv_block
+        + fav_trap_block
         + clv_block
     )
 
