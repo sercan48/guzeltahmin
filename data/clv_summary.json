@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-06-27T09:29:42.521811+00:00",
-  "n": 66,
+  "generated_at": "2026-06-28T09:58:12.399801+00:00",
+  "n": 72,
   "n_with_odds": 0,
   "avg_clv": null,
   "pct_clv_positive": null,
-  "accuracy_all": 65.2,
-  "n_sniper": 30,
-  "sniper_accuracy": 70.0,
+  "accuracy_all": 63.9,
+  "n_sniper": 32,
+  "sniper_accuracy": 71.9,
   "interpretation": "CLV hesaplanamadı — piyasa oranı eksik",
-  "stat_note": "n=66 kayıt (0 oran mevcut). İstatistiksel anlam için n≥500 gerekli."
+  "stat_note": "n=72 kayıt (0 oran mevcut). İstatistiksel anlam için n≥500 gerekli."
 }
