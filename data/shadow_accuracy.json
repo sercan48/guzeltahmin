@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-01T10:43:16.022260+00:00",
+  "generated_at": "2026-07-02T10:11:39.024715+00:00",
   "n_settled": 72,
   "n_correct": 46,
   "overall_accuracy_pct": 63.89,
@@ -71,9 +71,9 @@
     }
   },
   "rolling_7d": {
-    "n": 48,
-    "accuracy": 64.58,
-    "cutoff": "2026-06-24"
+    "n": 24,
+    "accuracy": 58.33,
+    "cutoff": "2026-06-25"
   },
   "brier_score": 0.51481,
   "brier_available": true,
